@@ -5,16 +5,21 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'app',
-  actions: {
+  computed: {
+    ...mapGetters([
+      'account'
+    ])
+  },
+  methods: {
     ...mapActions([
-      'checkAccount'
+      'connect'
     ])
   },
   mounted () {
-    this.checkAccount()
+    this.connect()
   }
 }
 </script>

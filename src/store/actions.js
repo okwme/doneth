@@ -5,7 +5,7 @@ import Web3 from 'web3'
 const ZeroClientProvider = require('web3-provider-engine/zero.js')
 
 export default {
-  connectt ({commit, state, dispatch}) {
+  connect ({commit, state, dispatch}) {
     let web3Provider = false
     if (web3) {
       web3Provider = web3.currentProvider
@@ -24,7 +24,7 @@ export default {
     if (web3Provider) {
       web3 = new Web3(web3Provider)
       let wrongNetwork = false
-      web3.version.getNetwork((err, netId) => {
+      web3.eth.net.getId((err, netId) => {
         console.log(netId)
         if (!err) {
           switch (netId) {
