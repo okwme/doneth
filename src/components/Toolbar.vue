@@ -5,7 +5,9 @@
     </div>
 
     <ul class="menu">
-      <li @click="navigate('deploy')">Create</li>
+      <li>
+        <router-link :to="{name: 'Deploy'}">Create</router-link>
+      </li>
       <li class="currency">
         <div class="active-currency">{{activeCurrency}} <img src="static/downArrow.svg"/></div>
         <div class="dropdown">
@@ -80,8 +82,16 @@ export default {
     flex: 1;
     font-size: 14pt;
     font-weight: 500;
-    /*margin: auto 20px;*/
+  }
+  .menu li a {
+    color: #323232;
+    text-decoration: none;
     padding: 10px 10px;
+    display: block;
+  }
+  .menu li:hover a {
+    color: #548c4c;
+    cursor: pointer;
   }
   .menu li:hover {
     color: #548c4c;
@@ -92,6 +102,7 @@ export default {
     border-radius: 3px;
     font-size: 12pt;
     position: relative;
+    padding: 10px 10px;
     text-transform: uppercase;
   }
   .dropdown {
