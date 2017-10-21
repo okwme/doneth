@@ -1,6 +1,8 @@
 <template>
   <div >
     Welcome to Doneth.
+
+    <router-link :to="{name: 'Deploy'}">Deploy</router-link>
   </div>
 </template>
 

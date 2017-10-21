@@ -5,8 +5,17 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
-  name: 'app'
+  name: 'app',
+  actions: {
+    ...mapActions([
+      'checkAccount'
+    ])
+  },
+  mounted () {
+    this.checkAccount()
+  }
 }
 </script>
 

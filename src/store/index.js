@@ -12,7 +12,9 @@ Vue.use(Vuex)
 const debug = false
 
 const state = {
-
+  retried: false,
+  metamask: true,
+  account: null
 }
 
 export default new Vuex.Store({
