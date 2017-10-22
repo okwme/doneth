@@ -1,0 +1,38 @@
+@import 'variables';
+
+p {
+  margin: 0px;
+  padding: 20px;
+  text-align: left;
+}
+
+hr {
+  border: 0px;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  display: inline-block;
+  margin: 5px;
+}
+
+.page-card {
+  background: $white;
+  border-radius: 3px;
+  box-shadow: 0 1px 10px -3px rgba(0,0,0,0.15);
+  width: 60vw;
+  min-width: 760px;
+  margin: 0px auto 30px;
+}
+
+.bk-green {
+  background: $primary;
+  color: $white;
+}
+
+.wd-50 {
+  width: 50%;
+}
+.flex-1 {
+  flex: 1;
+}
+.flex-2 {
+  flex: 2;
+}

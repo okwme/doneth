@@ -1,0 +1,27 @@
+.btn {
+  background: transparent;
+  border: 2px solid transparent;
+  color: $primary;
+  cursor: pointer;
+  padding: 7px 12px;
+
+  b {
+    display: block;
+    font-size: 13pt;
+  }
+
+  &.btn-outlined{
+    background: transparent;
+    border: 2px solid $white;
+    border-radius: 3px;
+    color: $white;
+  }
+
+  &.btn-white{
+    background: $white;
+
+    &.btn-outlined{
+      background: transparent;
+    }
+  }
+}
