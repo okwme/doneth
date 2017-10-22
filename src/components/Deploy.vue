@@ -1,11 +1,16 @@
 <template>
     <div>
-      <input v-model="name">
-      <br>
-      <textarea readonly v-text="contract"></textarea>
-      <textarea :class="isCompiling" readonly v-text="compiled"></textarea>
-      <br>
-      <button @click="deploy">DEPLOY</button>
+      <template v-if="metamask">
+        <input v-model="name">
+        <br>
+        <textarea readonly v-text="contract"></textarea>
+        <textarea :class="isCompiling" readonly v-text="compiled"></textarea>
+        <br>
+        <button :disabled="compiling" @click="deploy">DEPLOY</button>
+      </template>
+      <template v-else>
+        Please get Metamask
+      </template>
     </div>
 </template>
 
@@ -32,7 +37,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['account']),
+    ...mapGetters(['account', 'metamask']),
     contract () {
       return contract.replace('__REPLACE__', this.name)
     },
@@ -74,6 +79,7 @@ export default {
           console.log(output)
           this.compiled = output.contracts[':Doneth'].bytecode
           this.abi = JSON.parse(output.contracts[':Doneth'].interface)
+          console.log(JSON.stringify(this.abi))
           this.compiling = false
         })
       } else {
@@ -90,9 +96,9 @@ export default {
         arguments: [],
         from: this.account
       }).send({
-        from: this.account,
-        gas: '4700000',
-        gasPrice: '4700000'
+        from: this.account
+        // gas: '4700000',
+        // gasPrice: '4700000'
       }, function (e, transactionHash) {
         console.log(e, transactionHash)
         // if (typeof contract.address !== 'undefined') {
@@ -118,6 +124,7 @@ export default {
     }
   },
   mounted () {
+    console.log(this.metamask)
     this.compile()
   }
 }

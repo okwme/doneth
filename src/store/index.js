@@ -13,7 +13,7 @@ const debug = false
 
 const state = {
   retried: false,
-  metamask: true,
+  metamask: false,
   account: null
 }
 

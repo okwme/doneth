@@ -1,3 +1,4 @@
 export default {
-  account: state => state.account
+  account: state => state.account,
+  metamask: state => state.metamask
 }

@@ -1,21 +1,24 @@
 // import BN from 'bignumber.js'
 import Web3 from 'web3'
-
 // const ProviderEngine = require('web3-provider-engine/index.js')
 const ZeroClientProvider = require('web3-provider-engine/zero.js')
 
 export default {
   connect ({commit, state, dispatch}) {
+    console.log('connect')
     let web3Provider = false
-    if (web3) {
+    if (typeof web3 !== 'undefined') {
+      console.log('yes web 3')
       web3Provider = web3.currentProvider
+      commit('SET_METAMASK', true)
     } else if (!state.retried) {
+      console.log('not retried')
       commit('SET_RETRY', true)
       setTimeout(() => {
         dispatch('connect')
       }, 1000)
     } else {
-      commit('SET_METAMASK', false)
+      console.log('no metamask')
       web3Provider = ZeroClientProvider({
         getAccounts: function () {},
         rpcUrl: 'https://rinkeby.infura.io/Q5I7AA6unRLULsLTYd6d'
@@ -51,7 +54,6 @@ export default {
     }, 3000)
   },
   checkAccount ({commit}) {
-    console.log('checkAccount')
     web3.eth.getAccounts((error, accounts) => {
       if (error) throw new Error(error)
       if (accounts.length && this.account !== accounts[0]) {
