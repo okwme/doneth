@@ -35,8 +35,9 @@ export default {
   methods: {
     iframePreview () {
       let mainurl = `https://doneth.org/${this.address}`
+      // let mainurl = `http://localhost:8080/${this.address}`
       let url = `${mainurl}/donate-button`
-      this.htm = `<a href="${mainurl}"><iframe src="${url}" width="200px" height="50px"></iframe></a>`
+      this.htm = `<a href="${mainurl}"><iframe src="${url}" width="305px" height="50px"></iframe></a>`
     }
   }
 }
@@ -89,6 +90,11 @@ export default {
       border-color: $lightgrey;
       resize: none;
       width: 100%;
+    }
+
+    a {
+      display: block;
+      margin: auto;
     }
 
     iframe {
