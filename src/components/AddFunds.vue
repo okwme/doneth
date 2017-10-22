@@ -68,7 +68,6 @@ export default {
     deposit () {
       if (this.depositing) {
         this.makeDeposit(this.depositAmount).then((result) => {
-          console.log('FINISHED', result)
           this.depositing = false
         }).catch((error) => {
           console.error(error)
