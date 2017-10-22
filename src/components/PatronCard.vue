@@ -7,7 +7,8 @@
         </div>
         <div class="attributes">
           <h3>{{member.firstName || 'FirstName'}}</h3>
-          <small>{{member.who || '0x0000...0000'}}</small>
+          <!-- <small>{{member.who || '0x0000...0000'}}</small> -->
+          <short-hash :hash="member.who || '0x0000000000000'"/>
         </div>
       </div>
       <hr class="divider" :style="{ background: colorHex(member) }">
@@ -24,10 +25,13 @@
         <button class="btn btn-primary btn-outlined" name="button">Withdraw</button>
       </div>
     </div>
+    <patron-form/>
   </div>
 </template>
 
 <script>
+import PatronForm from '@/components/PatronForm'
+import ShortHash from '@/components/ShortHash'
 export default {
 
   name: 'PatronCard',
@@ -53,6 +57,10 @@ export default {
       // console.log('member', member.active)
       // this.$emit('activemember')
     }
+  },
+  components: {
+    PatronForm,
+    ShortHash
   }
 }
 </script>
@@ -62,9 +70,10 @@ export default {
 
   .patron-cards {
     display: flex;
-    flex-direction: column;
-    min-width: 760px;
-    margin: 20px auto 40px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    min-width: 780px;
+    margin: 20px auto 30px;
     width: 60vw;
   }
 
@@ -73,7 +82,8 @@ export default {
     border-radius: $border-radius;
     box-shadow: 0 1px 10px -2px rgba(0,0,0,0.1);
     overflow: hidden;
-    max-width: 33%;
+    width: 250px;
+    margin: 0 10px 10px;
     padding-bottom: 10px;
     transition: all 220ms ease;
 

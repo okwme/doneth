@@ -10,6 +10,7 @@ select {
   color: $darkgrey;
   cursor: pointer;
   display: inline-block;
+  font-size: 13pt;
   height: 45px;
   margin: 0;
   outline: none;
@@ -36,12 +37,12 @@ input {
   border-radius: 3px;
   color: $darkgrey;
   cursor: pointer;
+  font-size: 13pt;
   display: inline-block;
   height: 41px;
   margin: 0;
   outline: none;
   width: 100%;
-  font-size: 16px;
 }
 
 label {
@@ -49,4 +50,20 @@ label {
   position: absolute;
   padding: 12px;
   text-align: left;
+}
+
+.field {
+  flex: 1;
+  padding: 10px;
+  position: relative;
+
+  select {
+    padding-left: 40px;
+  }
+
+  input {
+    padding-left: 70px;
+    text-align: right;
+    width: 160px;
+  }
 }
