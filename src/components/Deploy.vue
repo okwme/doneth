@@ -164,7 +164,7 @@ export default {
 
   .warning-msg {
     background: #e09100;
-    border-radius: $border-radius;
+    border-radius: 3px;
     color: $white;
     margin: 10px 20px 20px;
 
