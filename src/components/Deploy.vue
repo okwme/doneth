@@ -36,7 +36,7 @@
 import abi from '../assets/Doneth.json'
 import contract from '../assets/Doneth.sol.txt'
 
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
 
   name: 'Deploy',
@@ -59,11 +59,13 @@ export default {
     ...mapGetters(['account', 'metamask'])
   },
   methods: {
+    ...mapActions(['addNotification', 'setLoading']),
     deploy () {
       console.log(this.account)
       if (!this.account) {
         alert('unlock your wallet!')
       }
+      this.setLoading(true)
       var contract = new web3.eth.Contract(this.abi)
       this.deploying = true
       contract.deploy({
@@ -80,9 +82,14 @@ export default {
         this.tx = transactionHash
       })
       .on('error', (error) => {
+        this.addNotification({
+          text: 'Error has occured, please check logs',
+          class: 'error'
+        })
         console.log('ERROR', error)
       })
       .then((newContractInstance) => {
+        this.setLoading(false)
         this.confirming = false
         this.address = newContractInstance.options.address
         setInterval(() => {

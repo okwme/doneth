@@ -16,7 +16,17 @@ const state = {
   metamask: false,
   account: null,
   connected: false,
-  conversions: {}
+  conversions: {},
+  loading: false,
+  notifications: [{
+    id: 1,
+    text: 'test hello',
+    class: 'success'
+  }, {
+    id: 2,
+    text: 'uhoh',
+    class: 'error'
+  }]
 }
 
 export default new Vuex.Store({

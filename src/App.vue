@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <toolbar/>
+    <notifications/>
     <router-view/>
     <section>
       <div class="page-card bk-green">
@@ -12,6 +13,7 @@
 </template>
 
 <script>
+import Notifications from '@/components/Notifications'
 import Toolbar from '@/components/Toolbar'
 import FooterInfo from '@/components/FooterInfo'
 import DonateCta from '@/components/DonateCta'
@@ -37,7 +39,8 @@ export default {
   components: {
     Toolbar,
     DonateCta,
-    FooterInfo
+    FooterInfo,
+    Notifications
   }
 }
 </script>
