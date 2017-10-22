@@ -230,7 +230,9 @@ export default {
     commit('SET_CURRENCY', currency)
   },
   convertToCurrency ({state}, eth) {
+    if (!eth) return 0
     let conversion = state.conversions[state.currency]
+    if (!conversion) return 0
     console.log(conversion)
     let result = new BN(eth).mul(conversion).toFixed(2)
     console.log(result)

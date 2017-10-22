@@ -52,6 +52,7 @@ export default {
   },
   watch: {
     depositAmount () {
+      if (!this.depositAmount) return 0
       this.convertToCurrency(this.depositAmount).then((amount) => {
         this.convertedAmount = amount
       })
