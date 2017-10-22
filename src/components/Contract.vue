@@ -8,7 +8,7 @@
       <div class="contract-details">
         <h2>{{contractName}}</h2>
         <div class="sub-details">
-          <div class=""><small>Total Available:</small> {{totalBalance}} Eth/{{totalBalance}} {{currency}}</div>
+          <div class=""><small>Total Available:</small> {{totalBalance}} Eth ({{totalBalanceEther}})</div>
           <div class=""><small>Created:</small> {{dateTime(timestamp)}}</div>
         </div>
       </div>
@@ -49,25 +49,36 @@ export default {
       convertedAmount: 0,
       depositAmount: 0,
       depositing: false,
-      timestamp: null
+      timestamp: null,
+      totalBalanceEther: 999
     }
   },
   computed: {
-    ...mapGetters(['metamask', 'members', 'contractName', 'sortedLogs', 'totalBalance'])
+    ...mapGetters(['metamask', 'members', 'contractName', 'sortedLogs', 'totalBalance', 'totalBalanceRaw'])
   },
   mounted () {
     this.deployDoneth(this.address)
     this.getCreatedAt()
+    this.convertTotalBalance()
   },
   watch: {
     depositAmount () {
       this.convertToCurrency(this.depositAmount).then((amount) => {
         this.convertedAmount = amount
       })
+    },
+    totalBalanceRaw () {
+      this.convertTotalBalance()
     }
   },
   methods: {
-    ...mapActions(['deployDoneth', 'makeDeposit', 'convertToCurrency']),
+    ...mapActions(['deployDoneth', 'makeDeposit', 'convertToCurrency', 'convertFromCurrency']),
+    convertTotalBalance () {
+      if (!this.totalBalance) return
+      this.convertToCurrency(this.totalBalance).then((amount) => {
+        this.totalBalanceEther = amount
+      })
+    },
     dateTime (value) {
       if (!value) return ''
       return this.$moment(value).format('dddd, MMMM Do YYYY')

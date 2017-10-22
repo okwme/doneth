@@ -1,6 +1,6 @@
 <template>
   <div class="patron-cards">
-    <div class="patron-card" v-for="member in patrons" v-on:mouseenter="toggleActive(member, true)" v-on:mouseleave="toggleActive(member, false)">
+    <div class="patron-card" v-for="member in members" v-on:mouseenter="toggleActive(member, true)" v-on:mouseleave="toggleActive(member, false)">
       <div class="user">
         <div class="avatar" :style="{ background: colorHex(member) }">
           <div>{{firstName(member)}}</div>
@@ -18,6 +18,7 @@
         </div>
         <div class="meta-item">
           <span>Ownership: <strong>{{percentage(member)}}</strong></span>
+          <span>Allowed: <strong>{{getAllowedAmount(member.address) || 0}}</strong></span>
         </div>
       </div>
       <div class="actions" v-if="member.address === account">
@@ -40,7 +41,7 @@ export default {
 
   name: 'PatronCard',
 
-  props: ['patrons', 'address'],
+  props: ['address'],
 
   data () {
     return {
@@ -51,7 +52,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['account', 'conversions', 'currency', 'totalShares'])
+    ...mapGetters(['account', 'conversions', 'currency', 'totalShares', 'members'])
   },
   watch: {
     withdrawAmount () {
@@ -63,6 +64,11 @@ export default {
   },
   methods: {
     ...mapActions(['convertToCurrency', 'makeWithdraw']),
+    getAllowedAmount (address) {
+      let member = this.members.find((member) => member.address === address)
+      if (!member || !member.allowedAmount) return 0
+      return member.allowedAmount
+    },
     updateConversion () {
       if (!this.withdrawAmount) return
       this.convertToCurrency(this.withdrawAmount).then((convertedAmount) => {
@@ -79,7 +85,7 @@ export default {
     percentage (member) {
       let num = parseInt(this.totalShares, 10)
       if (num === 0) {
-        this.patrons.map((p) => {
+        this.members.map((p) => {
           if (p && p.shares && !isNaN(parseInt(p.shares, 10))) {
             num += parseInt(p.shares, 10)
           }

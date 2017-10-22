@@ -10,7 +10,10 @@ export default {
   contractName: state => state.contractName,
   founder: state => state.founder,
   genesisBlock: state => state.genesisBlock,
-  totalBalance: state => state.totalBalance,
+  totalBalance: state => {
+    return state.totalBalance && web3 && web3.utils && web3.utils.fromWei(state.totalBalance)
+  },
+  totalBalanceRaw: state => state.totalBalance,
   totalWithdrawn: state => state.totalWithdrawn,
   logs: state => state.logs,
   currency: state => state.currency,

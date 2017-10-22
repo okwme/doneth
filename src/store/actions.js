@@ -105,7 +105,9 @@ export default {
     }
   },
   populateContractData ({dispatch}) {
-    dispatch('pollMembers')
+    dispatch('pollMembers').then(() => {
+      dispatch('pollAllowedAmounts')
+    })
     dispatch('getContractInfo')
     dispatch('readLogs')
   },
@@ -125,10 +127,7 @@ export default {
     state.Doneth.methods.totalWithdrawn().call().then((totalWithdrawn) => {
       commit('SET_WITHDRAWN', totalWithdrawn)
     })
-  },
-  getBalance ({state, commit}) {
     state.Doneth.methods.getBalance().call().then((totalBalance) => {
-      console.log('totalBalance', totalBalance)
       commit('SET_BALANCE', totalBalance)
     })
   },
@@ -165,6 +164,17 @@ export default {
       commit('ADD_LOGS', results)
     })
   },
+  pollAllowedAmounts ({dispatch, state}) {
+    console.log('poll amounts')
+    return dispatch('pollAllowedAmount', 0)
+  },
+  pollAllowedAmount ({dispatch, state, commit}, i) {
+    console.log(i, state.members.length, i >= state.members.length)
+    if (i >= state.members.length) return
+    return dispatch('getAllowed', state.members[i].address).then((result) => {
+      return dispatch('pollAllowedAmount', i + 1)
+    })
+  },
   pollMembers ({dispatch, state}) {
     return state.Doneth.methods.getMemberCount().call().then((count) => {
       console.log(count)
@@ -177,7 +187,9 @@ export default {
         return state.Doneth.methods.returnMember(address).call()
         .then(({active, admin, shares, withdrawn, memberName}) => {
           commit('ADD_MEMBER', {address, active, admin, shares, withdrawn, memberName})
-          if (data.i + 1 < data.length) dispatch('pollMember', {i: data.i + 1, length: data.length})
+          if (data.i + 1 < data.length) {
+            return dispatch('pollMember', {i: data.i + 1, length: data.length})
+          }
         })
       })
   },
@@ -220,7 +232,6 @@ export default {
   convertToCurrency ({state}, eth) {
     let conversion = state.conversions[state.currency]
     console.log(conversion)
-    console.log(eth)
     let result = new BN(eth).mul(conversion).toFixed(2)
     console.log(result)
     let symbol = ''
@@ -236,28 +247,53 @@ export default {
     }
     return symbol + result
   },
-  makeWithdraw ({state}, amount) {
-    let wei = web3.utils.toWei(amount)
-    // console.log(state.Doneth.methods)
-    // state.Doneth.methods.withdraw(wei).send({from: state.account}).then((result) => {
-    //   console.log(result)
-    // })
-    state.Doneth.methods.calculateTotalWithdrawableAmount(state.account).call().then((result) => {
-      console.log(wei.toString(), 'try')
-      console.log(result, 'allowed')
+  convertFromCurrency ({state}, eth) {
+    let conversion = state.conversions[state.currency]
+    let result = new BN(eth).div(conversion).toFixed(8)
+    return result
+  },
+  makeWithdraw ({state, dispatch}, amount) {
+    let wei = new BN(web3.utils.toWei(amount))
+    return state.Doneth.methods.calculateTotalWithdrawableAmount(state.account).call().then((result) => {
+      console.log(new BN(result), 'result')
+      console.log(wei, 'amount')
+      console.log(wei.comparedTo(new BN(result)))
+      if (wei.comparedTo(new BN(result)) > -1) {
+        dispatch('setLoading', true)
+        return state.Doneth.methods.withdraw(wei).send({from: state.account}).then((result) => {
+          dispatch('setLoading', false)
+          dispatch('getContractInfo')
+          dispatch('addNotification', {class: 'success', text: 'Withdrawn 🎉'})
+        })
+      } else {
+        dispatch('addNotification', {class: 'error', text: 'Insufficient Shares to withdraw that amount'})
+      }
     })
   },
   makeDeposit ({state, dispatch}, amount) {
     let wei = web3.utils.toWei(amount)
     console.log(wei)
+    dispatch('setLoading', true)
     web3.eth.sendTransaction({
       from: state.account,
       to: state.address,
       value: wei
     }).then((result) => {
+      dispatch('setLoading', false)
       console.log(result)
       dispatch('getContractInfo')
+    }).catch((error) => {
+      console.error(error)
+      dispatch('setLoading', false)
     })
     // state.Doneth.methods.send()
+  },
+  getAllowed ({state, commit}, address) {
+    return state.Doneth.methods.calculateTotalWithdrawableAmount(address).call().then((amount) => {
+      let wei = new BN(web3.utils.fromWei(amount))
+      console.log(address)
+      console.log(wei.toString())
+      commit('UPDATE_MEMBER_AMOUNT', {address, amount: wei.toString()})
+    })
   }
 }
