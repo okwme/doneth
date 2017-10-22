@@ -21,12 +21,19 @@
           <span>Allowed: <strong>{{getAllowedAmount(member.address) || 0}}</strong></span>
         </div>
       </div>
-      <div class="actions" v-if="member.address === account">
-        <input class="center" v-if="withdrawing" type="number" placeholder="Amount (ETH)" v-model="withdrawAmount">
-        <input readOnly="true" class="center" v-if="withdrawing" type="text" :value="convertedAmount">
-        <button @click="withdraw(member)" class="btn btn-primary btn-outlined" name="button"
-        v-text="withdrawing ? 'Confirm' : 'Withdraw'"></button>
-        <button @click="cancelWithdraw" class="btn btn-error btn-outlined" name="button" v-if="withdrawing && withdrawer === member.address">Cancel</button>
+      <div class="actions" :class="{ active: withdrawing }" v-if="member.address === account">
+        <div @click="withdrawing = !withdrawing" :class="{ active: withdrawing }" class="btn btn-primary">Withdraw</div>
+        <div class="withdraw-form" :class="{ active: withdrawing }">
+          <div class="fields">
+            <label for="">ETH</label>
+            <input class="center" type="number" placeholder="Amount (ETH)" v-model="withdrawAmount">
+            <input readOnly="true" class="center" type="text" :value="convertedAmount">
+          </div>
+          <div class="actions">
+            <button @click="cancelWithdraw" class="btn btn-error" name="button">Cancel</button>
+            <button @click="withdraw(member)" class="btn btn-primary" name="button">Confirm</button>
+          </div>
+        </div>
       </div>
     </div>
     <patron-form :address="address"/>
@@ -136,9 +143,9 @@ export default {
     border-radius: $border-radius;
     box-shadow: 0 1px 10px -2px rgba(0,0,0,0.1);
     overflow: hidden;
-    width: 250px;
-    margin: 0 10px 10px;
-    padding-bottom: 10px;
+    width: calc(32% - 20px);
+    margin: 0 10px;
+    // padding-bottom: 10px;
     transition: all 220ms ease;
 
     &:hover {
@@ -200,8 +207,66 @@ export default {
   .actions {
 
     .btn {
-      margin: 10px 0 0;
-      width: 70%;
+      border-radius: 3px;
+      margin: auto;
+      // width: 100%;
+
+      &.active {
+        border-radius: 3px 3px 0 0;
+      }
+    }
+
+    &.active {
+      background: darken($white, 3%);
+    }
+  }
+
+  .withdraw-form {
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    max-height: 0;
+    width: 210px;
+    margin: auto;
+    padding-bottom: 20px;
+    transition: opacity 220ms ease 20ms;
+
+    .fields {
+      margin: 10px 0;
+    }
+
+    input {
+      width: calc(50% - 60px);
+      text-align: right;
+      padding-left: 50px;
+
+      &:last-of-type {
+        width: calc(50% - 10px);
+        padding-left: 0;
+        padding-right: 5px;
+      }
+    }
+
+    .actions {
+      display: flex;
+
+      .btn {
+        width: calc(50% - 10px);
+      }
+
+      .btn-error {
+        opacity: .4;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+
+    &.active {
+      opacity: 1;
+      max-height: 400px;
+      transition: opacity 220ms ease 0;
     }
   }
 </style>
