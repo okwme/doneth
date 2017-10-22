@@ -14,13 +14,5 @@ export default {
   totalWithdrawn: state => state.totalWithdrawn,
   logs: state => state.logs,
   currency: state => state.currency,
-  sortedLogs: (state) => {
-    // TODO: SORT!
-    console.log('------state.sortedLogs', state.sortedLogs)
-    // state.logs.sort((a, b) => {
-    //   console.log('a, b', a, b)
-    // })
-
-    return state.sortedLogs
-  }
+  sortedLogs: (state) => state.sortedLogs
 }

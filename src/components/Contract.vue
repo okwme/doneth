@@ -1,9 +1,5 @@
 <template>
   <div class="contract">
-    <!-- <h1>{{address}}</h1>
-    <div v-for="member in members">
-      <pre>{{member}}</pre>
-    </div> -->
     <div class="contract-header">
       <div class="contract-details">
         <h2>{{contractName}}</h2>
@@ -13,15 +9,7 @@
         </div>
       </div>
 
-      <div class="contract-cta">
-        <input v-if="depositing" v-model="depositAmount">
-        <input v-if="depositing" :value="convertedAmount">
-        <button @click="deposit()" type="button" name="button" class="btn btn-primary">
-          <b>Add Funds</b>
-          <short-hash :hash="address"/>
-        </button>
-        <button v-if="depositing" class="btn btn-error" @click="depositing = false">Cancel</button>
-      </div>
+      <add-funds :address="address"/>
     </div>
     <allocation-bar :patrons="members"/>
     <patron-card :address="address" :patrons="members"/>
@@ -31,6 +19,7 @@
 </template>
 
 <script>
+import AddFunds from '@/components/AddFunds'
 import AllocationBar from '@/components/AllocationBar'
 import AllocationForm from '@/components/AllocationForm'
 import PatronCard from '@/components/PatronCard'
@@ -48,7 +37,6 @@ export default {
       createdAt: 1508639178669,
       convertedAmount: 0,
       depositAmount: 0,
-      depositing: false,
       timestamp: null
     }
   },
@@ -72,13 +60,6 @@ export default {
       if (!value) return ''
       return this.$moment(value).format('dddd, MMMM Do YYYY')
     },
-    deposit () {
-      if (this.depositing) {
-        this.makeDeposit(this.depositAmount)
-      } else {
-        this.depositing = true
-      }
-    },
     getCreatedAt () {
       if (!this.sortedLogs || this.sortedLogs.length <= 0 || !this.sortedLogs[0] || !this.sortedLogs[0].blockNumber) {
         // NOTE: Added only for demo so no missing data :/
@@ -92,6 +73,7 @@ export default {
     }
   },
   components: {
+    AddFunds,
     AllocationBar,
     AllocationForm,
     PatronCard,
