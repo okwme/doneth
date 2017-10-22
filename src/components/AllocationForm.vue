@@ -62,22 +62,6 @@ export default {
   .allocations-form {
     display: flex;
 
-    .field {
-      flex: 1;
-      padding: 10px;
-      position: relative;
-    }
-
-    select {
-      padding-left: 40px;
-    }
-
-    input {
-      padding-left: 70px;
-      text-align: right;
-      width: 160px;
-    }
-
     .btn {
       display: block;
       width: 100%;
