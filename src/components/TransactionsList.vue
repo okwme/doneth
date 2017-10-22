@@ -91,6 +91,7 @@ export default {
     &:nth-child(even) {
       background: rgba(0,0,0,0.1);
     }
+
     &:last-child {
       border-radius: 0 0 3px 3px;
     }
