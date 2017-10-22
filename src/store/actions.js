@@ -28,27 +28,30 @@ export default {
         console.log(netId)
         if (!err) {
           switch (netId) {
-            case '3':
-            case '4':
-            case '666':
+            case 3:
+            case 4:
+            case 666:
               break
             default:
               wrongNetwork = true
           }
         }
+        console.log(wrongNetwork)
         if (!wrongNetwork) {
           dispatch('setAccountInterval')
         }
       })
     }
   },
-  setAccountInterval (dispatch) {
+  setAccountInterval ({dispatch}) {
+    console.log('setAccountInterval')
     dispatch('checkAccount')
     setInterval(() => {
       dispatch('checkAccount')
     }, 3000)
   },
-  checkAccount (commit) {
+  checkAccount ({commit}) {
+    console.log('checkAccount')
     web3.eth.getAccounts((error, accounts) => {
       if (error) throw new Error(error)
       if (accounts.length && this.account !== accounts[0]) {
