@@ -8,8 +8,7 @@
       <div class="flex-1 cta-action">
         <button type="button" name="button" class="btn btn-white btn-outlined">
           <b>Click this bro</b>
-          <sub>0x0000...00000</sub>
-          <!-- TODO: Split this into component  -->
+          <short-hash :hash="address"/>
         </button>
       </div>
     </div>
@@ -18,16 +17,19 @@
 
 <script>
 import SectionHeader from '@/components/SectionHeader'
+import ShortHash from '@/components/ShortHash'
 export default {
 
   name: 'DonateCta',
 
   data () {
     return {
+      address: '0x0000000000000000000000000000000000001'
     }
   },
   components: {
-    SectionHeader
+    SectionHeader,
+    ShortHash
   }
 }
 </script>

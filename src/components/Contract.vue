@@ -144,5 +144,12 @@ export default {
 
   .contract-cta {
     margin: 0;
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+
+    .btn {
+      margin: auto 0;
+    }
   }
 </style>

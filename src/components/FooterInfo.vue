@@ -1,6 +1,6 @@
 <template>
   <div>
-    &copy; Copyright {{year}}
+    &copy; Copyright Don.eth {{year}}
   </div>
 </template>
 

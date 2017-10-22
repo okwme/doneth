@@ -1,5 +1,5 @@
 <template>
-  <i>{{shorten(hash)}}</i>
+  <i :title="hash">{{shorten(hash)}}</i>
 </template>
 
 <script>

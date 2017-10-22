@@ -9,7 +9,7 @@
             <h4><small>Shares:</small> {{item.transaction.sharesIssued}}/{{item.transaction.sharesTotal}}</h4>
           </div>
           <div class="details">
-            <div>{{item.sender.address}} allocated {{item.transaction.sharesIssued}} new shares to {{item.receiver.address}}</div>
+            <div><short-hash :hash="item.sender.address"/> allocated {{item.transaction.sharesIssued}} new shares to <short-hash :hash="item.receiver.address"/></div>
             <div class="time">{{dateTime(item.transaction.createdAt)}}</div>
           </div>
         </li>
@@ -19,6 +19,7 @@
 </template>
 
 <script>
+import ShortHash from '@/components/ShortHash'
 export default {
 
   name: 'TransactionsList',
@@ -63,6 +64,9 @@ export default {
       if (!value) return ''
       return this.$moment(value).format('dddd, MMMM Do YYYY')
     }
+  },
+  components: {
+    ShortHash
   }
 }
 </script>

@@ -42,6 +42,7 @@ export default {
   .patron-form {
     background: $white;
     border-radius: $border-radius;
+    border: 2px solid $primary;
     box-shadow: 0 1px 10px -2px rgba(0,0,0,0.1);
     overflow: hidden;
     width: 250px;
@@ -53,10 +54,14 @@ export default {
       flex-direction: column;
     }
 
+    .field {
+      padding: 0 0 10px;
+    }
+
     .field-address {
       input {
         padding-left: 80px;
-        width: 150px;
+        width: 147px;
       }
     }
   }
