@@ -29,13 +29,13 @@
 <script>
 import abi from '../assets/Doneth.json'
 import { mapGetters, mapActions } from 'vuex'
+import BN from 'bignumber.js'
 export default {
 
   name: 'PatronForm',
-
+  props: ['address'],
   data () {
     return {
-      address: null,
       Doneth: null,
       abi: abi.abi,
       firstName: '',
@@ -68,23 +68,33 @@ export default {
         return
       }
       console.log('addNewMember', this.userAddress)
-      this.Doneth = new web3.eth.Contract(this.abi, this.account)
+      this.Doneth = new web3.eth.Contract(this.abi, this.address)
       this.setLoading(true)
       this.submitting = true
-
-      this.Doneth.methods.addMember(this.userAddress, this.sharesTotal, false, this.firstName).call()
-        .then(({address, active, admin, shares, withdrawn, memberName}) => {
-          console.log('addMember res', {address, active, admin, shares, withdrawn, memberName})
-          // this.members.push({address, active, admin, shares, withdrawn, memberName})
-          this.submitting = false
-          this.setLoading(false)
-          this.addNotification({
-            text: 'Member added successfully!',
-            class: 'success'
-          })
-        }, (err) => {
-          console.log('addMember err', err)
+      console.log(this.userAddress, this.sharesTotal, this.firstName)
+      this.Doneth.methods.addMember(this.userAddress, new BN(this.sharesTotal), false, this.firstName).send({from: this.account})
+      .on('transactionHash', (hash) => {
+        console.log(hash)
+      })
+      .on('confirmation', (confirmationNumber, receipt) => {
+        console.log(confirmationNumber, receipt)
+      })
+      .on('receipt', (receipt) => {
+        console.log(receipt)
+        // console.log('addMember res', {address, active, admin, shares, withdrawn, memberName})
+        // this.members.push({address, active, admin, shares, withdrawn, memberName})
+        this.submitting = false
+        this.setLoading(false)
+        this.addNotification({
+          text: 'Member added successfully!',
+          class: 'success'
         })
+      })
+      .on('error', (error) => {
+        console.error(error)
+        this.submitting = false
+        this.setLoading(false)
+      })
     }
   }
 }

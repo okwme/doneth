@@ -90,5 +90,8 @@ export default {
   },
   setLoading ({commit}, isLoading) {
     commit('SET_LOADING', isLoading)
+  },
+  deployDoneth ({commit, state}) {
+    this.Doneth = new web3.eth.Contract(state.abi.abi, state.address)
   }
 }

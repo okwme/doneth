@@ -23,8 +23,8 @@
       <div class="actions">
         <button class="btn btn-primary btn-outlined" name="button">Withdraw</button>
       </div>
-    </div>
-    <patron-form/>
+    </div><!-- 
+     --><patron-form :address="address"/>
   </div>
 </template>
 
@@ -35,7 +35,7 @@ export default {
 
   name: 'PatronCard',
 
-  props: ['patrons'],
+  props: ['patrons', 'address'],
 
   data () {
     return {
