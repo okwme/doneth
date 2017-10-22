@@ -26,8 +26,13 @@ export default {
 
   data () {
     return {
+<<<<<<< HEAD
+      options: ['$USD', 'GBP'],
+      currency: 'USD'
+=======
       currency: 'USD',
       clicked: false
+>>>>>>> master
     }
   },
   methods: {

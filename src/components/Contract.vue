@@ -20,7 +20,7 @@
         </button>
       </div>
     </div>
-    <allocation-bar :allocations="allocations"/>
+    <allocation-bar :patrons="members"/>
     <patron-card :patrons="members"/>
     <allocation-form/>
     <transactions-list/>
@@ -104,6 +104,9 @@ export default {
       .then((results) => {
         console.log(results)
       })
+    },
+    activeMember () {
+
     }
   },
   components: {
