@@ -11,5 +11,12 @@ export default {
   founder: state => state.founder,
   genesisBlock: state => state.genesisBlock,
   totalWithdrawn: state => state.totalWithdrawn,
-  logs: state => state.logs
+  sortedLogs: (state) => {
+    console.log('state.logs', state.logs)
+    state.logs.sort((a, b) => {
+      console.log('a, b', a, b)
+    })
+
+    return state.logs
+  }
 }

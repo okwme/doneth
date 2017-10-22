@@ -6,9 +6,9 @@
     </div> -->
     <div class="contract-header">
       <div class="contract-details">
-        <h2>{{name}}</h2>
+        <h2>{{contractName}}</h2>
         <div class="sub-details">
-          <div class=""><small>Total Available:</small> {{totalEth}} Eth/{{totalCurrency}} {{currency}}</div>
+          <div class=""><small>Total Available:</small> {{totalBalance}} Eth/{{totalBalance}} {{currency}}</div>
           <div class=""><small>Created:</small> {{dateTime(createdAt)}}</div>
         </div>
       </div>
@@ -22,7 +22,7 @@
     <allocation-bar :patrons="members"/>
     <patron-card :address="address" :patrons="members"/>
     <allocation-form />
-    <transactions-list :allocations="logs"/>
+    <transactions-list :allocations="sortedLogs"/>
   </div>
 </template>
 
@@ -41,19 +41,20 @@ export default {
   data () {
     return {
       Doneth: null,
-      name: 'Contract Name',
-      allocations: [{
-        value: 2130,
-        color: 0x333333
-      }],
-      totalEth: 13,
-      totalCurrency: 2349,
       currency: 'USD',
-      createdAt: 1508639178669
+      totalBalance: 10
     }
   },
   computed: {
-    ...mapGetters(['metamask', 'members', 'contractName', 'logs'])
+    ...mapGetters(['metamask', 'members', 'contractName', 'sortedLogs']),
+    createdAt () {
+      console.log('this.sortedLogs[0].blockNumber', this.sortedLogs[0].blockNumber)
+      web3.eth.getBlock(this.sortedLogs[0].blockNumber)
+      .then((res) => {
+        console.log('res', res)
+      })
+      return (+new Date())
+    }
   },
   mounted () {
     this.addAddress(this.address)
