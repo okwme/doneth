@@ -35,10 +35,12 @@ export default {
 }
 </script>
 
-<style lang="css" scoped>
-  .item-steps {
+<style lang="scss" scoped>
+  @import '../scss/variables';
+  .intro-steps {
     display: flex;
   }
+
   .intro-item {
     display: flex;
     flex-direction: column;
@@ -49,7 +51,7 @@ export default {
   }
 
   .large-number {
-    color: #548c4c;
+    color: $primary;
     font-size: 32pt;
     position: absolute;
     left: -7px;

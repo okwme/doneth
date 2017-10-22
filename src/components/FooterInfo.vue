@@ -17,7 +17,7 @@ export default {
 }
 </script>
 
-<style lang="css" scoped>
+<style lang="scss" scoped>
   div {
     font-size: 11pt;
     margin: 40px 0px;

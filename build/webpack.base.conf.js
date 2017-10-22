@@ -12,6 +12,12 @@ module.exports = {
   entry: {
     app: './src/main.js'
   },
+  // node: {
+  //   fs: 'empty'
+  // },
+  // externals: {
+  //   'fs-extra': '{}'
+  // },
   output: {
     path: config.build.assetsRoot,
     filename: '[name].js',

@@ -29,13 +29,7 @@ export default {
       currency: 'USD'
     }
   },
-  mounted () {
-    console.log(this.options)
-  },
   methods: {
-    click () {
-      alert('i got clicked')
-    },
     selectCurrency (option) {
       this.currency = option
     }
@@ -48,11 +42,12 @@ export default {
 }
 </script>
 
-<style lang="css" scoped>
+<style lang="scss" scoped>
+  @import '../scss/variables';
   .toolbar {
-    background: white;
+    background: $white;
     box-shadow: 0 1px 10px -3px rgba(0,0,0,0.15);
-    color: #4a4a4a;
+    color: $darkgrey;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -63,9 +58,11 @@ export default {
     z-index: 99;
   }
 
-  .logo h1 {
-    color: #548c4c;
-    margin: 10px 20px;
+  .logo {
+    h1 {
+      color: $primary;
+      margin: 10px 20px;
+    }
   }
 
   .menu {
@@ -77,36 +74,43 @@ export default {
     padding: 10px 10px;
   }
 
-  .menu li {
-    color: #323232;
-    flex: 1;
-    font-size: 14pt;
-    font-weight: 500;
+  .menu {
+    li {
+      color: $darkgrey;
+      flex: 1;
+      font-size: 14pt;
+      font-weight: 500;
+
+      a {
+        color: $darkgrey;
+        text-decoration: none;
+        padding: 10px 10px;
+        display: block;
+      }
+
+      &:hover,
+      &:hover a {
+        color: $primary;
+        cursor: pointer;
+      }
+
+      &.currency {
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 3px;
+        font-size: 12pt;
+        position: relative;
+        padding: 10px 10px;
+        text-transform: uppercase;
+
+        &:hover .dropdown {
+          display: block;
+        }
+      }
+    }
   }
-  .menu li a {
-    color: #323232;
-    text-decoration: none;
-    padding: 10px 10px;
-    display: block;
-  }
-  .menu li:hover a {
-    color: #548c4c;
-    cursor: pointer;
-  }
-  .menu li:hover {
-    color: #548c4c;
-    cursor: pointer;
-  }
-  .menu li.currency {
-    border: 1px solid rgba(0,0,0,0.1);
-    border-radius: 3px;
-    font-size: 12pt;
-    position: relative;
-    padding: 10px 10px;
-    text-transform: uppercase;
-  }
+
   .dropdown {
-    background: white;
+    background: $white;
     box-shadow: 0 1px 10px -3px rgba(0,0,0,0.15);
     display: none;
     position: absolute;
@@ -114,24 +118,24 @@ export default {
     left: 0px;
     width: 100%;
   }
-  .menu li.currency:hover .dropdown {
-    display: block;
-  }
+
   .dropdown-item {
-    color: #323232;
+    color: $darkgrey;
     cursor: pointer;
     padding: 5px 10px;
-  }
-  .dropdown-item:hover {
-    color: #548c4c;
+
+    &:hover {
+      color: $primary;
+    }
   }
 
   .active-currency {
     position: relative;
-  }
-  .active-currency img {
-    position: absolute;
-    right: 5px;
-    top: 38%;
+
+    img {
+      position: absolute;
+      right: 5px;
+      top: 38%;
+    }
   }
 </style>

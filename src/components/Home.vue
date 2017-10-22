@@ -9,19 +9,7 @@
     </div>
 
     <div class="page-card bk-green">
-      <section-header :title="'Donate & Help Us Out!'" class="cl-white"></section-header>
-      <div class="cta-content">
-        <div class="flex-2 cta-copy">
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-        </div>
-        <div class="flex-1 cta-action">
-          <button type="button" name="button" class="btn btn-white btn-outlined">
-            <b>Click this bro</b>
-            <sub>0x0000...00000</sub>
-            <!-- TODO: Split this into component  -->
-          </button>
-        </div>
-      </div>
+      <donate-cta/>
     </div>
 
   </div>
@@ -30,6 +18,7 @@
 <script>
 import SectionHeader from '@/components/SectionHeader'
 import IntroSteps from '@/components/IntroSteps'
+import DonateCta from '@/components/DonateCta'
 export default {
   name: 'Home',
   data () {
@@ -39,24 +28,15 @@ export default {
   },
   components: {
     SectionHeader,
-    IntroSteps
+    IntroSteps,
+    DonateCta
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+  @import '../scss/variables';
   .container {
     width: 100%;
-  }
-
-  .cta-content {
-    display: flex;
-  }
-  .cta-copy {}
-  .cta-action {
-    margin: auto;
-  }
-  .cta-action .btn {
-    width: 80%;
   }
 </style>
