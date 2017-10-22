@@ -131,6 +131,8 @@ export default {
 
   form {
     display: flex;
+    width: 100%;
+
     h2 {
       flex: 1;
       text-align: center;
