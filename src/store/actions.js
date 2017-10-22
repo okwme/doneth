@@ -107,12 +107,23 @@ export default {
     dispatch('readLogs')
     dispatch('getContractInfo')
   },
-  getContractInfo () {
-    // get total shares
-    // get name
-    // get founder
-    // get genesis block number
-    // get totalwithdraw
+  getContractInfo ({state, commit}) {
+    console.log(state.Doneth)
+    state.Doneth.methods.totalShares().call().then((totalShares) => {
+      commit('SET_SHARES', totalShares)
+    })
+    state.Doneth.methods.name().call().then((name) => {
+      commit('SET_NAME', name)
+    })
+    state.Doneth.methods.founder().call().then((founder) => {
+      commit('SET_FOUNDER', founder)
+    })
+    state.Doneth.methods.genesisBlockNumber().call().then((genesisBlockNumber) => {
+      commit('SET_BLOCK', genesisBlockNumber)
+    })
+    state.Doneth.methods.totalWithdrawn().call().then((totalWithdrawn) => {
+      commit('SET_WITHDRAWN', totalWithdrawn)
+    })
   },
   readLogs ({dispatch, state, commit}) {
     state.Doneth.getPastEvents('AddShare', {

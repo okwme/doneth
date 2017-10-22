@@ -38,5 +38,20 @@ export default {
   },
   ADD_LOGS (state, logs) {
     state.logs.push(...logs)
+  },
+  SET_SHARES (state, totalShares) {
+    state.totalShares = totalShares
+  },
+  SET_NAME (state, name) {
+    state.contractName = name
+  },
+  SET_FOUNDER (state, founder) {
+    state.founder = founder
+  },
+  SET_BLOCK (state, genesisBlock) {
+    state.genesisBlock = genesisBlock
+  },
+  SET_WITHDRAWN (state, totalWithdrawn) {
+    state.totalWithdrawn = totalWithdrawn
   }
 }
