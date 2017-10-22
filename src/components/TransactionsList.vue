@@ -3,7 +3,7 @@
     <div class="page-card transactions">
       <div class="heading">Transactions</div>
       <ul class="transactions-list">
-        <li class="transaction" v-for="item in transactions">
+        <li class="transaction" v-for="item in allocations">
           <template v-if="item.transaction">
             <div class="reference">
               <h3>{{item.sender.firstName}}<small>(owner)</small> allocated {{item.transaction.sharesIssued}} new shares to {{item.receiver.firstName}}<small>(patron)</small></h3>
@@ -45,7 +45,7 @@ import ShortHash from '@/components/ShortHash'
 export default {
 
   name: 'TransactionsList',
-  // props: ['allocations'],
+  props: ['allocations'],
   data () {
     return {
       transactions: [{

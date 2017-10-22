@@ -70,7 +70,7 @@ export default {
   getConversions ({commit}) {
     const url = 'https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH&tsyms=USD,EUR,GBP,CNY,JPY'
     axios.get(url).then((resp) => {
-      console.log(resp)
+      console.log(resp.data)
       commit('SET_CONVERSIONS', resp.data.ETH)
     })
   },

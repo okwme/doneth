@@ -22,7 +22,7 @@
     <allocation-bar :patrons="members"/>
     <patron-card :patrons="members"/>
     <allocation-form/>
-    <transactions-list/>
+    <transactions-list :allocations="transactions"/>
   </div>
 </template>
 
