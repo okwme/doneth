@@ -1,3 +1,4 @@
+import BN from 'bignumber.js'
 
 export default {
   SET_LOADING (state, isLoading) {
@@ -72,11 +73,21 @@ export default {
   SET_BALANCE (state, totalBalance) {
     state.totalBalance = totalBalance
   },
+  UPDATE_MEMBER_WITHDRAWN (state, {amount, address}) {
+    let memberKey = state.members.findIndex((member) => member.address === address)
+    if (memberKey > -1) {
+      let member = state.members[memberKey]
+      member.withdrawn = new BN(member.withdrawn).add(new BN(amount)).toString()
+      state.members.splice(memberKey, 1, member)
+    }
+  },
   UPDATE_MEMBER_AMOUNT (state, {amount, address}) {
     let memberKey = state.members.findIndex((member) => member.address === address)
     if (memberKey > -1) {
       let member = state.members[memberKey]
-      member.allowedAmount = amount
+      let remaining = new BN(amount).sub(new BN(member.withdrawn))
+      let wei = new BN(web3.utils.fromWei(remaining)).toString()
+      member.allowedAmount = wei
       state.members.splice(memberKey, 1, member)
     }
   }

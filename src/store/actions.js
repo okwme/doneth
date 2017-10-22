@@ -165,6 +165,7 @@ export default {
     })
   },
   pollAllowedAmounts ({dispatch, state}) {
+    console.log('poll allowed aounts')
     return dispatch('pollAllowedAmount', 0)
   },
   pollAllowedAmount ({dispatch, state, commit}, i) {
@@ -207,11 +208,12 @@ export default {
         })
         .on('error', (error) => {
           console.error(error)
-          this.submitting = false
-          this.setLoading(false)
+          dispatch('setLoading', false)
           reject(error)
         })
         .then((result) => {
+          dispatch('getContractInfo')
+          dispatch('pollAllowedAmounts')
           dispatch('setLoading', false)
           dispatch('addNotification', {
             text: 'Member added successfully!',
@@ -264,23 +266,31 @@ export default {
     let result = new BN(eth).div(conversion).toFixed(8)
     return result
   },
-  makeWithdraw ({state, dispatch}, amount) {
+  makeWithdraw ({state, dispatch, commit}, amount) {
     let wei = new BN(web3.utils.toWei(amount))
     return state.Doneth.methods.calculateTotalWithdrawableAmount(state.account).call().then((result) => {
-      console.log(new BN(result), 'result')
-      console.log(wei, 'amount')
-      console.log(new BN(result).greaterThanOrEqualTo(wei))
-      if (new BN(result).greaterThanOrEqualTo(wei)) {
+      let member = state.members.find((member) => member.address === state.account)
+      if (!member) return new Error('No Member')
+      let withdrawnAlready = new BN(member.withdrawn)
+      result = new BN(result)
+
+      if (result.sub(withdrawnAlready).greaterThanOrEqualTo(wei)) {
         dispatch('setLoading', true)
         return state.Doneth.methods.withdraw(wei).send({from: state.account}).then((result) => {
           console.log(result)
+          commit('UPDATE_MEMBER_WITHDRAWN', {amount: wei, address: state.account})
           dispatch('setLoading', false)
           dispatch('getContractInfo')
+          dispatch('pollAllowedAmounts')
           dispatch('addNotification', {class: 'success', text: 'Withdrawn 🎉'})
         })
       } else {
         dispatch('addNotification', {class: 'error', text: 'Insufficient Shares to withdraw that amount'})
       }
+    }).catch((error) => {
+      console.error(error)
+      dispatch('setLoading', false)
+      dispatch('addNotification', {class: 'error', text: 'Unknown Error, please check logs'})
     })
   },
   makeDeposit ({state, dispatch}, amount) {
@@ -306,8 +316,7 @@ export default {
     console.log('check ', address)
     return state.Doneth.methods.calculateTotalWithdrawableAmount(address).call().then((amount) => {
       console.log(amount)
-      let wei = new BN(web3.utils.fromWei(amount))
-      commit('UPDATE_MEMBER_AMOUNT', {address, amount: wei.toString()})
+      commit('UPDATE_MEMBER_AMOUNT', {address, amount})
     })
   }
 }
