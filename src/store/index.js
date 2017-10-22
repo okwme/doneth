@@ -18,15 +18,7 @@ const state = {
   connected: false,
   conversions: {},
   loading: false,
-  notifications: [{
-    id: 1,
-    text: 'test hello',
-    class: 'success'
-  }, {
-    id: 2,
-    text: 'uhoh',
-    class: 'error'
-  }]
+  notifications: []
 }
 
 export default new Vuex.Store({

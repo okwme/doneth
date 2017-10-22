@@ -1,27 +1,36 @@
 <template>
   <div class="container">
     <div class="page-card">
+      <section-header :title="'Deploy!'"></section-header>
+      <p>You can deploy your very own Contract on this page. Just add a title for the contract and your own name. Adding names will help you identify the members of your contract and make the shares and balance delegation clearer.</p>
+      <p>After deploying the contract you will be able to add more members and modify how much of the shared account balance they have access to. It may be prudent to create a new member designated as "Accounts Payable" to handle all of your expenses.</p>
+      <hr class="wd-50">
       <template v-if="metamask">
         <form @submit.prevent="deploy()">
-          <input :readonly="confirming" placeholder="Contract Name" v-model="name">
-          <br>
-          <input :readonly="confirming" placeholder="Your Name" v-model="founderName">
-          <br>
           <template v-if="!deploying && !confirming && !address">
-            <button @click="deploy" type="button" name="button" class="btn btn-primary btn-outlined">
-              <b>Deploy</b>
-            </button>
+            <div class="field">
+              <label for="alloc_shares">Title:</label>
+              <input maxLength="12" type="text" name="name" v-model="name" >
+            </div>
+
+            <div class="field">
+              <label for="alloc_shares">Founder:</label>
+              <input maxLength="12" type="text" name="founder_name" v-model="founderName" >
+            </div>
+            <div class="field">
+              <button class="btn btn-primary" type="submit" name="button">Deploy</button>
+            </div>
           </template>
-          <template v-if="deploying && !confirming && !address">
+          <h2 v-if="deploying && !confirming && !address">
             Deploying....
-          </template>
-          <template v-if="confirming && !address">
+          </h2>
+          <h2 v-if="confirming && !address">
             Waiting for Confirmations....
-          </template>
-          <template v-if="address">
+          </h2>
+          <h2 v-if="address">
             Contract Deployed 🎉<br>
             Redirecting in {{countdown}} sec
-          </template>
+          </h2>
         </form>
       </template>
       <template v-else>
@@ -35,12 +44,13 @@
 
 import abi from '../assets/Doneth.json'
 import contract from '../assets/Doneth.sol.txt'
+import SectionHeader from '@/components/SectionHeader'
 
 import { mapGetters, mapActions } from 'vuex'
 export default {
 
   name: 'Deploy',
-
+  components: {SectionHeader},
   data () {
     return {
       name: '',
@@ -82,6 +92,9 @@ export default {
         this.tx = transactionHash
       })
       .on('error', (error) => {
+        this.confirming = false
+        this.deploying = false
+        this.setLoading(false)
         this.addNotification({
           text: 'Error has occured, please check logs',
           class: 'error'
@@ -103,12 +116,44 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-textarea {
-  width:500px;
-  height:200px;
-  border: 1px solid black;
-  &.yesCompiling {
-    border:1px solid red;
+  textarea {
+    width:500px;
+    height:200px;
+    border: 1px solid black;
+    &.yesCompiling {
+      border:1px solid red;
+    }
   }
-}
+
+  form {
+    display: flex;
+    h2 {
+      flex: 1;
+      text-align: center;
+    }
+    .field {
+      flex: 1;
+      padding: 10px;
+      position: relative;
+    }
+
+    select {
+      padding-left: 40px;
+    }
+
+    input {
+      padding-left: 70px;
+      padding-right:5px;
+      text-align: center;
+      width: 160px;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      font-size: 13pt;
+      font-weight: 500;
+      padding: 11px 12px 8px;
+    }
+  }
 </style>
