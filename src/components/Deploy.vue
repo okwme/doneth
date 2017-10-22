@@ -4,6 +4,9 @@
       <section-header :title="'Deploy!'"></section-header>
       <p>You can deploy your very own Contract on this page. Just add a title for the contract and your own name. Adding names will help you identify the members of your contract and make the shares and balance delegation clearer.</p>
       <p>After deploying the contract you will be able to add more members and modify how much of the shared account balance they have access to. It may be prudent to create a new member designated as "Accounts Payable" to handle all of your expenses.</p>
+      <div class="warning-msg">
+        <p><strong>Notice:</strong> Use at your own risk! Don.eth has not been formally audited for full security<br>protection & edge cases.</p>
+      </div>
       <div class="page-card-footer">
         <template v-if="metamask">
           <form @submit.prevent="deploy()">
@@ -117,6 +120,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  @import '../scss/variables';
   textarea {
     width:500px;
     height:200px;
@@ -155,6 +159,17 @@ export default {
       font-size: 13pt;
       font-weight: 500;
       padding: 11px 12px 9px;
+    }
+  }
+
+  .warning-msg {
+    background: #e09100;
+    border-radius: $border-radius;
+    color: $white;
+    margin: 10px 20px 20px;
+
+    p {
+      padding: 9px 15px;
     }
   }
 </style>
