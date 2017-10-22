@@ -25,6 +25,7 @@
         <div @click="withdrawing = !withdrawing" :class="{ active: withdrawing }" class="btn btn-primary">Withdraw</div>
         <div class="withdraw-form" :class="{ active: withdrawing }">
           <div class="fields">
+            <label for="">ETH</label>
             <input class="center" type="number" placeholder="Amount (ETH)" v-model="withdrawAmount">
             <input readOnly="true" class="center" type="text" :value="convertedAmount">
           </div>
@@ -235,8 +236,15 @@ export default {
     }
 
     input {
-      width: calc(50% - 10px);
-      text-align: center;
+      width: calc(50% - 60px);
+      text-align: right;
+      padding-left: 50px;
+
+      &:last-of-type {
+        width: calc(50% - 10px);
+        padding-left: 0;
+        padding-right: 5px;
+      }
     }
 
     .actions {
