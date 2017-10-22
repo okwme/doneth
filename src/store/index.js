@@ -14,7 +14,8 @@ const debug = false
 const state = {
   retried: false,
   metamask: false,
-  account: null
+  account: null,
+  connected: false
 }
 
 export default new Vuex.Store({

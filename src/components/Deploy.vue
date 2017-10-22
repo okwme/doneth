@@ -71,7 +71,7 @@ export default {
       if (typeof BrowserSolc !== 'undefined') {
         BrowserSolc.getVersions((soljsonSources, soljsonReleases) => {
           // console.log(soljsonSources)
-          // console.log(soljsonReleases)
+          console.log(soljsonReleases)
         })
         BrowserSolc.loadVersion('soljson-v0.4.19-nightly.2017.10.20+commit.bdd2858b.js', (compiler) => {
           const output = compiler.compile(this.contract, 1)
@@ -93,7 +93,7 @@ export default {
       var contract = new web3.eth.Contract(this.abi)
       contract.deploy({
         data: this.compiled,
-        arguments: [],
+        arguments: [this.name],
         from: this.account
       }).send({
         from: this.account
@@ -117,7 +117,7 @@ export default {
       .on('confirmation', function (confirmationNumber, receipt) {
         console.log(confirmationNumber, receipt)
       })
-      .then(function (newContractInstance) {
+      .then((newContractInstance) => {
         console.log(newContractInstance.options.address) // instance with the new contract address
         this.$router.push('/' + newContractInstance.options.address)
       })
