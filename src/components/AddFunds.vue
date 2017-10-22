@@ -10,17 +10,17 @@
         <small>{{address}}</small>
       </div>
       <div class="funds-meta">
-        <span>1 ETH</span> -> <span>1 USD</span>
+        <span>1 ETH</span> &#8594; <span>{{convertedSingleEth}} {{currency}}</span>
       </div>
       <div class="funds-actions">
         <label for="">ETH</label>
         <input v-if="depositing" v-model="depositAmount">
-        <label for="">USD</label>
+        <label for="">{{currency}}</label>
         <input v-if="depositing" :value="convertedAmount">
       </div>
       <div class="funds-footer">
         <button v-if="depositing" class="btn btn-error" @click="depositing = false">Cancel</button>
-        <button @click="doDeposit()" type="button" name="button" class="btn btn-primary">Submit</button>
+        <button @click="deposit()" type="button" name="button" class="btn btn-primary">Submit</button>
       </div>
     </div>
   </div>
@@ -36,12 +36,16 @@ export default {
   data () {
     return {
       currency: 'USD',
-      createdAt: 1508639178669,
       convertedAmount: 0,
+      convertedSingleEth: 0,
       depositAmount: 0,
-      depositing: false,
-      timestamp: null
+      depositing: false
     }
+  },
+  mounted () {
+    this.convertToCurrency(1).then((amount) => {
+      this.convertedSingleEth = amount
+    })
   },
   computed: {
     ...mapGetters(['metamask'])
@@ -127,8 +131,8 @@ export default {
 
     h3 {
       color: $white;
-      font-size: 14pt;
-      line-height: 12pt;
+      font-size: 16pt;
+      line-height: 13pt;
       margin: 0;
       padding: 0;
     }
@@ -143,6 +147,11 @@ export default {
 
   .funds-meta {
     background: lighten($primary, 10%);
+
+    span {
+      font-size: 10pt;
+      font-weight: 600;
+    }
   }
 
   .funds-actions {
