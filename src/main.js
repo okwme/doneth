@@ -5,9 +5,14 @@ import App from './App'
 import router from './router'
 import store from './store'
 import { sync } from 'vuex-router-sync'
+import moment from 'moment'
+import VueMomentJS from 'vue-momentjs'
 sync(store, router)
+console.log('moment', moment)
+window.moment = moment
 
 Vue.config.productionTip = false
+Vue.use(VueMomentJS, moment)
 
 /* eslint-disable no-new */
 new Vue({
