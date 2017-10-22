@@ -33,7 +33,7 @@ import PatronCard from '@/components/PatronCard'
 import ShortHash from '@/components/ShortHash'
 import SectionHeader from '@/components/SectionHeader'
 import TransactionsList from '@/components/TransactionsList'
-import { mapGetters, mapMutations, mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
 
   name: 'Contract',
@@ -56,12 +56,10 @@ export default {
     ...mapGetters(['metamask', 'members', 'contractName', 'logs'])
   },
   mounted () {
-    this.addAddress(this.address)
-    this.deployDoneth()
+    this.deployDoneth(this.address)
   },
   methods: {
     ...mapActions(['deployDoneth']),
-    ...mapMutations({addAddress: 'ADD_ADDRESS'}),
     dateTime (value) {
       if (!value) return ''
       return this.$moment(value).format('dddd, MMMM Do YYYY')

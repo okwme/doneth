@@ -92,13 +92,15 @@ export default {
   setLoading ({commit}, isLoading) {
     commit('SET_LOADING', isLoading)
   },
-  deployDoneth ({dispatch, commit, state}) {
+  deployDoneth ({dispatch, commit, state}, address) {
     if (state.connected) {
+      commit('CLEAR_CONTRACT')
+      commit('ADD_ADDRESS', address)
       commit('ADD_DONETH', new web3.eth.Contract(state.abi.abi, state.address))
       dispatch('populateContractData')
     } else {
       setTimeout(() => {
-        dispatch('deployDoneth')
+        dispatch('deployDoneth', address)
       }, 500)
     }
   },
@@ -188,8 +190,13 @@ export default {
         .on('transactionHash', (hash) => {
           console.log(hash)
         })
-        .on('confirmation', (confirmationNumber, receipt) => {
-          console.log(confirmationNumber, receipt)
+        .on('error', (error) => {
+          console.error(error)
+          this.submitting = false
+          this.setLoading(false)
+          reject(error)
+        })
+        .then((result) => {
           dispatch('setLoading', false)
           dispatch('addNotification', {
             text: 'Member added successfully!',
@@ -197,15 +204,6 @@ export default {
           })
           dispatch('pollMember', {i: state.members.length, length: state.members + 1})
           resolve()
-        })
-        .on('receipt', (receipt) => {
-          console.log(receipt)
-        })
-        .on('error', (error) => {
-          console.error(error)
-          this.submitting = false
-          this.setLoading(false)
-          reject(error)
         })
       }
     })
