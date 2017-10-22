@@ -4,14 +4,36 @@
       <div class="heading">Transactions</div>
       <ul class="transactions-list">
         <li class="transaction" v-for="item in transactions">
-          <div class="reference">
-            <h3>{{item.sender.firstName}}<small>(owner)</small> allocated {{item.transaction.sharesIssued}} new shares to {{item.receiver.firstName}}<small>(patron)</small></h3>
-            <h4><small>Shares:</small> {{item.transaction.sharesIssued}}/{{item.transaction.sharesTotal}}</h4>
-          </div>
-          <div class="details">
-            <div><short-hash :hash="item.sender.address"/> allocated {{item.transaction.sharesIssued}} new shares to <short-hash :hash="item.receiver.address"/></div>
-            <div class="time">{{dateTime(item.transaction.createdAt)}}</div>
-          </div>
+          <template v-if="item.transaction">
+            <div class="reference">
+              <h3>{{item.sender.firstName}}<small>(owner)</small> allocated {{item.transaction.sharesIssued}} new shares to {{item.receiver.firstName}}<small>(patron)</small></h3>
+              <h4><small>Shares:</small> {{item.transaction.sharesIssued}}/{{item.transaction.sharesTotal}}</h4>
+            </div>
+            <div class="details">
+              <div><short-hash :hash="item.sender.address"/> allocated {{item.transaction.sharesIssued}} new shares to <short-hash :hash="item.receiver.address"/></div>
+              <div class="time">{{dateTime(item.transaction.createdAt)}}</div>
+            </div>
+          </template>
+          <template v-if="item.sentBalance">
+            <div class="reference">
+              <h3>{{item.firstName}} (<short-hash :hash="item.address"/>) donated {{item.sentBalance}}</h3>
+              <h4><small>Shares:</small> {{item.sharesIssued}}/{{item.sharesTotal}}</h4>
+            </div>
+            <div class="details">
+              <div></div>
+              <div class="time">{{dateTime(item.createdAt)}}</div>
+            </div>
+          </template>
+          <template v-if="item.removedBalance">
+            <div class="reference">
+              <h3>{{item.firstName}} (<short-hash :hash="item.address"/>) withdrew {{item.removedBalance}}</h3>
+              <h4><small>Shares:</small> {{item.sharesIssued}}/{{item.sharesTotal}}</h4>
+            </div>
+            <div class="details">
+              <div></div>
+              <div class="time">{{dateTime(item.createdAt)}}</div>
+            </div>
+          </template>
         </li>
       </ul>
     </div>
@@ -57,20 +79,21 @@ export default {
           sharesTotal: 100005669
         }
       }, {
-        sender: {
-          address: '0x0000000000000000000000000000000000000',
-          firstName: 'Billy'
-        },
-        receiver: {
-          address: '0x0000000000000000000000000000000000004',
-          firstName: 'Tim'
-        },
-        transaction: {
-          address: '0x000000000000000000000000000000000000123',
-          createdAt: 1508639178669,
-          sharesIssued: 4435,
-          sharesTotal: 100005669
-        }
+        address: '0x000000000000000000000000000000000000123',
+        firstName: 'Trevor',
+        createdAt: 1508639178669,
+        removedBalance: 4,
+        totalBalance: 8,
+        sharesIssued: 345,
+        sharesTotal: 100005669
+      }, {
+        address: '0x000000000000000000000000000000000000123',
+        firstName: 'Billy',
+        createdAt: 1508639178669,
+        sentBalance: 1,
+        totalBalance: 12,
+        sharesIssued: 345,
+        sharesTotal: 100005669
       }]
     }
   },
