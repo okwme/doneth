@@ -67,7 +67,7 @@ export default {
       width: 100%;
       font-size: 13pt;
       font-weight: 500;
-      padding: 11px 12px 8px;
+      padding: 11px 12px 9px;
     }
   }
 

@@ -149,7 +149,9 @@ export default {
     justify-content: flex-end;
 
     .btn {
+      width: 200px;
       margin: auto 0;
+      padding: 10px 0 6px;
     }
   }
 </style>

@@ -21,3 +21,13 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  @import '../scss/variables';
+
+  i {
+    font-size: 9pt;
+    line-height: 9pt;
+    font-style: normal;
+  }
+</style>
