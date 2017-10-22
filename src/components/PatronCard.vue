@@ -13,11 +13,11 @@
       <hr class="divider" :style="{ background: colorHex(member) }">
       <div class="meta">
         <div class="meta-item">
-          <span>Shares: {{member.shares}}</span>
-          <span>Transactions: {{member.transactions || 0}}</span>
+          <span>Shares: <strong>{{member.shares}}</strong></span>
+          <span>Transactions: <strong>{{member.transactions || 0}}</strong></span>
         </div>
         <div class="meta-item">
-          <span>Ownership: 132</span>
+          <span>Ownership: <strong>45%</strong></span>
         </div>
       </div>
       <div class="actions">
@@ -120,6 +120,12 @@ export default {
     .meta-item {
       display: flex;
       justify-content: space-between;
+      padding: 5px 0;
+
+      span {
+        font-size: 9pt;
+        text-transform: uppercase;
+      }
 
       &:not(:last-child) {
         border-bottom: 1px solid rgba(0,0,0,0.1);
