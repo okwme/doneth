@@ -48,12 +48,15 @@ export default {
   computed: {
     ...mapGetters(['metamask', 'members', 'contractName', 'sortedLogs']),
     createdAt () {
-      console.log('this.sortedLogs[0].blockNumber', this.sortedLogs[0].blockNumber)
-      web3.eth.getBlock(this.sortedLogs[0].blockNumber)
-      .then((res) => {
-        console.log('res', res)
+      var ts = new Promise((resolve, reject) => {
+        return web3.eth.getBlock(this.sortedLogs[0].blockNumber)
+          .then((res) => {
+            console.log('res', res)
+            resolve(res.timestamp)
+          })
       })
-      return (+new Date())
+      console.log('res.timestampres.timestamp', ts)
+      return ts
     }
   },
   mounted () {
