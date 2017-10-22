@@ -148,7 +148,18 @@ export default {
   .funds-actions {
     display: flex;
     justify-content: space-between;
-    padding: 20px 20px 0;
+    padding: 40px 20px 15px;
+    position: relative;
+
+    label {
+      font-weight: 600;
+      top: 0;
+      left: 8px;
+
+      &:last-of-type {
+        left: 183px;
+      }
+    }
 
     input {
       width: calc(50% - 10px);
