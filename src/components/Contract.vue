@@ -21,7 +21,7 @@
       </div>
     </div>
     <allocation-bar :allocations="allocations"/>
-    <patron-card/>
+    <patron-card :patrons="members"/>
     <allocation-form/>
     <transactions-list/>
   </div>

@@ -1,7 +1,7 @@
 <template>
   <div class="allocation-bar">
     <div class="bar-graph">
-      <div class="bar-item" v-for="member in members" :style="{ background: '#' + member.who.substring(10, 16), width: (parseInt(member.shares, 10) * 100) / 10 + '%' }"></div>
+      <div class="bar-item" v-for="member in members" :style="{ background: '#' + member.who.slice(-6), width: (parseInt(member.shares, 10) * 100) / 10 + '%' }"></div>
     </div>
     <div class="allocation-details">
       <div class="detail-item" v-for="member in members" :style="{ width: Math.round((parseInt(member.shares, 10) * 100) / parseInt(member.newTotal, 10)) + '%' }">{{Math.round((parseInt(member.shares, 10) * 100) / parseInt(member.newTotal, 10)) + '%'}}</div>
