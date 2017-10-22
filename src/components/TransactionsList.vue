@@ -10,7 +10,7 @@
           </div>
           <div class="details">
             <div>{{item.sender.address}} allocated {{item.transaction.sharesIssued}} new shares to {{item.receiver.address}}</div>
-            <div class="time">{{item.transaction.createdAt | dateTime}}</div>
+            <div class="time">{{dateTime(item.transaction.createdAt)}}</div>
           </div>
         </li>
       </ul>
@@ -58,8 +58,8 @@ export default {
       }]
     }
   },
-  filters: {
-    dateTime: function (value) {
+  methods: {
+    dateTime (value) {
       if (!value) return ''
       return this.$moment(value).format('dddd, MMMM Do YYYY')
     }
