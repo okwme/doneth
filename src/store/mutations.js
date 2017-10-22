@@ -8,5 +8,8 @@ export default {
   },
   SET_RETRY (state, haveRetried) {
     state.retried = haveRetried
+  },
+  SET_CONNECTED (state, isConnected) {
+    state.connected = isConnected
   }
 }

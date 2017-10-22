@@ -26,6 +26,7 @@ export default {
     }
     if (web3Provider) {
       web3 = new Web3(web3Provider)
+      commit('SET_CONNECTED', true)
       let wrongNetwork = false
       web3.eth.net.getId((err, netId) => {
         console.log(netId)
