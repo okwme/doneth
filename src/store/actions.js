@@ -1,6 +1,7 @@
 // import BN from 'bignumber.js'
 import Web3 from 'web3'
 import axios from 'axios'
+import BN from 'bignumber.js'
 // const ProviderEngine = require('web3-provider-engine/index.js')
 const ZeroClientProvider = require('web3-provider-engine/zero.js')
 
@@ -91,7 +92,51 @@ export default {
   setLoading ({commit}, isLoading) {
     commit('SET_LOADING', isLoading)
   },
-  deployDoneth ({commit, state}) {
-    this.Doneth = new web3.eth.Contract(state.abi.abi, state.address)
+  deployDoneth ({dispatch, commit, state}) {
+    if (state.connected) {
+      commit('ADD_DONETH', new web3.eth.Contract(state.abi.abi, state.address))
+      dispatch('populateContractData')
+    } else {
+      setTimeout(() => {
+        dispatch('deployDoneth')
+      }, 500)
+    }
+  },
+  populateContractData ({dispatch}) {
+    dispatch('pollMembers')
+    dispatch('readLogs')
+    dispatch('getContractInfo')
+  },
+  getContractInfo () {
+    // get total shares
+    // get name
+    // get founder
+    // get genesis block number
+    // get totalwithdraw
+  },
+  readLogs ({dispatch, state, commit}) {
+    state.Doneth.getPastEvents('AddShare', {
+      fromBlock: state.genesisBlock,
+      toBlock: 'latest'
+    })
+    .then((results) => {
+      commit('ADD_LOGS', results)
+    })
+  },
+  pollMembers ({dispatch, state}) {
+    return state.Doneth.methods.getMemberCount().call().then((count) => {
+      console.log(count)
+      return dispatch('pollMember', {i: 0, length: parseInt(count)})
+    })
+  },
+  pollMember ({dispatch, state, commit}, data) {
+    return state.Doneth.methods.getMemberAtKey(new BN(data.i)).call()
+      .then((address) => {
+        return state.Doneth.methods.returnMember(address).call()
+        .then(({active, admin, shares, withdrawn, memberName}) => {
+          commit('ADD_MEMBER', {address, active, admin, shares, withdrawn, memberName})
+          if (data.i + 1 < data.length) dispatch('pollMember', {i: data.i + 1, length: data.length})
+        })
+      })
   }
 }
