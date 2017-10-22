@@ -7,7 +7,8 @@
         </div>
         <div class="attributes">
           <h3>{{member.firstName || 'FirstName'}}</h3>
-          <small>{{member.who || '0x0000...0000'}}</small>
+          <!-- <small>{{member.who || '0x0000...0000'}}</small> -->
+          <short-hash :hash="member.who || '0x0000000000000'"/>
         </div>
       </div>
       <hr class="divider" :style="{ background: colorHex(member) }">
@@ -30,6 +31,7 @@
 
 <script>
 import PatronForm from '@/components/PatronForm'
+import ShortHash from '@/components/ShortHash'
 export default {
 
   name: 'PatronCard',
@@ -57,7 +59,8 @@ export default {
     }
   },
   components: {
-    PatronForm
+    PatronForm,
+    ShortHash
   }
 }
 </script>
