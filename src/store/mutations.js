@@ -48,7 +48,7 @@ export default {
     state.members.push(member)
   },
   ADD_LOGS (state, logs) {
-    state.logs.push(...logs)
+    state.sortedLogs.push(...logs)
   },
   SET_SHARES (state, totalShares) {
     state.totalShares = totalShares
@@ -64,5 +64,8 @@ export default {
   },
   SET_WITHDRAWN (state, totalWithdrawn) {
     state.totalWithdrawn = totalWithdrawn
+  },
+  SET_BALANCE (state, totalBalance) {
+    state.totalBalance = totalBalance
   }
 }
