@@ -115,7 +115,6 @@ export default {
     toggleActive: function (member, bool) {
       // TODO: Come back when not confused :)
       // member.active = (typeof bool === 'undefined') ? true : bool
-      // console.log('member', member.active)
       // this.$emit('activemember')
     },
     cancelWithdraw () {

@@ -45,10 +45,13 @@ export default {
   @import '../scss/variables';
 
   .donate-embed {
+    display: flex;
+    height: 50px;
 
     .btn {
       border-radius: 0px;
-      width: 300px;
+      width: 100%;
+      padding-top: 0;
     }
   }
 </style>

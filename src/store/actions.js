@@ -8,20 +8,16 @@ const ZeroClientProvider = require('web3-provider-engine/zero.js')
 export default {
   connect ({commit, state, dispatch}) {
     commit('SET_LOADING', true)
-    console.log('connect')
     let web3Provider = false
     if (typeof web3 !== 'undefined') {
-      console.log('yes web 3')
       web3Provider = web3.currentProvider
       commit('SET_METAMASK', true)
     } else if (!state.retried) {
-      console.log('not retried')
       commit('SET_RETRY', true)
       setTimeout(() => {
         dispatch('connect')
       }, 1000)
     } else {
-      console.log('no metamask')
       web3Provider = ZeroClientProvider({
         getAccounts: function () {},
         rpcUrl: 'https://rinkeby.infura.io/Q5I7AA6unRLULsLTYd6d'
@@ -33,7 +29,6 @@ export default {
       commit('SET_CONNECTED', true)
       let wrongNetwork = false
       web3.eth.net.getId((err, netId) => {
-        console.log(netId)
         if (!err) {
           switch (netId) {
             case 3:
@@ -44,7 +39,6 @@ export default {
               wrongNetwork = true
           }
         }
-        console.log(wrongNetwork)
         if (!wrongNetwork) {
           dispatch('setAccountInterval')
         }
@@ -52,7 +46,6 @@ export default {
     }
   },
   setAccountInterval ({dispatch}) {
-    console.log('setAccountInterval')
     dispatch('checkAccount')
     setInterval(() => {
       dispatch('checkAccount')
@@ -71,7 +64,6 @@ export default {
   getConversions ({commit}) {
     const url = 'https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH&tsyms=USD,EUR,GBP,CNY,JPY'
     axios.get(url).then((resp) => {
-      console.log(resp.data)
       commit('SET_CONVERSIONS', resp.data.ETH)
     })
   },
@@ -165,7 +157,6 @@ export default {
     })
   },
   pollAllowedAmounts ({dispatch, state}) {
-    console.log('poll allowed aounts')
     return dispatch('pollAllowedAmount', 0)
   },
   pollAllowedAmount ({dispatch, state, commit}, i) {
@@ -192,7 +183,6 @@ export default {
       })
   },
   addMember ({state, dispatch}, member) {
-    console.log('addNewMember', this.userAddress)
     return new Promise((resolve, reject) => {
       let currentUser = state.members.find((member) => {
         return member.address === state.account
@@ -201,10 +191,8 @@ export default {
         reject(new Error('Not an Admin'))
       } else {
         dispatch('setLoading', true)
-        console.log(member.userAddress, member.sharesTotal, member.firstName)
         return state.Doneth.methods.addMember(member.userAddress, new BN(member.sharesTotal), false, member.firstName).send({from: state.account})
         .on('transactionHash', (hash) => {
-          console.log(hash)
         })
         .on('error', (error) => {
           console.error(error)
@@ -229,15 +217,11 @@ export default {
     commit('SET_CURRENCY', currency)
   },
   convertToCurrency ({state}, eth) {
-    console.log(eth)
     if (isNaN(eth)) return 0
     if (!eth) return 0
     let conversion = state.conversions[state.currency]
-    console.log(eth)
     if (!conversion) return 0
-    console.log(conversion)
     let result = new BN(eth).mul(conversion).toFixed(2)
-    console.log(result)
     let symbol = ''
     switch (state.currency) {
       case ('USD'):
@@ -277,7 +261,6 @@ export default {
       if (result.sub(withdrawnAlready).greaterThanOrEqualTo(wei)) {
         dispatch('setLoading', true)
         return state.Doneth.methods.withdraw(wei).send({from: state.account}).then((result) => {
-          console.log(result)
           commit('UPDATE_MEMBER_WITHDRAWN', {amount: wei, address: state.account})
           dispatch('setLoading', false)
           dispatch('getContractInfo')
@@ -295,7 +278,6 @@ export default {
   },
   makeDeposit ({state, dispatch}, amount) {
     let wei = web3.utils.toWei(amount)
-    console.log(wei)
     dispatch('setLoading', true)
     return web3.eth.sendTransaction({
       from: state.account,
@@ -303,7 +285,6 @@ export default {
       value: wei
     }).then((result) => {
       dispatch('setLoading', false)
-      console.log(result)
       dispatch('getContractInfo')
       dispatch('pollAllowedAmounts')
     }).catch((error) => {
@@ -313,9 +294,7 @@ export default {
     // state.Doneth.methods.send()
   },
   getAllowed ({state, commit}, address) {
-    console.log('check ', address)
     return state.Doneth.methods.calculateTotalWithdrawableAmount(address).call().then((amount) => {
-      console.log(amount)
       commit('UPDATE_MEMBER_AMOUNT', {address, amount})
     })
   }
