@@ -10,14 +10,23 @@
     font-size: 13pt;
   }
 
-  &.btn-outlined{
+  &.btn-outlined {
     background: transparent;
     border: 2px solid $white;
     border-radius: 3px;
     color: $white;
   }
-  &.btn-white{
+  &.btn-white {
     background: $white;
+
+    &.btn-outlined{
+      background: transparent;
+    }
+  }
+
+  &.btn-primary {
+    background: $primary;
+    color: $white;
 
     &.btn-outlined{
       background: transparent;
