@@ -172,5 +172,42 @@ export default {
           if (data.i + 1 < data.length) dispatch('pollMember', {i: data.i + 1, length: data.length})
         })
       })
+  },
+  addMember ({state, dispatch}, member) {
+    console.log('addNewMember', this.userAddress)
+    return new Promise((resolve, reject) => {
+      let currentUser = state.members.find((member) => {
+        return member.address === state.account
+      })
+      if (!currentUser || !currentUser.admin) {
+        reject(new Error('Not an Admin'))
+      } else {
+        dispatch('setLoading', true)
+        console.log(member.userAddress, member.sharesTotal, member.firstName)
+        return state.Doneth.methods.addMember(member.userAddress, new BN(member.sharesTotal), false, member.firstName).send({from: state.account})
+        .on('transactionHash', (hash) => {
+          console.log(hash)
+        })
+        .on('confirmation', (confirmationNumber, receipt) => {
+          console.log(confirmationNumber, receipt)
+          dispatch('setLoading', false)
+          dispatch('addNotification', {
+            text: 'Member added successfully!',
+            class: 'success'
+          })
+          dispatch('pollMember', {i: state.members.length, length: state.members + 1})
+          resolve()
+        })
+        .on('receipt', (receipt) => {
+          console.log(receipt)
+        })
+        .on('error', (error) => {
+          console.error(error)
+          this.submitting = false
+          this.setLoading(false)
+          reject(error)
+        })
+      }
+    })
   }
 }
