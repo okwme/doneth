@@ -28,7 +28,8 @@ const state = {
   founder: null,
   genesisBlock: 0,
   totalWithdrawn: 0,
-  logs: [],
+  totalBalance: 0,
+  sortedLogs: [],
   abi
 }
 

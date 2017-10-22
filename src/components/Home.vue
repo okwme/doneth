@@ -2,7 +2,7 @@
   <section>
     <div class="page-card">
       <section-header :title="'Welcome!'"></section-header>
-      <p>Don.eth is a platform to help you create shared funds that are easily self-manageable. This allows for the unique governance directly controlled by the user.<br><br>Use Don.eth to fund your side project, distribute funds to those helping development, and many more options!</p>
+      <p>Don.eth is a platform to help you create shared funds that are easily self-manageable. This allows for unique governance directly controlled by the user.<br><br>Use Don.eth to fund your side project, distribute funds to those contributing to development, and many more options!</p>
       <hr class="wd-50">
       <intro-steps/>
       <div class="page-card-footer">

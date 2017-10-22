@@ -17,7 +17,7 @@
           <span>Transactions: <strong>{{member.transactions || 0}}</strong></span>
         </div>
         <div class="meta-item">
-          <span>Ownership: <strong>45%</strong></span>
+          <span>Ownership: <strong>{{percentage(member)}}</strong></span>
         </div>
       </div>
       <div class="actions" v-if="member.address === account">
@@ -27,8 +27,8 @@
         v-text="withdrawing ? 'Confirm' : 'Withdraw'"></button>
         <button @click="cancelWithdraw" class="btn btn-error btn-outlined" name="button" v-if="withdrawing && withdrawer === member.address">Cancel</button>
       </div>
-    </div><!-- 
-     --><patron-form :address="address"/>
+    </div>
+    <patron-form :address="address"/>
   </div>
 </template>
 
@@ -51,7 +51,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['account', 'conversions', 'currency'])
+    ...mapGetters(['account', 'conversions', 'currency', 'totalShares'])
   },
   watch: {
     withdrawAmount () {
@@ -75,6 +75,17 @@ export default {
     },
     colorHex (member) {
       return (member && member.address) ? `#${member.address.slice(-6)}` : '#CCCCCC'
+    },
+    percentage (member) {
+      let num = parseInt(this.totalShares, 10)
+      if (num === 0) {
+        this.patrons.map((p) => {
+          if (p && p.shares && !isNaN(parseInt(p.shares, 10))) {
+            num += parseInt(p.shares, 10)
+          }
+        })
+      }
+      return Math.round((parseInt(member.shares, 10) * 100) / num) + '%'
     },
     toggleActive: function (member, bool) {
       // TODO: Come back when not confused :)
