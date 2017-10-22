@@ -8,8 +8,8 @@
       <div class="contract-details">
         <h2>{{name}}</h2>
         <div class="sub-details">
-          <div class=""><small>Total Available:</small> Ξ{{totalEth}} Eth/${{totalCurrency}} {{currency}}</div>
-          <div class=""><small>Created:</small> {{createdAt | dateTime}}</div>
+          <div class=""><small>Total Available:</small> {{totalEth}} Eth/{{totalCurrency}} {{currency}}</div>
+          <div class=""><small>Created:</small> {{dateTime(createdAt)}}</div>
         </div>
       </div>
       <div class="contract-cta">
@@ -63,6 +63,10 @@ export default {
     this.tryContract()
   },
   methods: {
+    dateTime (value) {
+      if (!value) return ''
+      return this.$moment(value).format('dddd, MMMM Do YYYY')
+    },
     tryContract () {
       if (this.connected) {
         this.useContract()
@@ -111,12 +115,6 @@ export default {
     PatronCard,
     SectionHeader,
     TransactionsList
-  },
-  filters: {
-    dateTime: function (value) {
-      if (!value) return ''
-      return window.moment(value).format('dddd, MMMM Do YYYY')
-    }
   }
 }
 </script>

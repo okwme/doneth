@@ -1,142 +1,159 @@
 <template>
-    <div>
+  <div class="container">
+    <div class="page-card">
+      <section-header :title="'Deploy!'"></section-header>
+      <p>You can deploy your very own Contract on this page. Just add a title for the contract and your own name. Adding names will help you identify the members of your contract and make the shares and balance delegation clearer.</p>
+      <p>After deploying the contract you will be able to add more members and modify how much of the shared account balance they have access to. It may be prudent to create a new member designated as "Accounts Payable" to handle all of your expenses.</p>
+      <hr class="wd-50">
       <template v-if="metamask">
-        <input v-model="name">
-        <br>
-        <textarea readonly v-text="contract"></textarea>
-        <textarea :class="isCompiling" readonly v-text="compiled"></textarea>
-        <br>
-        <button :disabled="compiling" @click="deploy">DEPLOY</button>
+        <form @submit.prevent="deploy()">
+          <template v-if="!deploying && !confirming && !address">
+            <div class="field">
+              <label for="alloc_shares">Title:</label>
+              <input maxLength="12" type="text" name="name" v-model="name" >
+            </div>
+
+            <div class="field">
+              <label for="alloc_shares">Founder:</label>
+              <input maxLength="12" type="text" name="founder_name" v-model="founderName" >
+            </div>
+            <div class="field">
+              <button class="btn btn-primary" type="submit" name="button">Deploy</button>
+            </div>
+          </template>
+          <h2 v-if="deploying && !confirming && !address">
+            Deploying....
+          </h2>
+          <h2 v-if="confirming && !address">
+            Waiting for Confirmations....
+          </h2>
+          <h2 v-if="address">
+            Contract Deployed 🎉<br>
+            Redirecting in {{countdown}} sec
+          </h2>
+        </form>
       </template>
       <template v-else>
         Please get Metamask
       </template>
     </div>
+  </div>
 </template>
 
 <script>
 
+import abi from '../assets/Doneth.json'
 import contract from '../assets/Doneth.sol.txt'
-// import contract from 'raw-loader!../assets/dummy.sol.txt'
-// let contract = require('../assets/dummy.sol.txt')
-// const contract = fs.readFileSync('../assets/dummy.sol.txt')
-// var solc = require('solc')
-// const Web3 = require('web3')
-// const Tx = require('ethereumjs-tx')
-import { mapGetters } from 'vuex'
+import SectionHeader from '@/components/SectionHeader'
+
+import { mapGetters, mapActions } from 'vuex'
 export default {
 
   name: 'Deploy',
-
+  components: {SectionHeader},
   data () {
     return {
-      name: 'Contract Name',
-      abi: null,
-      compiled: null,
-      compiling: false
+      name: '',
+      founderName: '',
+      abi: abi.abi,
+      compiled: abi.unlinked_binary,
+      contract,
+      deploying: false,
+      confirming: false,
+      tx: null,
+      address: null,
+      countdown: 5
     }
   },
   computed: {
-    ...mapGetters(['account', 'metamask']),
-    contract () {
-      return contract.replace('__REPLACE__', this.name)
-    },
-    isCompiling () {
-      return {
-        yesCompiling: this.compiling
-      }
-    }
-  },
-  watch: {
-    contract () {
-      this.compile()
-    }
+    ...mapGetters(['account', 'metamask'])
   },
   methods: {
-    compile () {
-      clearTimeout(this.compileTimeout)
-      this.compiling = true
-      this.compiled = this.compiled === null ? 'compiling...' : this.compiled
-      this.compileTimeout = setTimeout(() => {
-        this.actuallyCompile()
-      }, 1000)
-    },
-    actuallyCompile () {
-      console.log('actually compile')
-      // web3.eth.compile.solidity(this.contract).then((contract) => {
-      //   this.compiling = false
-      //   console.log(contract)
-      // })
-
-      if (typeof BrowserSolc !== 'undefined') {
-        BrowserSolc.getVersions((soljsonSources, soljsonReleases) => {
-          // console.log(soljsonSources)
-          console.log(soljsonReleases)
-        })
-        BrowserSolc.loadVersion('soljson-v0.4.19-nightly.2017.10.20+commit.bdd2858b.js', (compiler) => {
-          const output = compiler.compile(this.contract, 1)
-          // const output = compiler.compile('contract x { function g() {} }', 1)
-          console.log(output)
-          this.compiled = output.contracts[':Doneth'].bytecode
-          this.abi = JSON.parse(output.contracts[':Doneth'].interface)
-          console.log(JSON.stringify(this.abi))
-          this.compiling = false
-        })
-      } else {
-        setTimeout(() => {
-          this.actuallyCompile()
-        }, 1000)
-      }
-    },
+    ...mapActions(['addNotification', 'setLoading']),
     deploy () {
       console.log(this.account)
+      if (!this.account) {
+        alert('unlock your wallet!')
+      }
+      this.setLoading(true)
       var contract = new web3.eth.Contract(this.abi)
+      this.deploying = true
       contract.deploy({
         data: this.compiled,
-        arguments: [this.name],
+        arguments: [this.name, this.founderName],
         from: this.account
       }).send({
         from: this.account
         // gas: '4700000',
-        // gasPrice: '4700000'
-      }, function (e, transactionHash) {
-        console.log(e, transactionHash)
-        // if (typeof contract.address !== 'undefined') {
-        //   console.log('Contract mined! address: ' + contract.address + ' transactionHash: ' + contract.transactionHash)
-        // }
+        // gasPrice: '20000000000'
+      }, (e, transactionHash) => {
+        this.deploying = false
+        this.confirming = true
+        this.tx = transactionHash
       })
-      .on('error', function (error) {
+      .on('error', (error) => {
+        this.confirming = false
+        this.deploying = false
+        this.setLoading(false)
+        this.addNotification({
+          text: 'Error has occured, please check logs',
+          class: 'error'
+        })
         console.log('ERROR', error)
       })
-      .on('transactionHash', function (transactionHash) {
-        console.log('transactionHash', transactionHash)
-      })
-      .on('receipt', function (receipt) {
-        console.log(receipt.contractAddress) // contains the new contract address
-      })
-      .on('confirmation', function (confirmationNumber, receipt) {
-        console.log(confirmationNumber, receipt)
-      })
       .then((newContractInstance) => {
-        console.log(newContractInstance.options.address) // instance with the new contract address
-        this.$router.push('/' + newContractInstance.options.address)
+        this.setLoading(false)
+        this.confirming = false
+        this.address = newContractInstance.options.address
+        setInterval(() => {
+          this.countdown--
+          if (this.countdown === 0) this.$router.push('/' + this.address)
+        }, 1000)
       })
     }
-  },
-  mounted () {
-    console.log(this.metamask)
-    this.compile()
   }
 }
 </script>
 
 <style lang="scss" scoped>
-textarea {
-  width:500px;
-  height:200px;
-  border: 1px solid black;
-  &.yesCompiling {
-    border:1px solid red;
+  textarea {
+    width:500px;
+    height:200px;
+    border: 1px solid black;
+    &.yesCompiling {
+      border:1px solid red;
+    }
   }
-}
+
+  form {
+    display: flex;
+    h2 {
+      flex: 1;
+      text-align: center;
+    }
+    .field {
+      flex: 1;
+      padding: 10px;
+      position: relative;
+    }
+
+    select {
+      padding-left: 40px;
+    }
+
+    input {
+      padding-left: 70px;
+      padding-right:5px;
+      text-align: center;
+      width: 160px;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      font-size: 13pt;
+      font-weight: 500;
+      padding: 11px 12px 8px;
+    }
+  }
 </style>

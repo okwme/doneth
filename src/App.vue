@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <toolbar/>
+    <notifications/>
     <router-view/>
     <section>
       <div class="page-card bk-green">
@@ -12,6 +13,7 @@
 </template>
 
 <script>
+import Notifications from '@/components/Notifications'
 import Toolbar from '@/components/Toolbar'
 import FooterInfo from '@/components/FooterInfo'
 import DonateCta from '@/components/DonateCta'
@@ -20,21 +22,25 @@ export default {
   name: 'app',
   computed: {
     ...mapGetters([
-      'account'
+      'account',
+      'conversions'
     ])
   },
   methods: {
     ...mapActions([
-      'connect'
+      'connect',
+      'getConversions'
     ])
   },
   mounted () {
     this.connect()
+    this.getConversions()
   },
   components: {
     Toolbar,
     DonateCta,
-    FooterInfo
+    FooterInfo,
+    Notifications
   }
 }
 </script>
@@ -42,6 +48,7 @@ export default {
 <style lang="scss">
 @import '/scss/variables';
 @import '/scss/main.scss';
+
 html {
   background: $white;
 }

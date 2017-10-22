@@ -15,7 +15,10 @@ const state = {
   retried: false,
   metamask: false,
   account: null,
-  connected: false
+  connected: false,
+  conversions: {},
+  loading: false,
+  notifications: []
 }
 
 export default new Vuex.Store({

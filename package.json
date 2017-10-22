@@ -14,6 +14,7 @@
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
   },
   "dependencies": {
+    "axios": "^0.17.0",
     "bignumber.js": "^4.1.0",
     "fs": "0.0.1-security",
     "module": "^1.2.5",
@@ -22,6 +23,7 @@
     "vue": "^2.5.2",
     "vue-momentjs": "^0.1.1",
     "vue-router": "^3.0.1",
+    "vue-worker": "^1.2.1",
     "vuex": "^3.0.0",
     "vuex-router-sync": "^5.0.0",
     "web3": "^1.0.0-beta.24",

@@ -48,8 +48,6 @@ export default {
 
 <style lang="scss" scoped>
   @import '../scss/variables';
-  @import '../scss/buttons';
-  @import '../scss/forms';
 
   .allocations {
 

@@ -5,13 +5,17 @@ import App from './App'
 import router from './router'
 import store from './store'
 import { sync } from 'vuex-router-sync'
+import VueWorker from 'vue-worker'
 import moment from 'moment'
-import VueMomentJS from 'vue-momentjs'
+// import VueMomentJS from 'vue-momentjs'
+
 sync(store, router)
-window.moment = moment // dont hate me :)
+Vue.use(VueWorker)
+
+Object.defineProperty(Vue.prototype, '$moment', { value: moment })
 
 Vue.config.productionTip = false
-Vue.use(VueMomentJS, moment)
+// Vue.use(VueMomentJS, moment)
 
 /* eslint-disable no-new */
 new Vue({
