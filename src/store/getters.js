@@ -10,12 +10,14 @@ export default {
   contractName: state => state.contractName,
   founder: state => state.founder,
   genesisBlock: state => state.genesisBlock,
+  totalBalance: state => state.totalBalance,
   totalWithdrawn: state => state.totalWithdrawn,
   sortedLogs: (state) => {
+    // TODO: SORT!
     console.log('state.logs', state.logs)
-    state.logs.sort((a, b) => {
-      console.log('a, b', a, b)
-    })
+    // state.logs.sort((a, b) => {
+    //   console.log('a, b', a, b)
+    // })
 
     return state.logs
   }

@@ -9,7 +9,8 @@
         <h2>{{contractName}}</h2>
         <div class="sub-details">
           <div class=""><small>Total Available:</small> {{totalBalance}} Eth/{{totalBalance}} {{currency}}</div>
-          <div class=""><small>Created:</small> {{dateTime(createdAt)}}</div>
+          <!-- <div class=""><small>Created:</small> {{dateTime(timestamp)}}</div> -->
+          <div class=""><small>Created:</small> {{timestamp}}</div>
         </div>
       </div>
       <div class="contract-cta">
@@ -42,26 +43,17 @@ export default {
     return {
       Doneth: null,
       currency: 'USD',
-      totalBalance: 10
+      timestamp: null
     }
   },
   computed: {
-    ...mapGetters(['metamask', 'members', 'contractName', 'sortedLogs']),
-    createdAt () {
-      var ts = new Promise((resolve, reject) => {
-        return web3.eth.getBlock(this.sortedLogs[0].blockNumber)
-          .then((res) => {
-            console.log('res', res)
-            resolve(res.timestamp)
-          })
-      })
-      console.log('res.timestampres.timestamp', ts)
-      return ts
-    }
+    ...mapGetters(['metamask', 'members', 'contractName', 'sortedLogs', 'totalBalance'])
   },
   mounted () {
     this.addAddress(this.address)
     this.deployDoneth()
+    this.getCreatedAt()
+    console.log('this.totalBalance', this.totalBalance)
   },
   methods: {
     ...mapActions(['deployDoneth']),
@@ -69,6 +61,15 @@ export default {
     dateTime (value) {
       if (!value) return ''
       return this.$moment(value).format('dddd, MMMM Do YYYY')
+    },
+    getCreatedAt () {
+      if (!this.sortedLogs[0] || !this.sortedLogs[0].blockNumber) return
+      this.timestamp = this.sortedLogs[0].blockNumber
+      // web3.eth.getBlock(this.sortedLogs[0].blockNumber)
+      // .then((res) => {
+      //   console.log('fdsafdsadsafdts', res)
+      //   if (res && res.timestamp) this.timestamp = res.timestamp * 1000
+      // })
     }
   },
   components: {

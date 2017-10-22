@@ -124,6 +124,12 @@ export default {
       commit('SET_WITHDRAWN', totalWithdrawn)
     })
   },
+  // getBalance ({state, commit}) {
+  //   state.Doneth.methods.getBalance().call().then((totalBalance) => {
+  //     console.log('totalBalance', totalBalance)
+  //     commit('SET_BALANCE', totalBalance)
+  //   })
+  // },
   readLogs ({dispatch, state, commit}) {
     state.Doneth.getPastEvents('AddShare', {
       fromBlock: state.genesisBlock,
