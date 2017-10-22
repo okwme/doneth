@@ -92,23 +92,27 @@ export default {
   setLoading ({commit}, isLoading) {
     commit('SET_LOADING', isLoading)
   },
-  deployDoneth ({dispatch, commit, state}) {
+  deployDoneth ({dispatch, commit, state}, address) {
     if (state.connected) {
+      commit('CLEAR_CONTRACT')
+      commit('ADD_ADDRESS', address)
       commit('ADD_DONETH', new web3.eth.Contract(state.abi.abi, state.address))
       dispatch('populateContractData')
     } else {
       setTimeout(() => {
-        dispatch('deployDoneth')
+        dispatch('deployDoneth', address)
       }, 500)
     }
   },
   populateContractData ({dispatch}) {
     dispatch('pollMembers')
-    dispatch('readLogs')
     dispatch('getContractInfo')
+    dispatch('readLogs')
   },
   getContractInfo ({state, commit}) {
-    console.log(state.Doneth)
+    state.Doneth.methods.genesisBlockNumber().call().then((genesisBlockNumber) => {
+      commit('SET_BLOCK', genesisBlockNumber)
+    })
     state.Doneth.methods.totalShares().call().then((totalShares) => {
       commit('SET_SHARES', totalShares)
     })
@@ -118,15 +122,36 @@ export default {
     state.Doneth.methods.founder().call().then((founder) => {
       commit('SET_FOUNDER', founder)
     })
-    state.Doneth.methods.genesisBlockNumber().call().then((genesisBlockNumber) => {
-      commit('SET_BLOCK', genesisBlockNumber)
-    })
     state.Doneth.methods.totalWithdrawn().call().then((totalWithdrawn) => {
       commit('SET_WITHDRAWN', totalWithdrawn)
     })
   },
   readLogs ({dispatch, state, commit}) {
     state.Doneth.getPastEvents('AddShare', {
+      fromBlock: state.genesisBlock,
+      toBlock: 'latest'
+    })
+    .then((results) => {
+      commit('ADD_LOGS', results)
+    })
+
+    state.Doneth.getPastEvents('RemoveShare', {
+      fromBlock: state.genesisBlock,
+      toBlock: 'latest'
+    })
+    .then((results) => {
+      commit('ADD_LOGS', results)
+    })
+
+    state.Doneth.getPastEvents('Deposit', {
+      fromBlock: state.genesisBlock,
+      toBlock: 'latest'
+    })
+    .then((results) => {
+      commit('ADD_LOGS', results)
+    })
+
+    state.Doneth.getPastEvents('Withdraw', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
@@ -206,12 +231,27 @@ export default {
     return symbol + result
   },
   makeWithdraw ({state}, amount) {
-    let wei = new BN(amount).mul(new BN(10).toPower(18))
-    console.log(wei.toString())
+    let wei = web3.utils.toWei(amount)
+    // console.log(state.Doneth.methods)
+    // state.Doneth.methods.withdraw(wei).send({from: state.account}).then((result) => {
+    //   console.log(result)
+    // })
+    state.Doneth.methods.calculateTotalWithdrawableAmount(state.account).call().then((result) => {
+      console.log(wei.toString(), 'try')
+      console.log(result, 'allowed')
+    })
   },
-  makeDeposit ({state}, amount) {
-    let wei = new BN(amount).mul(new BN(10).toPower(18))
+  makeDeposit ({state, dispatch}, amount) {
+    let wei = web3.utils.toWei(amount)
     console.log(wei)
+    web3.eth.sendTransaction({
+      from: state.account,
+      to: state.address,
+      value: wei
+    }).then((result) => {
+      console.log(result)
+      dispatch('getContractInfo')
+    })
     // state.Doneth.methods.send()
   }
 }

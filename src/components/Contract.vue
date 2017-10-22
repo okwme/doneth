@@ -12,11 +12,15 @@
           <div class=""><small>Created:</small> {{dateTime(createdAt)}}</div>
         </div>
       </div>
+
       <div class="contract-cta">
-        <button type="button" name="button" class="btn btn-primary">
+        <input v-if="depositing" v-model="depositAmount">
+        <input v-if="depositing" :value="convertedAmount">
+        <button @click="deposit()" type="button" name="button" class="btn btn-primary">
           <b>Add Funds</b>
           <short-hash :hash="address"/>
         </button>
+        <button v-if="depositing" class="btn btn-error" @click="depositing = false">Cancel</button>
       </div>
     </div>
     <allocation-bar :patrons="members"/>
@@ -33,7 +37,7 @@ import PatronCard from '@/components/PatronCard'
 import ShortHash from '@/components/ShortHash'
 import SectionHeader from '@/components/SectionHeader'
 import TransactionsList from '@/components/TransactionsList'
-import { mapGetters, mapMutations, mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
 
   name: 'Contract',
@@ -49,22 +53,37 @@ export default {
       totalEth: 13,
       totalCurrency: 2349,
       currency: 'USD',
-      createdAt: 1508639178669
+      createdAt: 1508639178669,
+      convertedAmount: 0,
+      depositAmount: 0,
+      depositing: false
     }
   },
   computed: {
     ...mapGetters(['metamask', 'members', 'contractName', 'logs'])
   },
   mounted () {
-    this.addAddress(this.address)
-    this.deployDoneth()
+    this.deployDoneth(this.address)
+  },
+  watch: {
+    depositAmount () {
+      this.convertToCurrency(this.depositAmount).then((amount) => {
+        this.convertedAmount = amount
+      })
+    }
   },
   methods: {
-    ...mapActions(['deployDoneth']),
-    ...mapMutations({addAddress: 'ADD_ADDRESS'}),
+    ...mapActions(['deployDoneth', 'makeDeposit', 'convertToCurrency']),
     dateTime (value) {
       if (!value) return ''
       return this.$moment(value).format('dddd, MMMM Do YYYY')
+    },
+    deposit () {
+      if (this.depositing) {
+        this.makeDeposit(this.depositAmount)
+      } else {
+        this.depositing = true
+      }
     }
   },
   components: {

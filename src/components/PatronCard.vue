@@ -64,6 +64,7 @@ export default {
   methods: {
     ...mapActions(['convertToCurrency', 'makeWithdraw']),
     updateConversion () {
+      if (!this.withdrawAmount) return
       this.convertToCurrency(this.withdrawAmount).then((convertedAmount) => {
         this.convertedAmount = convertedAmount
       })
