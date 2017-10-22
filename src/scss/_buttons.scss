@@ -42,4 +42,21 @@
       }
     }
   }
+
+  &.btn-error {
+    background: $error;
+    color: $white;
+    transition: all 220ms ease;
+
+    &.btn-outlined {
+      background: transparent;
+      border-color: $error;
+      color: $error;
+
+      &:hover {
+        background: $error;
+        color: $white;
+      }
+    }
+  }
 }

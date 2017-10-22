@@ -20,8 +20,12 @@
           <span>Ownership: <strong>{{percentage(member)}}</strong></span>
         </div>
       </div>
-      <div class="actions">
-        <button class="btn btn-primary btn-outlined" name="button">Withdraw</button>
+      <div class="actions" v-if="member.address === account">
+        <input class="center" v-if="withdrawing" type="number" placeholder="Amount (ETH)" v-model="withdrawAmount">
+        <input readOnly="true" class="center" v-if="withdrawing" type="text" :value="convertedAmount">
+        <button @click="withdraw(member)" class="btn btn-primary btn-outlined" name="button"
+        v-text="withdrawing ? 'Confirm' : 'Withdraw'"></button>
+        <button @click="cancelWithdraw" class="btn btn-error btn-outlined" name="button" v-if="withdrawing && withdrawer === member.address">Cancel</button>
       </div>
     </div>
     <patron-form :address="address"/>
@@ -31,7 +35,7 @@
 <script>
 import PatronForm from '@/components/PatronForm'
 import ShortHash from '@/components/ShortHash'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
 
   name: 'PatronCard',
@@ -40,12 +44,31 @@ export default {
 
   data () {
     return {
+      withdrawAmount: 0,
+      convertedAmount: 0,
+      withdrawing: false,
+      withdrawer: 0
     }
   },
   computed: {
-    ...mapGetters(['totalShares'])
+    ...mapGetters(['account', 'conversions', 'currency', 'totalShares'])
+  },
+  watch: {
+    withdrawAmount () {
+      this.updateConversion()
+    },
+    currency () {
+      this.updateConversion()
+    }
   },
   methods: {
+    ...mapActions(['convertToCurrency', 'makeWithdraw']),
+    updateConversion () {
+      if (!this.withdrawAmount) return
+      this.convertToCurrency(this.withdrawAmount).then((convertedAmount) => {
+        this.convertedAmount = convertedAmount
+      })
+    },
     firstName (member) {
       let initial = (member && member.memberName) ? member.memberName.substring(0, 2) : '0x'
       return initial.toUpperCase()
@@ -69,6 +92,18 @@ export default {
       // member.active = (typeof bool === 'undefined') ? true : bool
       // console.log('member', member.active)
       // this.$emit('activemember')
+    },
+    cancelWithdraw () {
+      this.withdrawing = false
+      this.withdrawer = null
+    },
+    withdraw (member) {
+      if (this.withdrawing) {
+        this.makeWithdraw(this.withdrawAmount)
+      } else {
+        this.withdrawer = member.address
+        this.withdrawing = true
+      }
     }
   },
   components: {

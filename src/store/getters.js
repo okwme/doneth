@@ -12,6 +12,8 @@ export default {
   genesisBlock: state => state.genesisBlock,
   totalBalance: state => state.totalBalance,
   totalWithdrawn: state => state.totalWithdrawn,
+  logs: state => state.logs,
+  currency: state => state.currency,
   sortedLogs: (state) => {
     // TODO: SORT!
     console.log('------state.sortedLogs', state.sortedLogs)

@@ -20,28 +20,28 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
 
   name: 'Toolbar',
 
   data () {
     return {
-      currency: 'USD',
       clicked: false
     }
   },
   methods: {
+    ...mapActions(['setCurrency']),
     selectCurrency (option) {
       this.clicked = true
-      this.currency = option
+      this.setCurrency(option)
       setTimeout(() => {
         this.clicked = false
       }, 500)
     }
   },
   computed: {
-    ...mapGetters(['conversions']),
+    ...mapGetters(['conversions', 'currency']),
     justClicked () {
       return {justClicked: this.clicked}
     },

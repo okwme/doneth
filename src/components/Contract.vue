@@ -12,11 +12,15 @@
           <div class=""><small>Created:</small> {{dateTime(timestamp)}}</div>
         </div>
       </div>
+
       <div class="contract-cta">
-        <button type="button" name="button" class="btn btn-primary">
+        <input v-if="depositing" v-model="depositAmount">
+        <input v-if="depositing" :value="convertedAmount">
+        <button @click="deposit()" type="button" name="button" class="btn btn-primary">
           <b>Add Funds</b>
           <short-hash :hash="address"/>
         </button>
+        <button v-if="depositing" class="btn btn-error" @click="depositing = false">Cancel</button>
       </div>
     </div>
     <allocation-bar :patrons="members"/>
@@ -40,8 +44,11 @@ export default {
   props: ['address'],
   data () {
     return {
-      Doneth: null,
       currency: 'USD',
+      createdAt: 1508639178669,
+      convertedAmount: 0,
+      depositAmount: 0,
+      depositing: false,
       timestamp: null
     }
   },
@@ -52,11 +59,25 @@ export default {
     this.deployDoneth(this.address)
     this.getCreatedAt()
   },
+  watch: {
+    depositAmount () {
+      this.convertToCurrency(this.depositAmount).then((amount) => {
+        this.convertedAmount = amount
+      })
+    }
+  },
   methods: {
-    ...mapActions(['deployDoneth']),
+    ...mapActions(['deployDoneth', 'makeDeposit', 'convertToCurrency']),
     dateTime (value) {
       if (!value) return ''
       return this.$moment(value).format('dddd, MMMM Do YYYY')
+    },
+    deposit () {
+      if (this.depositing) {
+        this.makeDeposit(this.depositAmount)
+      } else {
+        this.depositing = true
+      }
     },
     getCreatedAt () {
       if (!this.sortedLogs || this.sortedLogs.length <= 0 || !this.sortedLogs[0] || !this.sortedLogs[0].blockNumber) {

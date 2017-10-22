@@ -65,5 +65,10 @@ label {
     padding-left: 70px;
     text-align: right;
     width: 160px;
+    max-width:100%;
   }
+}
+input.center {
+  text-align:center;
+  width: 160px;
 }

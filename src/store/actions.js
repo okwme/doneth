@@ -213,5 +213,51 @@ export default {
         })
       }
     })
+  },
+  setCurrency ({commit}, currency) {
+    commit('SET_CURRENCY', currency)
+  },
+  convertToCurrency ({state}, eth) {
+    let conversion = state.conversions[state.currency]
+    console.log(conversion)
+    console.log(eth)
+    let result = new BN(eth).mul(conversion).toFixed(2)
+    console.log(result)
+    let symbol = ''
+    switch (state.currency) {
+      case ('USD'):
+        symbol = '$'
+        break
+      case ('GDP'):
+        symbol = '?'
+        break
+      default:
+        symbol = ''
+    }
+    return symbol + result
+  },
+  makeWithdraw ({state}, amount) {
+    let wei = web3.utils.toWei(amount)
+    // console.log(state.Doneth.methods)
+    // state.Doneth.methods.withdraw(wei).send({from: state.account}).then((result) => {
+    //   console.log(result)
+    // })
+    state.Doneth.methods.calculateTotalWithdrawableAmount(state.account).call().then((result) => {
+      console.log(wei.toString(), 'try')
+      console.log(result, 'allowed')
+    })
+  },
+  makeDeposit ({state, dispatch}, amount) {
+    let wei = web3.utils.toWei(amount)
+    console.log(wei)
+    web3.eth.sendTransaction({
+      from: state.account,
+      to: state.address,
+      value: wei
+    }).then((result) => {
+      console.log(result)
+      dispatch('getContractInfo')
+    })
+    // state.Doneth.methods.send()
   }
 }

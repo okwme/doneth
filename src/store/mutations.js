@@ -65,6 +65,9 @@ export default {
   SET_WITHDRAWN (state, totalWithdrawn) {
     state.totalWithdrawn = totalWithdrawn
   },
+  SET_CURRENCY (state, currency) {
+    state.currency = currency
+  },
   SET_BALANCE (state, totalBalance) {
     state.totalBalance = totalBalance
   }
