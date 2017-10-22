@@ -2,13 +2,12 @@
   <div class="patron-cards">
     <div class="patron-card" v-for="member in patrons" v-on:mouseenter="toggleActive(member, true)" v-on:mouseleave="toggleActive(member, false)">
       <div class="user">
-        <div class="avatar">
+        <div class="avatar" :style="{ background: colorHex(member) }">
           <div>{{firstName(member)}}</div>
         </div>
         <div class="attributes">
-          <h3>{{member.firstName || 'FirstName'}}</h3>
-          <!-- <small>{{member.who || '0x0000...0000'}}</small> -->
-          <short-hash :hash="member.who || '0x0000000000000'"/>
+          <h3>{{member.memberName || 'FirstName'}}</h3>
+          <short-hash :hash="member.address || '0x0000000000000'"/>
         </div>
       </div>
       <hr class="divider" :style="{ background: colorHex(member) }">
@@ -40,16 +39,15 @@ export default {
 
   data () {
     return {
-      members: []
     }
   },
   methods: {
     firstName (member) {
-      let initial = (member && member.firstName) ? member.firstName.substring(0, 2) : '0x'
+      let initial = (member && member.memberName) ? member.memberName.substring(0, 2) : '0x'
       return initial.toUpperCase()
     },
     colorHex (member) {
-      return (member && member.who) ? `#${member.who.slice(-6)}` : '#CCCCCC'
+      return (member && member.address) ? `#${member.address.slice(-6)}` : '#CCCCCC'
     },
     toggleActive: function (member, bool) {
       // TODO: Come back when not confused :)

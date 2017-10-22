@@ -1,6 +1,6 @@
 <template>
   <div class="patron-form">
-    <form class="" action="index.html" method="post">
+    <form @submit.prevent="addNewMember()">
       <h3>Add Member</h3>
       <div class="field">
         <label for="add_name">Name:</label>
@@ -12,25 +12,79 @@
       </div>
       <div class="field field-address">
         <label for="add_address">Address:</label>
-        <input maxLength="42" type="text" name="add_address" v-model="address" required>
+        <input maxLength="42" type="text" name="add_address" v-model="userAddress" required>
       </div>
       <div class="actions">
-        <button class="btn btn-primary" type="submit" name="button">Submit</button>
+        <h2 v-if="submitting">
+          <button class="btn btn-primary">Sending...</button>
+        </h2>
+        <template v-if="!submitting">
+          <button class="btn btn-primary" type="submit" name="button">Submit</button>
+        </template>
       </div>
     </form>
   </div>
 </template>
 
 <script>
+import abi from '../assets/Doneth.json'
+import { mapGetters, mapActions } from 'vuex'
 export default {
 
   name: 'PatronForm',
 
   data () {
     return {
+      address: null,
+      Doneth: null,
+      abi: abi.abi,
       firstName: '',
       sharesTotal: '',
-      address: ''
+      userAddress: '',
+      submitting: false,
+      confirming: false
+    }
+  },
+  computed: {
+    ...mapGetters(['account', 'metamask', 'connected'])
+  },
+  methods: {
+    ...mapActions(['addNotification', 'setLoading']),
+    tryContract () {
+      if (this.connected) {
+        this.useContract()
+      } else {
+        setTimeout(() => {
+          this.tryContract()
+        }, 500)
+      }
+    },
+    useContract () {
+      this.Doneth = new web3.eth.Contract(this.abi, this.address)
+    },
+    addNewMember () {
+      if (!this.connected) {
+        this.tryContract()
+        return
+      }
+      console.log('addNewMember', this.userAddress)
+      this.Doneth = new web3.eth.Contract(this.abi, this.account)
+      this.setLoading(true)
+      this.submitting = true
+
+      this.Doneth.methods.addMember(this.userAddress, this.sharesTotal, false, this.firstName).call()
+        .then(({address, active, admin, shares, withdrawn, memberName}) => {
+          console.log('addMember res', {address, active, admin, shares, withdrawn, memberName})
+          // this.members.push({address, active, admin, shares, withdrawn, memberName})
+          this.submitting = false
+          this.setLoading(false)
+          this.addNotification({
+            text: 'Member added successfully!',
+            class: 'success'
+          })
+        }, (err) => {
+          console.log('addMember err', err)
+        })
     }
   }
 }
