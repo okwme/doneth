@@ -11,5 +11,8 @@ export default {
   },
   SET_CONNECTED (state, isConnected) {
     state.connected = isConnected
+  },
+  SET_CONVERSIONS (state, conversions) {
+    state.conversions = conversions
   }
 }

@@ -12,7 +12,9 @@ hr {
   display: inline-block;
   margin: 5px;
 }
-
+.pointer {
+  cursor: pointer;
+}
 .page-card {
   background: $white;
   border-radius: 3px;

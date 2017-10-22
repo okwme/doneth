@@ -14,16 +14,19 @@ export default {
   name: 'app',
   computed: {
     ...mapGetters([
-      'account'
+      'account',
+      'conversions'
     ])
   },
   methods: {
     ...mapActions([
-      'connect'
+      'connect',
+      'getConversions'
     ])
   },
   mounted () {
     this.connect()
+    this.getConversions()
   },
   components: {
     Toolbar,
@@ -35,6 +38,7 @@ export default {
 <style lang="scss">
 @import '/scss/variables';
 @import '/scss/main.scss';
+@import '/scss/buttons';
 html {
   background: $white;
 }

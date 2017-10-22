@@ -5,7 +5,9 @@ import App from './App'
 import router from './router'
 import store from './store'
 import { sync } from 'vuex-router-sync'
+import VueWorker from 'vue-worker'
 sync(store, router)
+Vue.use(VueWorker)
 
 Vue.config.productionTip = false
 

@@ -1,5 +1,6 @@
 // import BN from 'bignumber.js'
 import Web3 from 'web3'
+import axios from 'axios'
 // const ProviderEngine = require('web3-provider-engine/index.js')
 const ZeroClientProvider = require('web3-provider-engine/zero.js')
 
@@ -56,10 +57,19 @@ export default {
   },
   checkAccount ({commit}) {
     web3.eth.getAccounts((error, accounts) => {
-      if (error) throw new Error(error)
+      if (error) console.error(error)
       if (accounts.length && this.account !== accounts[0]) {
         commit('SET_ACCOUNT', accounts[0])
+      } else {
+        commit('SET_ACCOUNT', null)
       }
+    })
+  },
+  getConversions ({commit}) {
+    const url = 'https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH&tsyms=USD,EUR,GBP,CNY,JPY'
+    axios.get(url).then((resp) => {
+      console.log(resp)
+      commit('SET_CONVERSIONS', resp.data.ETH)
     })
   }
 }

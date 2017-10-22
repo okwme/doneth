@@ -1,28 +1,41 @@
 <template>
-    <div>
+  <div class="container">
+    <div class="page-card">
       <template v-if="metamask">
-        <input v-model="name">
-        <br>
-        <textarea readonly v-text="contract"></textarea>
-        <textarea :class="isCompiling" readonly v-text="compiled"></textarea>
-        <br>
-        <button :disabled="compiling" @click="deploy">DEPLOY</button>
+        <form @submit.prevent="deploy()">
+          <input :readonly="confirming" placeholder="Contract Name" v-model="name">
+          <br>
+          <input :readonly="confirming" placeholder="Your Name" v-model="founderName">
+          <br>
+          <template v-if="!deploying && !confirming && !address">
+            <button @click="deploy" type="button" name="button" class="btn btn-primary btn-outlined">
+              <b>Deploy</b>
+            </button>
+          </template>
+          <template v-if="deploying && !confirming && !address">
+            Deploying....
+          </template>
+          <template v-if="confirming && !address">
+            Waiting for Confirmations....
+          </template>
+          <template v-if="address">
+            Contract Deployed 🎉<br>
+            Redirecting in {{countdown}} sec
+          </template>
+        </form>
       </template>
       <template v-else>
         Please get Metamask
       </template>
     </div>
+  </div>
 </template>
 
 <script>
 
+import abi from '../assets/Doneth.json'
 import contract from '../assets/Doneth.sol.txt'
-// import contract from 'raw-loader!../assets/dummy.sol.txt'
-// let contract = require('../assets/dummy.sol.txt')
-// const contract = fs.readFileSync('../assets/dummy.sol.txt')
-// var solc = require('solc')
-// const Web3 = require('web3')
-// const Tx = require('ethereumjs-tx')
+
 import { mapGetters } from 'vuex'
 export default {
 
@@ -30,102 +43,54 @@ export default {
 
   data () {
     return {
-      name: 'Contract Name',
-      abi: null,
-      compiled: null,
-      compiling: false
+      name: '',
+      founderName: '',
+      abi: abi.abi,
+      compiled: abi.unlinked_binary,
+      contract,
+      deploying: false,
+      confirming: false,
+      tx: null,
+      address: null,
+      countdown: 5
     }
   },
   computed: {
-    ...mapGetters(['account', 'metamask']),
-    contract () {
-      return contract.replace('__REPLACE__', this.name)
-    },
-    isCompiling () {
-      return {
-        yesCompiling: this.compiling
-      }
-    }
-  },
-  watch: {
-    contract () {
-      this.compile()
-    }
+    ...mapGetters(['account', 'metamask'])
   },
   methods: {
-    compile () {
-      clearTimeout(this.compileTimeout)
-      this.compiling = true
-      this.compiled = this.compiled === null ? 'compiling...' : this.compiled
-      this.compileTimeout = setTimeout(() => {
-        this.actuallyCompile()
-      }, 1000)
-    },
-    actuallyCompile () {
-      console.log('actually compile')
-      // web3.eth.compile.solidity(this.contract).then((contract) => {
-      //   this.compiling = false
-      //   console.log(contract)
-      // })
-
-      if (typeof BrowserSolc !== 'undefined') {
-        BrowserSolc.getVersions((soljsonSources, soljsonReleases) => {
-          // console.log(soljsonSources)
-          console.log(soljsonReleases)
-        })
-        BrowserSolc.loadVersion('soljson-v0.4.19-nightly.2017.10.20+commit.bdd2858b.js', (compiler) => {
-          const output = compiler.compile(this.contract, 1)
-          // const output = compiler.compile('contract x { function g() {} }', 1)
-          console.log(output)
-          this.compiled = output.contracts[':Doneth'].bytecode
-          this.abi = JSON.parse(output.contracts[':Doneth'].interface)
-          console.log(JSON.stringify(this.abi))
-          this.compiling = false
-        })
-      } else {
-        setTimeout(() => {
-          this.actuallyCompile()
-        }, 1000)
-      }
-    },
     deploy () {
       console.log(this.account)
+      if (!this.account) {
+        alert('unlock your wallet!')
+      }
       var contract = new web3.eth.Contract(this.abi)
+      this.deploying = true
       contract.deploy({
         data: this.compiled,
-        arguments: [this.name],
+        arguments: [this.name, this.founderName],
         from: this.account
       }).send({
         from: this.account
         // gas: '4700000',
-        // gasPrice: '4700000'
-      }, function (e, transactionHash) {
-        console.log(e, transactionHash)
-        // if (typeof contract.address !== 'undefined') {
-        //   console.log('Contract mined! address: ' + contract.address + ' transactionHash: ' + contract.transactionHash)
-        // }
+        // gasPrice: '20000000000'
+      }, (e, transactionHash) => {
+        this.deploying = false
+        this.confirming = true
+        this.tx = transactionHash
       })
-      .on('error', function (error) {
+      .on('error', (error) => {
         console.log('ERROR', error)
       })
-      .on('transactionHash', function (transactionHash) {
-        console.log('transactionHash', transactionHash)
-      })
-      .on('receipt', function (receipt) {
-        console.log(receipt.contractAddress) // contains the new contract address
-      })
-      .on('confirmation', function (confirmationNumber, receipt) {
-        console.log(confirmationNumber, receipt)
-      })
       .then((newContractInstance) => {
-        console.log(newContractInstance.options.address) // instance with the new contract address
-        this.$router.push('/' + newContractInstance.options.address)
+        this.confirming = false
+        this.address = newContractInstance.options.address
+        setInterval(() => {
+          this.countdown--
+          if (this.countdown === 0) this.$router.push('/' + this.address)
+        }, 1000)
       })
     }
-  },
-  mounted () {
-    console.log(this.metamask)
-    this.compile()
   }
 }
 </script>

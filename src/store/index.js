@@ -15,7 +15,8 @@ const state = {
   retried: false,
   metamask: false,
   account: null,
-  connected: false
+  connected: false,
+  conversions: {}
 }
 
 export default new Vuex.Store({

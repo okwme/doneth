@@ -1,7 +1,7 @@
 <template>
   <div class="toolbar">
     <div class="logo">
-      <h1>Don.eth</h1>
+      <router-link class="pointer" :to="{name: 'Home'}" tag="h1">Don.eth</router-link>
     </div>
 
     <ul class="menu">
@@ -10,7 +10,7 @@
       </li>
       <li class="currency">
         <div class="active-currency">{{activeCurrency}} <img src="static/downArrow.svg"/></div>
-        <div class="dropdown">
+        <div class="dropdown" :class="justClicked">
           <div class="dropdown-item" v-for="option in options" @click="selectCurrency(option)">Eth/{{option}}</div>
         </div>
       </li>
@@ -19,22 +19,38 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
 
   name: 'Toolbar',
 
   data () {
     return {
-      options: ['USD', 'GBP'],
-      currency: 'USD'
+      currency: 'USD',
+      clicked: false
     }
   },
   methods: {
     selectCurrency (option) {
+      this.clicked = true
       this.currency = option
+      setTimeout(() => {
+        this.clicked = false
+      }, 500)
     }
   },
   computed: {
+    ...mapGetters(['conversions']),
+    justClicked () {
+      return {justClicked: this.clicked}
+    },
+    options () {
+      let options = []
+      Object.keys(this.conversions).forEach((key, index) => {
+        options.push(key)
+      })
+      return options
+    },
     activeCurrency () {
       return `Eth/${this.currency}`
     }
@@ -102,7 +118,7 @@ export default {
         padding: 10px 10px;
         text-transform: uppercase;
 
-        &:hover .dropdown {
+        &:hover :not(.justClicked).dropdown {
           display: block;
         }
       }
