@@ -2,7 +2,7 @@
   <div class="donate-embed">
     <button type="button" name="button" class="btn btn-primary">
       <b>{{btntitle || 'Donate Ether'}}</b>
-      <short-hash :hash="address"/>
+      <sub>{{address}}</sub>
     </button>
   </div>
 </template>
@@ -52,6 +52,10 @@ export default {
       border-radius: 0px;
       width: 100%;
       padding-top: 0;
+
+      sub {
+        font-size: 8pt;
+      }
     }
   }
 </style>
