@@ -2,6 +2,11 @@
   <div id="app">
     <toolbar/>
     <router-view/>
+    <section>
+      <div class="page-card bk-green">
+        <donate-cta/>
+      </div>
+    </section>
     <footer-info/>
   </div>
 </template>
@@ -9,6 +14,7 @@
 <script>
 import Toolbar from '@/components/Toolbar'
 import FooterInfo from '@/components/FooterInfo'
+import DonateCta from '@/components/DonateCta'
 import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'app',
@@ -27,6 +33,7 @@ export default {
   },
   components: {
     Toolbar,
+    DonateCta,
     FooterInfo
   }
 }
