@@ -1,9 +1,6 @@
 <template>
   <div>
     {{address}}
-    <template>
-
-    </template>
   </div>
 </template>
 
