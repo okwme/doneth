@@ -75,7 +75,6 @@ export default {
   methods: {
     ...mapActions(['addNotification', 'setLoading']),
     deploy () {
-      console.log(this.account)
       if (!this.account) {
         alert('unlock your wallet!')
       }

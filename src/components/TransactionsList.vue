@@ -51,9 +51,7 @@ export default {
         obj.block = a.blockNumber
 
         if (!a.who) obj.who = a.address
-        console.log(a.value)
         if (obj.value) obj.valueConverted = web3.utils.fromWei(new BN(obj.value), 'ether')
-        console.log('------------------obj', obj.value, obj.valueConverted)
         return obj
       }).reverse()
     }
