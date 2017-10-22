@@ -8,7 +8,7 @@
       <div class="contract-details">
         <h2>{{name}}</h2>
         <div class="sub-details">
-          <div class=""><small>Total Available:</small> {{totalEth}} Eth/{{totalCurrency}} {{currency}}</div>
+          <div class=""><small>Total Available:</small> Ξ{{totalEth}} Eth/${{totalCurrency}} {{currency}}</div>
           <div class=""><small>Created:</small> {{createdAt | dateTime}}</div>
         </div>
       </div>
@@ -20,7 +20,7 @@
         </button>
       </div>
     </div>
-    <allocation-bar :allocations="allocations"/>
+    <allocation-bar :patrons="members"/>
     <patron-card :patrons="members"/>
     <allocation-form/>
     <transactions-list/>
@@ -100,6 +100,9 @@ export default {
       .then((results) => {
         console.log(results)
       })
+    },
+    activeMember () {
+
     }
   },
   components: {

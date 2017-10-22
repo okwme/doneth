@@ -25,7 +25,7 @@ export default {
 
   data () {
     return {
-      options: ['USD', 'GBP'],
+      options: ['$USD', 'GBP'],
       currency: 'USD'
     }
   },

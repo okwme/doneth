@@ -1,0 +1,19 @@
+@import 'variables';
+
+.avatar {
+  background: $lightgrey;
+  color: $white;
+  display: block;
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  text-align: center;
+
+  div {
+    font-size: 16pt;
+    font-weight: 500;
+    margin-top: 10px;
+  }
+}
