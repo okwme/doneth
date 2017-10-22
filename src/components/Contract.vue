@@ -22,7 +22,7 @@
     <allocation-bar :patrons="members"/>
     <patron-card :address="address" :patrons="members"/>
     <allocation-form />
-    <transactions-list :allocations="transactions"/>
+    <transactions-list :allocations="logs"/>
   </div>
 </template>
 
@@ -33,18 +33,14 @@ import PatronCard from '@/components/PatronCard'
 import ShortHash from '@/components/ShortHash'
 import SectionHeader from '@/components/SectionHeader'
 import TransactionsList from '@/components/TransactionsList'
-import { mapGetters } from 'vuex'
-import abi from '../assets/Doneth.json'
-import BN from 'bignumber.js'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 export default {
 
   name: 'Contract',
   props: ['address'],
   data () {
     return {
-      abi,
       Doneth: null,
-      members: [],
       name: 'Contract Name',
       allocations: [{
         value: 2130,
@@ -53,65 +49,22 @@ export default {
       totalEth: 13,
       totalCurrency: 2349,
       currency: 'USD',
-      createdAt: 1508639178669,
-      transactions: []
+      createdAt: 1508639178669
     }
   },
   computed: {
-    ...mapGetters(['metamask', 'connected'])
+    ...mapGetters(['metamask', 'members', 'contractName', 'logs'])
   },
   mounted () {
-    this.tryContract()
+    this.addAddress(this.address)
+    this.deployDoneth()
   },
   methods: {
+    ...mapActions(['deployDoneth']),
+    ...mapMutations({addAddress: 'ADD_ADDRESS'}),
     dateTime (value) {
       if (!value) return ''
       return this.$moment(value).format('dddd, MMMM Do YYYY')
-    },
-    tryContract () {
-      if (this.connected) {
-        this.useContract()
-      } else {
-        setTimeout(() => {
-          this.tryContract()
-        }, 500)
-      }
-    },
-    useContract () {
-      this.Doneth = new web3.eth.Contract(this.abi.abi, this.address)
-      if (this.Doneth.name) this.name = this.Doneth.name
-      this.pullMembers()
-      this.readLogs()
-    },
-    pullMembers () {
-      return this.Doneth.methods.getMemberCount().call().then((count) => {
-        console.log(count)
-        return this.pullMember(0, parseInt(count))
-      })
-    },
-    pullMember (current, length) {
-      return this.Doneth.methods.getMemberAtKey(new BN(current)).call()
-      .then((address) => {
-        return this.Doneth.methods.returnMember(address).call()
-        .then(({active, admin, shares, withdrawn, memberName}) => {
-          this.members.push({address, active, admin, shares, withdrawn, memberName})
-          console.log(current, length)
-          if (current + 1 < length) this.pullMember(current + 1, length)
-        })
-      })
-    },
-    readLogs () {
-      this.Doneth.getPastEvents('AddShare', {
-        fromBlock: 0,
-        toBlock: 'latest'
-      })
-      .then((results) => {
-        this.transactions = results
-        console.log('getPastEvents', results)
-      })
-    },
-    activeMember () {
-
     }
   },
   components: {

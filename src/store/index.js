@@ -5,7 +5,7 @@ import createLogger from 'vuex/dist/logger'
 import actions from './actions'
 import getters from './getters'
 import mutations from './mutations'
-
+import abi from '../assets/Doneth.json'
 Vue.use(Vuex)
 
 // const debug = process.env.NODE_ENV !== 'production'
@@ -19,7 +19,16 @@ const state = {
   conversions: {},
   loading: false,
   notifications: [],
-  Doneth: null
+  Doneth: null,
+  address: null,
+  members: [],
+  totalShares: 0,
+  contractName: null,
+  founder: null,
+  genesisBlock: 0,
+  totalWithdrawn: 0,
+  logs: [],
+  abi
 }
 
 export default new Vuex.Store({

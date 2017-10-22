@@ -26,5 +26,17 @@ export default {
     if (key > -1) {
       state.notifications.splice(key, 1)
     }
+  },
+  ADD_DONETH (state, contract) {
+    state.Doneth = contract
+  },
+  ADD_ADDRESS (state, address) {
+    state.address = address
+  },
+  ADD_MEMBER (state, member) {
+    state.members.push(member)
+  },
+  ADD_LOGS (state, logs) {
+    state.logs.push(...logs)
   }
 }

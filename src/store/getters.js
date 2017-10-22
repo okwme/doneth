@@ -4,5 +4,12 @@ export default {
   connected: state => state.connected,
   conversions: state => state.conversions,
   notifications: state => state.notifications,
-  loading: state => state.loading
+  loading: state => state.loading,
+  members: state => state.members,
+  totalShares: state => state.totalShares,
+  contractName: state => state.contractName,
+  founder: state => state.founder,
+  genesisBlock: state => state.genesisBlock,
+  totalWithdrawn: state => state.totalWithdrawn,
+  logs: state => state.logs
 }
