@@ -1,13 +1,23 @@
 <template>
   <div class="contract">
-    <h1>{{address}}</h1>
+    <!-- <h1>{{address}}</h1>
     <div v-for="member in members">
       <pre>{{member}}</pre>
-    </div>
+    </div> -->
     <div class="contract-header">
-      <section-header :title="name"></section-header>
-      <div class="sub-details">
-        <div class=""><small>Total Available:</small> {{totalEth}} Eth/{{totalCurrency}} {{currency}}</div>
+      <div class="contract-details">
+        <h2>{{name}}</h2>
+        <div class="sub-details">
+          <div class=""><small>Total Available:</small> {{totalEth}} Eth/{{totalCurrency}} {{currency}}</div>
+          <div class=""><small>Created:</small> {{createdAt | dateTime}}</div>
+        </div>
+      </div>
+      <div class="contract-cta">
+        <button type="button" name="button" class="btn btn-primary">
+          <b>Add Funds</b>
+          <sub>0x0000...00000</sub>
+          <!-- TODO: Split this into component  -->
+        </button>
       </div>
     </div>
     <allocation-bar :allocations="allocations"/>
@@ -42,7 +52,8 @@ export default {
       }],
       totalEth: 13,
       totalCurrency: 2349,
-      currency: 'USD'
+      currency: 'USD',
+      createdAt: 1508639178669
     }
   },
   computed: {
@@ -97,13 +108,38 @@ export default {
     PatronCard,
     SectionHeader,
     TransactionsList
+  },
+  filters: {
+    dateTime: function (value) {
+      if (!value) return ''
+      return window.moment(value).format('dddd, MMMM Do YYYY')
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
   @import '../scss/variables';
-  .contract {
 
+  .contract-header {
+    display: flex;
+    width: 60vw;
+    min-width: 760px;
+    margin: 20px auto 0;
+
+    h2 {
+      font-size: 16pt;
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  .contract-details {
+    flex: 1;
+    text-align: left;
+  }
+
+  .contract-cta {
+    margin: 0;
   }
 </style>

@@ -3,16 +3,18 @@
     <h3>Allocate Shares</h3>
     <form class="allocations-form" action="" method="post">
       <div class="field">
-        <label for="alloc_patron"></label>
+        <label for="alloc_patron">To:</label>
         <select name="alloc_patron" v-model="patron">
-          <option v-for="item in patrons" value="item">{{item.firstName}}</option>
+          <option v-for="item in patrons" :value="item">{{item.firstName}}</option>
         </select>
       </div>
       <div class="field">
-        <label for="alloc_shares"></label>
+        <label for="alloc_shares">Shares:</label>
         <input type="number" name="alloc_shares" :value="sharesAllocated" placeholder="Shares">
       </div>
-      <button class="btn btn-primary" type="submit" name="button">Allocate</button>
+      <div class="field">
+        <button class="btn btn-primary" type="submit" name="button">Allocate</button>
+      </div>
     </form>
   </div>
 </template>
@@ -47,6 +49,7 @@ export default {
 <style lang="scss" scoped>
   @import '../scss/variables';
   @import '../scss/buttons';
+  @import '../scss/forms';
 
   .allocations {
 
@@ -62,7 +65,27 @@ export default {
     display: flex;
 
     .field {
+      flex: 1;
+      padding: 10px;
+      position: relative;
+    }
 
+    select {
+      padding-left: 40px;
+    }
+
+    input {
+      padding-left: 70px;
+      text-align: right;
+      width: 160px;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      font-size: 13pt;
+      font-weight: 500;
+      padding: 11px 12px 8px;
     }
   }
 
