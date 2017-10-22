@@ -16,6 +16,7 @@ const state = {
   metamask: false,
   account: null,
   connected: false,
+  currency: 'USD',
   conversions: {},
   loading: false,
   notifications: [],

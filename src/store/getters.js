@@ -11,5 +11,6 @@ export default {
   founder: state => state.founder,
   genesisBlock: state => state.genesisBlock,
   totalWithdrawn: state => state.totalWithdrawn,
-  logs: state => state.logs
+  logs: state => state.logs,
+  currency: state => state.currency
 }

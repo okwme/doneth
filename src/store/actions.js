@@ -149,5 +149,69 @@ export default {
           if (data.i + 1 < data.length) dispatch('pollMember', {i: data.i + 1, length: data.length})
         })
       })
+  },
+  addMember ({state, dispatch}, member) {
+    console.log('addNewMember', this.userAddress)
+    return new Promise((resolve, reject) => {
+      let currentUser = state.members.find((member) => {
+        return member.address === state.account
+      })
+      if (!currentUser || !currentUser.admin) {
+        reject(new Error('Not an Admin'))
+      } else {
+        dispatch('setLoading', true)
+        console.log(member.userAddress, member.sharesTotal, member.firstName)
+        return state.Doneth.methods.addMember(member.userAddress, new BN(member.sharesTotal), false, member.firstName).send({from: state.account})
+        .on('transactionHash', (hash) => {
+          console.log(hash)
+        })
+        .on('error', (error) => {
+          console.error(error)
+          this.submitting = false
+          this.setLoading(false)
+          reject(error)
+        })
+        .then((result) => {
+          dispatch('setLoading', false)
+          dispatch('addNotification', {
+            text: 'Member added successfully!',
+            class: 'success'
+          })
+          dispatch('pollMember', {i: state.members.length, length: state.members + 1})
+          resolve()
+        })
+      }
+    })
+  },
+  setCurrency ({commit}, currency) {
+    commit('SET_CURRENCY', currency)
+  },
+  convertToCurrency ({state}, eth) {
+    let conversion = state.conversions[state.currency]
+    console.log(conversion)
+    console.log(eth)
+    let result = new BN(eth).mul(conversion).toFixed(2)
+    console.log(result)
+    let symbol = ''
+    switch (state.currency) {
+      case ('USD'):
+        symbol = '$'
+        break
+      case ('GDP'):
+        symbol = '?'
+        break
+      default:
+        symbol = ''
+    }
+    return symbol + result
+  },
+  makeWithdraw ({state}, amount) {
+    let wei = new BN(amount).mul(new BN(10).toPower(18))
+    console.log(wei.toString())
+  },
+  makeDeposit ({state}, amount) {
+    let wei = new BN(amount).mul(new BN(10).toPower(18))
+    console.log(wei)
+    // state.Doneth.methods.send()
   }
 }
