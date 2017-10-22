@@ -106,7 +106,7 @@ export default {
   },
   populateContractData ({dispatch}) {
     dispatch('pollMembers').then(() => {
-      dispatch('pollAllowedAmounts')
+      return dispatch('pollAllowedAmounts')
     })
     dispatch('getContractInfo')
     dispatch('readLogs')
@@ -165,11 +165,9 @@ export default {
     })
   },
   pollAllowedAmounts ({dispatch, state}) {
-    console.log('poll amounts')
     return dispatch('pollAllowedAmount', 0)
   },
   pollAllowedAmount ({dispatch, state, commit}, i) {
-    console.log(i, state.members.length, i >= state.members.length)
     if (i >= state.members.length) return
     return dispatch('getAllowed', state.members[i].address).then((result) => {
       return dispatch('pollAllowedAmount', i + 1)
@@ -177,7 +175,6 @@ export default {
   },
   pollMembers ({dispatch, state}) {
     return state.Doneth.methods.getMemberCount().call().then((count) => {
-      console.log(count)
       return dispatch('pollMember', {i: 0, length: parseInt(count)})
     })
   },
@@ -230,8 +227,11 @@ export default {
     commit('SET_CURRENCY', currency)
   },
   convertToCurrency ({state}, eth) {
+    console.log(eth)
+    if (isNaN(eth)) return 0
     if (!eth) return 0
     let conversion = state.conversions[state.currency]
+    console.log(eth)
     if (!conversion) return 0
     console.log(conversion)
     let result = new BN(eth).mul(conversion).toFixed(2)
@@ -241,9 +241,19 @@ export default {
       case ('USD'):
         symbol = '$'
         break
-      case ('GDP'):
-        symbol = '?'
+      case ('GBP'):
+        symbol = '£'
         break
+      case ('EUR'):
+        symbol = '€'
+        break
+      case ('JPY'):
+      case ('CNY'):
+        symbol = '¥'
+        break
+      // case ('JPY'):
+      //   symbol = '¥'
+      //   break
       default:
         symbol = ''
     }
@@ -259,10 +269,11 @@ export default {
     return state.Doneth.methods.calculateTotalWithdrawableAmount(state.account).call().then((result) => {
       console.log(new BN(result), 'result')
       console.log(wei, 'amount')
-      console.log(wei.comparedTo(new BN(result)))
-      if (wei.comparedTo(new BN(result)) > -1) {
+      console.log(new BN(result).greaterThanOrEqualTo(wei))
+      if (new BN(result).greaterThanOrEqualTo(wei)) {
         dispatch('setLoading', true)
         return state.Doneth.methods.withdraw(wei).send({from: state.account}).then((result) => {
+          console.log(result)
           dispatch('setLoading', false)
           dispatch('getContractInfo')
           dispatch('addNotification', {class: 'success', text: 'Withdrawn 🎉'})
@@ -276,7 +287,7 @@ export default {
     let wei = web3.utils.toWei(amount)
     console.log(wei)
     dispatch('setLoading', true)
-    web3.eth.sendTransaction({
+    return web3.eth.sendTransaction({
       from: state.account,
       to: state.address,
       value: wei
@@ -284,6 +295,7 @@ export default {
       dispatch('setLoading', false)
       console.log(result)
       dispatch('getContractInfo')
+      dispatch('pollAllowedAmounts')
     }).catch((error) => {
       console.error(error)
       dispatch('setLoading', false)
@@ -291,10 +303,10 @@ export default {
     // state.Doneth.methods.send()
   },
   getAllowed ({state, commit}, address) {
+    console.log('check ', address)
     return state.Doneth.methods.calculateTotalWithdrawableAmount(address).call().then((amount) => {
+      console.log(amount)
       let wei = new BN(web3.utils.fromWei(amount))
-      console.log(address)
-      console.log(wei.toString())
       commit('UPDATE_MEMBER_AMOUNT', {address, amount: wei.toString()})
     })
   }

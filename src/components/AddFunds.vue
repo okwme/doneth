@@ -35,10 +35,9 @@ export default {
   props: ['address'],
   data () {
     return {
-      currency: 'USD',
-      convertedAmount: 0,
-      convertedSingleEth: 0,
-      depositAmount: 0,
+      convertedAmount: null,
+      convertedSingleEth: null,
+      depositAmount: null,
       depositing: false
     }
   },
@@ -48,21 +47,33 @@ export default {
     })
   },
   computed: {
-    ...mapGetters(['metamask'])
+    ...mapGetters(['metamask', 'currency'])
   },
   watch: {
     depositAmount () {
-      if (!this.depositAmount) return 0
-      this.convertToCurrency(this.depositAmount).then((amount) => {
-        this.convertedAmount = amount
-      })
+      this.makeConversion()
+    },
+    currency () {
+      this.makeConversion()
     }
   },
   methods: {
     ...mapActions(['makeDeposit', 'convertToCurrency']),
+    makeConversion () {
+      if (!this.depositAmount) return 0
+      this.convertToCurrency(this.depositAmount).then((amount) => {
+        this.convertedAmount = amount
+      })
+    },
     deposit () {
       if (this.depositing) {
-        this.makeDeposit(this.depositAmount)
+        this.makeDeposit(this.depositAmount).then((result) => {
+          console.log('FINISHED', result)
+          this.depositing = false
+        }).catch((error) => {
+          console.error(error)
+          this.depositing = false
+        })
       }
     }
   },

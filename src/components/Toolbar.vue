@@ -33,11 +33,11 @@ export default {
   methods: {
     ...mapActions(['setCurrency']),
     selectCurrency (option) {
-      this.clicked = true
+      // this.clicked = true
       this.setCurrency(option)
-      setTimeout(() => {
-        this.clicked = false
-      }, 500)
+      // setTimeout(() => {
+      //   this.clicked = false
+      // }, 500)
     }
   },
   computed: {
@@ -72,7 +72,7 @@ export default {
     position: fixed;
     top:0;
     width: 100%;
-    z-index: 99;
+    z-index: 999;
   }
 
   .logo {
@@ -134,6 +134,7 @@ export default {
     box-shadow: 0 1px 10px -3px rgba(0,0,0,0.15);
     display: none;
     position: absolute;
+    z-index:999;
     top: 45px;
     left: 0px;
     width: 100%;

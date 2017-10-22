@@ -33,14 +33,13 @@ export default {
   props: ['address'],
   data () {
     return {
-      currency: 'USD',
       createdAt: 1508639178669,
       timestamp: null,
       totalBalanceEther: 0
     }
   },
   computed: {
-    ...mapGetters(['metamask', 'members', 'contractName', 'sortedLogs', 'totalBalance', 'totalBalanceRaw'])
+    ...mapGetters(['metamask', 'members', 'contractName', 'sortedLogs', 'totalBalance', 'totalBalanceRaw', 'currency'])
   },
   mounted () {
     this.deployDoneth(this.address)
@@ -54,6 +53,9 @@ export default {
       })
     },
     totalBalanceRaw () {
+      this.convertTotalBalance()
+    },
+    currency () {
       this.convertTotalBalance()
     }
   },

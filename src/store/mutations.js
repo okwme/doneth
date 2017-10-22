@@ -73,15 +73,11 @@ export default {
     state.totalBalance = totalBalance
   },
   UPDATE_MEMBER_AMOUNT (state, {amount, address}) {
-    console.log('update????', address)
     let memberKey = state.members.findIndex((member) => member.address === address)
-    console.log(memberKey)
     if (memberKey > -1) {
       let member = state.members[memberKey]
       member.allowedAmount = amount
-      console.log(member)
       state.members.splice(memberKey, 1, member)
-      console.log(state.members[memberKey])
     }
   }
 }
