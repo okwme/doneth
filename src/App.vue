@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <toolbar></toolbar>
+    <toolbar/>
     <router-view/>
-    <footer-info></footer-info>
+    <footer-info/>
   </div>
 </template>
 
@@ -50,12 +50,62 @@ body {
   width: 100%;
 }
 /* Globals styles - TODO: split these out*/
+p {
+  margin: 0px;
+  padding: 20px;
+  text-align: left;
+}
+
+hr {
+  border: 0px;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  display: inline-block;
+  margin: 5px;
+}
+
+.btn {
+  background: transparent;
+  border: 2px solid transparent;
+  color: #548c4c;
+  cursor: pointer;
+  padding: 7px 12px;
+}
+.btn.btn-white{
+  background: white;
+}
+.btn.btn-white.btn-outlined{
+  background: transparent;
+  border: 2px solid white;
+  border-radius: 3px;
+  color: white;
+}
+.btn b {
+  display: block;
+  font-size: 13pt;
+}
+.btn sub {}
+
 .page-card {
   background: white;
   border-radius: 3px;
   box-shadow: 0 1px 10px -3px rgba(0,0,0,0.15);
   width: 60vw;
   min-width: 760px;
-  margin: auto;
+  margin: 0px auto 30px;
+}
+
+.bk-green {
+  background: #548c4c;
+  color: white;
+}
+
+.wd-50 {
+  width: 50%;
+}
+.flex-1 {
+  flex: 1;
+}
+.flex-2 {
+  flex: 2;
 }
 </style>
