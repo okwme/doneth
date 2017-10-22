@@ -104,11 +104,13 @@ export default {
   },
   populateContractData ({dispatch}) {
     dispatch('pollMembers')
-    dispatch('readLogs')
     dispatch('getContractInfo')
+    dispatch('readLogs')
   },
   getContractInfo ({state, commit}) {
-    console.log(state.Doneth)
+    state.Doneth.methods.genesisBlockNumber().call().then((genesisBlockNumber) => {
+      commit('SET_BLOCK', genesisBlockNumber)
+    })
     state.Doneth.methods.totalShares().call().then((totalShares) => {
       commit('SET_SHARES', totalShares)
     })
@@ -118,15 +120,36 @@ export default {
     state.Doneth.methods.founder().call().then((founder) => {
       commit('SET_FOUNDER', founder)
     })
-    state.Doneth.methods.genesisBlockNumber().call().then((genesisBlockNumber) => {
-      commit('SET_BLOCK', genesisBlockNumber)
-    })
     state.Doneth.methods.totalWithdrawn().call().then((totalWithdrawn) => {
       commit('SET_WITHDRAWN', totalWithdrawn)
     })
   },
   readLogs ({dispatch, state, commit}) {
     state.Doneth.getPastEvents('AddShare', {
+      fromBlock: state.genesisBlock,
+      toBlock: 'latest'
+    })
+    .then((results) => {
+      commit('ADD_LOGS', results)
+    })
+
+    state.Doneth.getPastEvents('RemoveShare', {
+      fromBlock: state.genesisBlock,
+      toBlock: 'latest'
+    })
+    .then((results) => {
+      commit('ADD_LOGS', results)
+    })
+
+    state.Doneth.getPastEvents('Deposit', {
+      fromBlock: state.genesisBlock,
+      toBlock: 'latest'
+    })
+    .then((results) => {
+      commit('ADD_LOGS', results)
+    })
+
+    state.Doneth.getPastEvents('Withdraw', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
