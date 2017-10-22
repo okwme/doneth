@@ -3,35 +3,21 @@
     <div class="page-card transactions">
       <div class="heading">Transactions</div>
       <ul class="transactions-list">
-        <li class="transaction" v-for="item in allocations">
-          <template v-if="item.transaction">
+        <li class="transaction" v-for="item in formattedTransactions">
+          <template v-if="item.type === 'AddShare'">
             <div class="reference">
-              <h3>{{item.sender.firstName}}<small>(owner)</small> allocated {{item.transaction.sharesIssued}} new shares to {{item.receiver.firstName}}<small>(patron)</small></h3>
-              <h4><small>Shares:</small> {{item.transaction.sharesIssued}}/{{item.transaction.sharesTotal}}</h4>
-            </div>
-            <div class="details">
-              <div><short-hash :hash="item.sender.address"/> allocated {{item.transaction.sharesIssued}} new shares to <short-hash :hash="item.receiver.address"/></div>
-              <div class="time">{{dateTime(item.transaction.createdAt)}}</div>
-            </div>
-          </template>
-          <template v-if="item.sentBalance">
-            <div class="reference">
-              <h3>{{item.firstName}} (<short-hash :hash="item.address"/>) donated {{item.sentBalance}}</h3>
-              <h4><small>Shares:</small> {{item.sharesIssued}}/{{item.sharesTotal}}</h4>
+              <h3><short-hash :hash="item.who"/> received {{item.addedShares}} new shares</h3>
+              <h4><small>Shares:</small> {{item.addedShares}}/{{item.newTotalShares}}</h4>
             </div>
             <div class="details">
               <div></div>
-              <div class="time">{{dateTime(item.createdAt)}}</div>
+              <div class="time">Block: {{item.block}}</div>
             </div>
           </template>
-          <template v-if="item.removedBalance">
+          <template v-if="item.type === 'Deposit' || item.type === 'Withdraw'">
             <div class="reference">
-              <h3>{{item.firstName}} (<short-hash :hash="item.address"/>) withdrew {{item.removedBalance}}</h3>
-              <h4><small>Shares:</small> {{item.sharesIssued}}/{{item.sharesTotal}}</h4>
-            </div>
-            <div class="details">
-              <div></div>
-              <div class="time">{{dateTime(item.createdAt)}}</div>
+              <h3><short-hash :hash="item.who"/> donated {{item.valueConverted}} ETH <small>({{item.value}} WEI)</small></h3>
+              <h4>Block: {{item.block}}</h4>
             </div>
           </template>
         </li>
@@ -42,65 +28,34 @@
 
 <script>
 import ShortHash from '@/components/ShortHash'
+import BN from 'bignumber.js'
 export default {
 
   name: 'TransactionsList',
   props: ['allocations'],
   data () {
     return {
-      transactions: [{
-        sender: {
-          address: '0x0000000000000000000000000000000000000',
-          firstName: 'Billy'
-        },
-        receiver: {
-          address: '0x0000000000000000000000000000000000001',
-          firstName: 'Trevor'
-        },
-        transaction: {
-          address: '0x000000000000000000000000000000000000123',
-          createdAt: 1508639178665,
-          sharesIssued: 1234,
-          sharesTotal: 100001234
-        }
-      }, {
-        sender: {
-          address: '0x0000000000000000000000000000000000000',
-          firstName: 'Billy'
-        },
-        receiver: {
-          address: '0x0000000000000000000000000000000000004',
-          firstName: 'Tim'
-        },
-        transaction: {
-          address: '0x000000000000000000000000000000000000123',
-          createdAt: 1508639178669,
-          sharesIssued: 4435,
-          sharesTotal: 100005669
-        }
-      }, {
-        address: '0x000000000000000000000000000000000000123',
-        firstName: 'Trevor',
-        createdAt: 1508639178669,
-        removedBalance: 4,
-        totalBalance: 8,
-        sharesIssued: 345,
-        sharesTotal: 100005669
-      }, {
-        address: '0x000000000000000000000000000000000000123',
-        firstName: 'Billy',
-        createdAt: 1508639178669,
-        sentBalance: 1,
-        totalBalance: 12,
-        sharesIssued: 345,
-        sharesTotal: 100005669
-      }]
     }
   },
   methods: {
     dateTime (value) {
       if (!value) return ''
       return this.$moment(value).format('dddd, MMMM Do YYYY')
+    }
+  },
+  computed: {
+    formattedTransactions () {
+      return this.allocations.map((a) => {
+        let obj = a.returnValues
+        obj.type = a.event
+        obj.block = a.blockNumber
+
+        if (!a.who) obj.who = a.address
+        console.log(a.value)
+        if (obj.value) obj.valueConverted = web3.utils.fromWei(new BN(obj.value), 'ether')
+        console.log('------------------obj', obj.value, obj.valueConverted)
+        return obj
+      }).reverse()
     }
   },
   components: {
@@ -146,9 +101,10 @@ export default {
   }
 
   .reference {
-    border-bottom: 1px solid rgba(0,0,0,0.1);
-    padding-bottom: 5px;
-    margin-bottom: 5px;
+
+    i {
+      font-size: 12pt;
+    }
 
     h3,
     h4 {
