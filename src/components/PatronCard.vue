@@ -17,20 +17,21 @@
           <span>Transactions: <strong>{{member.transactions || 0}}</strong></span>
         </div>
         <div class="meta-item">
-          <span>Ownership: <strong>45%</strong></span>
+          <span>Ownership: <strong>{{percentage(member)}}</strong></span>
         </div>
       </div>
       <div class="actions">
         <button class="btn btn-primary btn-outlined" name="button">Withdraw</button>
       </div>
-    </div><!-- 
-     --><patron-form :address="address"/>
+    </div>
+    <patron-form :address="address"/>
   </div>
 </template>
 
 <script>
 import PatronForm from '@/components/PatronForm'
 import ShortHash from '@/components/ShortHash'
+import { mapGetters } from 'vuex'
 export default {
 
   name: 'PatronCard',
@@ -41,6 +42,9 @@ export default {
     return {
     }
   },
+  computed: {
+    ...mapGetters(['totalShares'])
+  },
   methods: {
     firstName (member) {
       let initial = (member && member.memberName) ? member.memberName.substring(0, 2) : '0x'
@@ -48,6 +52,17 @@ export default {
     },
     colorHex (member) {
       return (member && member.address) ? `#${member.address.slice(-6)}` : '#CCCCCC'
+    },
+    percentage (member) {
+      let num = parseInt(this.totalShares, 10)
+      if (num === 0) {
+        this.patrons.map((p) => {
+          if (p && p.shares && !isNaN(parseInt(p.shares, 10))) {
+            num += parseInt(p.shares, 10)
+          }
+        })
+      }
+      return Math.round((parseInt(member.shares, 10) * 100) / num) + '%'
     },
     toggleActive: function (member, bool) {
       // TODO: Come back when not confused :)

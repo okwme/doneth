@@ -1,15 +1,16 @@
 <template>
   <div class="allocation-bar">
     <div class="bar-graph">
-      <div class="bar-item" :class="{ active: (member.active === true) }" v-for="member in patrons" :style="{ background: colorHex(member), width: percentage(member) }"></div>
+      <div class="bar-item" :class="{ active: (member.active === true) }" v-for="member in patrons" :style="{ background: colorHex(member), width: percentage(member) + '%' }"></div>
     </div>
     <div class="allocation-details">
-      <div class="detail-item" v-for="member in patrons" :style="{ width: percentage(member) }">{{percentage(member)}}</div>
+      <div class="detail-item" v-for="member in patrons" :style="{ width: percentage(member) + '%' }">{{percentage(member) + '%'}}</div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
 
   name: 'AllocationBar',
@@ -18,15 +19,25 @@ export default {
 
   data () {
     return {
-      totalShares: 2
     }
+  },
+  computed: {
+    ...mapGetters(['totalShares'])
   },
   methods: {
     colorHex (member) {
       return (member && member.address) ? `#${member.address.slice(-6)}` : '#CCCCCC'
     },
     percentage (member) {
-      return Math.round((parseInt(member.shares, 10) * 100) / this.totalShares) + '%'
+      let num = parseInt(this.totalShares, 10)
+      if (num === 0) {
+        this.patrons.map((p) => {
+          if (p && p.shares && !isNaN(parseInt(p.shares, 10))) {
+            num += parseInt(p.shares, 10)
+          }
+        })
+      }
+      return ((parseInt(member.shares, 10) * 100) / num).toFixed(2)
     }
   }
 }
