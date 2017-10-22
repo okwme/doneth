@@ -4,18 +4,18 @@
       <h3>Add Member</h3>
       <div class="field">
         <label for="add_name">Name:</label>
-        <input maxLength="64" type="text" name="add_name" v-model="firstName" >
+        <input maxLength="64" type="text" name="add_name" v-model="firstName" required>
       </div>
       <div class="field">
         <label for="add_name">Shares:</label>
-        <input min="0" type="number" name="add_shares" v-model="sharesTotal" >
+        <input min="0" type="number" name="add_shares" v-model="sharesTotal" required>
       </div>
       <div class="field field-address">
         <label for="add_address">Address:</label>
-        <input maxLength="42" type="text" name="add_address" v-model="address" >
+        <input maxLength="42" type="text" name="add_address" v-model="address" required>
       </div>
       <div class="actions">
-        <button class="btn btn-primary" name="button">Submit</button>
+        <button class="btn btn-primary" type="submit" name="button">Submit</button>
       </div>
     </form>
   </div>

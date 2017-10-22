@@ -4,13 +4,13 @@
     <form class="allocations-form" action="" method="post">
       <div class="field">
         <label for="alloc_patron">To:</label>
-        <select name="alloc_patron" v-model="patron">
+        <select name="alloc_patron" v-model="patron" required>
           <option v-for="item in patrons" :value="item">{{item.firstName}}</option>
         </select>
       </div>
       <div class="field">
         <label for="alloc_shares">Shares:</label>
-        <input type="number" name="alloc_shares" :value="sharesAllocated" placeholder="Shares">
+        <input type="number" name="alloc_shares" :value="sharesAllocated" placeholder="Shares" required>
       </div>
       <div class="field">
         <button class="btn btn-primary" type="submit" name="button">Allocate</button>

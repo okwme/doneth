@@ -6,7 +6,7 @@
       <hr class="wd-50">
       <intro-steps/>
       <div class="page-card-footer">
-        <button class="btn btn-primary">Get Started!</button>
+        <router-link class="pointer btn btn-primary" :to="{name: 'Deploy'}" tag="button">Get Started!</router-link>
       </div>
     </div>
   </section>
