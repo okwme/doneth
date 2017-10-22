@@ -4,38 +4,39 @@
       <section-header :title="'Deploy!'"></section-header>
       <p>You can deploy your very own Contract on this page. Just add a title for the contract and your own name. Adding names will help you identify the members of your contract and make the shares and balance delegation clearer.</p>
       <p>After deploying the contract you will be able to add more members and modify how much of the shared account balance they have access to. It may be prudent to create a new member designated as "Accounts Payable" to handle all of your expenses.</p>
-      <hr class="wd-50">
-      <template v-if="metamask">
-        <form @submit.prevent="deploy()">
-          <template v-if="!deploying && !confirming && !address">
-            <div class="field">
-              <label for="alloc_shares">Title:</label>
-              <input maxLength="12" type="text" name="name" v-model="name" >
-            </div>
+      <div class="page-card-footer">
+        <template v-if="metamask">
+          <form @submit.prevent="deploy()">
+            <template v-if="!deploying && !confirming && !address">
+              <div class="field">
+                <label for="alloc_shares">Title:</label>
+                <input maxLength="12" type="text" name="name" v-model="name" required>
+              </div>
 
-            <div class="field">
-              <label for="alloc_shares">Founder:</label>
-              <input maxLength="12" type="text" name="founder_name" v-model="founderName" >
-            </div>
-            <div class="field">
-              <button class="btn btn-primary" type="submit" name="button">Deploy</button>
-            </div>
-          </template>
-          <h2 v-if="deploying && !confirming && !address">
-            Deploying....
-          </h2>
-          <h2 v-if="confirming && !address">
-            Waiting for Confirmations....
-          </h2>
-          <h2 v-if="address">
-            Contract Deployed 🎉<br>
-            Redirecting in {{countdown}} sec
-          </h2>
-        </form>
-      </template>
-      <template v-else>
-        Please get Metamask
-      </template>
+              <div class="field">
+                <label for="alloc_shares">Founder:</label>
+                <input maxLength="12" type="text" name="founder_name" v-model="founderName" required>
+              </div>
+              <div class="field">
+                <button class="btn btn-primary" type="submit" name="button">Deploy</button>
+              </div>
+            </template>
+            <h2 v-if="deploying && !confirming && !address">
+              Deploying....
+            </h2>
+            <h2 v-if="confirming && !address">
+              Waiting for Confirmations....
+            </h2>
+            <h2 v-if="address">
+              Contract Deployed 🎉<br>
+              Redirecting in {{countdown}} sec
+            </h2>
+          </form>
+        </template>
+        <template v-else>
+          Please get Metamask
+        </template>
+      </div>
     </div>
   </div>
 </template>
@@ -150,10 +151,10 @@ export default {
 
     .btn {
       display: block;
-      width: 100%;
+      width: 190px;
       font-size: 13pt;
       font-weight: 500;
-      padding: 11px 12px 8px;
+      padding: 11px 12px 9px;
     }
   }
 </style>

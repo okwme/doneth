@@ -29,11 +29,24 @@ ul {
 
 .page-card {
   background: $white;
-  border-radius: 3px;
+  border-radius: $border-radius;
   box-shadow: 0 1px 10px -3px rgba(0,0,0,0.15);
   width: 60vw;
   min-width: 760px;
   margin: 0px auto 30px;
+}
+
+.page-card-footer {
+  background: darken($white, 3%);
+  border-radius: 0 0 $border-radius $border-radius;
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px;
+
+  .btn {
+    width: 250px;
+    padding: 15px;
+  }
 }
 
 .bk-green {

@@ -15,8 +15,7 @@
       <div class="contract-cta">
         <button type="button" name="button" class="btn btn-primary">
           <b>Add Funds</b>
-          <sub>0x0000...00000</sub>
-          <!-- TODO: Split this into component  -->
+          <short-hash :hash="address"/>
         </button>
       </div>
     </div>
@@ -31,6 +30,7 @@
 import AllocationBar from '@/components/AllocationBar'
 import AllocationForm from '@/components/AllocationForm'
 import PatronCard from '@/components/PatronCard'
+import ShortHash from '@/components/ShortHash'
 import SectionHeader from '@/components/SectionHeader'
 import TransactionsList from '@/components/TransactionsList'
 import { mapGetters } from 'vuex'
@@ -43,6 +43,7 @@ export default {
   data () {
     return {
       abi,
+      address: '',
       Doneth: null,
       members: [],
       name: 'Contract Name',
@@ -114,6 +115,7 @@ export default {
     AllocationForm,
     PatronCard,
     SectionHeader,
+    ShortHash,
     TransactionsList
   }
 }
@@ -142,5 +144,14 @@ export default {
 
   .contract-cta {
     margin: 0;
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+
+    .btn {
+      width: 200px;
+      margin: auto 0;
+      padding: 10px 0 6px;
+    }
   }
 </style>

@@ -4,14 +4,36 @@
       <div class="heading">Transactions</div>
       <ul class="transactions-list">
         <li class="transaction" v-for="item in transactions">
-          <div class="reference">
-            <h3>{{item.sender.firstName}}<small>(owner)</small> allocated {{item.transaction.sharesIssued}} new shares to {{item.receiver.firstName}}<small>(patron)</small></h3>
-            <h4><small>Shares:</small> {{item.transaction.sharesIssued}}/{{item.transaction.sharesTotal}}</h4>
-          </div>
-          <div class="details">
-            <div>{{item.sender.address}} allocated {{item.transaction.sharesIssued}} new shares to {{item.receiver.address}}</div>
-            <div class="time">{{dateTime(item.transaction.createdAt)}}</div>
-          </div>
+          <template v-if="item.transaction">
+            <div class="reference">
+              <h3>{{item.sender.firstName}}<small>(owner)</small> allocated {{item.transaction.sharesIssued}} new shares to {{item.receiver.firstName}}<small>(patron)</small></h3>
+              <h4><small>Shares:</small> {{item.transaction.sharesIssued}}/{{item.transaction.sharesTotal}}</h4>
+            </div>
+            <div class="details">
+              <div><short-hash :hash="item.sender.address"/> allocated {{item.transaction.sharesIssued}} new shares to <short-hash :hash="item.receiver.address"/></div>
+              <div class="time">{{dateTime(item.transaction.createdAt)}}</div>
+            </div>
+          </template>
+          <template v-if="item.sentBalance">
+            <div class="reference">
+              <h3>{{item.firstName}} (<short-hash :hash="item.address"/>) donated {{item.sentBalance}}</h3>
+              <h4><small>Shares:</small> {{item.sharesIssued}}/{{item.sharesTotal}}</h4>
+            </div>
+            <div class="details">
+              <div></div>
+              <div class="time">{{dateTime(item.createdAt)}}</div>
+            </div>
+          </template>
+          <template v-if="item.removedBalance">
+            <div class="reference">
+              <h3>{{item.firstName}} (<short-hash :hash="item.address"/>) withdrew {{item.removedBalance}}</h3>
+              <h4><small>Shares:</small> {{item.sharesIssued}}/{{item.sharesTotal}}</h4>
+            </div>
+            <div class="details">
+              <div></div>
+              <div class="time">{{dateTime(item.createdAt)}}</div>
+            </div>
+          </template>
         </li>
       </ul>
     </div>
@@ -19,6 +41,7 @@
 </template>
 
 <script>
+import ShortHash from '@/components/ShortHash'
 export default {
 
   name: 'TransactionsList',
@@ -55,6 +78,22 @@ export default {
           sharesIssued: 4435,
           sharesTotal: 100005669
         }
+      }, {
+        address: '0x000000000000000000000000000000000000123',
+        firstName: 'Trevor',
+        createdAt: 1508639178669,
+        removedBalance: 4,
+        totalBalance: 8,
+        sharesIssued: 345,
+        sharesTotal: 100005669
+      }, {
+        address: '0x000000000000000000000000000000000000123',
+        firstName: 'Billy',
+        createdAt: 1508639178669,
+        sentBalance: 1,
+        totalBalance: 12,
+        sharesIssued: 345,
+        sharesTotal: 100005669
       }]
     }
   },
@@ -63,6 +102,9 @@ export default {
       if (!value) return ''
       return this.$moment(value).format('dddd, MMMM Do YYYY')
     }
+  },
+  components: {
+    ShortHash
   }
 }
 </script>

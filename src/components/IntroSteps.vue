@@ -20,15 +20,15 @@ export default {
       items: [{
         index: 1,
         title: 'Create',
-        copy: 'fjkdslajfkldsajkfldsa fjdksla fjdklsa jf'
+        copy: 'Easily start a smart contract'
       }, {
         index: 2,
         title: 'Allocate',
-        copy: 'fjkdslajfkldsajkfldsa fjdksla fjdklsa jf'
+        copy: 'Add shares and funds for your members'
       }, {
         index: 3,
-        title: 'Share',
-        copy: 'fjkdslajfkldsajkfldsa fjdksla fjdklsa jf'
+        title: 'Manage',
+        copy: 'All members can manage their shares and funds'
       }]
     }
   }
@@ -48,6 +48,7 @@ export default {
     padding: 30px;
     position: relative;
     text-align: left;
+    // width: 30%;
   }
 
   .large-number {
