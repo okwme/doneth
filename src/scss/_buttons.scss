@@ -3,6 +3,8 @@
   border: 2px solid transparent;
   color: $primary;
   cursor: pointer;
+  font-size: 12pt;
+  font-weight: 500;
   padding: 7px 12px;
 
   b {
@@ -20,7 +22,7 @@
   &.btn-white {
     background: $white;
 
-    &.btn-outlined{
+    &.btn-outlined {
       background: transparent;
     }
   }
@@ -28,9 +30,17 @@
   &.btn-primary {
     background: $primary;
     color: $white;
+    transition: all 220ms ease;
 
-    &.btn-outlined{
+    &.btn-outlined {
       background: transparent;
+      border-color: $primary;
+      color: $primary;
+
+      &:hover {
+        background: $primary;
+        color: $white;
+      }
     }
   }
 }

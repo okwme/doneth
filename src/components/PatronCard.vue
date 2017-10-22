@@ -74,6 +74,7 @@ export default {
     box-shadow: 0 1px 10px -2px rgba(0,0,0,0.1);
     overflow: hidden;
     max-width: 33%;
+    padding-bottom: 10px;
     transition: all 220ms ease;
 
     &:hover {
@@ -99,16 +100,38 @@ export default {
         padding: 0;
       }
     }
+  }
 
-    .divider {
-      border: 0;
-      height: 5px;
-      width: 80%;
-      margin: auto;
+  .divider {
+    border: 0;
+    border-radius: $border-radius;
+    display: block;
+    height: 5px;
+    width: 90%;
+    margin: 0 auto 5px;
+  }
+
+  .meta {
+    display: flex;
+    flex-direction: column;
+    padding: 0 12px;
+    margin: 10px 0 20px;
+
+    .meta-item {
+      display: flex;
+      justify-content: space-between;
+
+      &:not(:last-child) {
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+      }
     }
+  }
 
-    .meta {}
+  .actions {
 
-    .actions {}
+    .btn {
+      margin: 10px 0 0;
+      width: 70%;
+    }
   }
 </style>
