@@ -27,17 +27,15 @@
 </template>
 
 <script>
-import abi from '../assets/Doneth.json'
+
 import { mapGetters, mapActions } from 'vuex'
-import BN from 'bignumber.js'
+
 export default {
 
   name: 'PatronForm',
   props: ['address'],
   data () {
     return {
-      Doneth: null,
-      abi: abi.abi,
       firstName: '',
       sharesTotal: '',
       userAddress: '',
@@ -49,51 +47,23 @@ export default {
     ...mapGetters(['account', 'metamask', 'connected'])
   },
   methods: {
-    ...mapActions(['addNotification', 'setLoading']),
-    tryContract () {
-      if (this.connected) {
-        this.useContract()
-      } else {
-        setTimeout(() => {
-          this.tryContract()
-        }, 500)
-      }
-    },
-    useContract () {
-      this.Doneth = new web3.eth.Contract(this.abi, this.address)
-    },
+    ...mapActions(['addNotification', 'setLoading', 'addMember']),
     addNewMember () {
-      if (!this.connected) {
-        this.tryContract()
-        return
+      let member = {
+        userAddress: this.userAddress,
+        sharesTotal: this.sharesTotal,
+        firstName: this.firstName
       }
-      console.log('addNewMember', this.userAddress)
-      this.Doneth = new web3.eth.Contract(this.abi, this.address)
-      this.setLoading(true)
       this.submitting = true
-      console.log(this.userAddress, this.sharesTotal, this.firstName)
-      this.Doneth.methods.addMember(this.userAddress, new BN(this.sharesTotal), false, this.firstName).send({from: this.account})
-      .on('transactionHash', (hash) => {
-        console.log(hash)
-      })
-      .on('confirmation', (confirmationNumber, receipt) => {
-        console.log(confirmationNumber, receipt)
-      })
-      .on('receipt', (receipt) => {
-        console.log(receipt)
-        // console.log('addMember res', {address, active, admin, shares, withdrawn, memberName})
-        // this.members.push({address, active, admin, shares, withdrawn, memberName})
+      this.addMember(member).then(() => {
         this.submitting = false
-        this.setLoading(false)
+      }).catch((error) => {
+        console.log('ERROR')
+        this.submitting = false
         this.addNotification({
-          text: 'Member added successfully!',
-          class: 'success'
+          text: error,
+          class: 'error'
         })
-      })
-      .on('error', (error) => {
-        console.error(error)
-        this.submitting = false
-        this.setLoading(false)
       })
     }
   }
