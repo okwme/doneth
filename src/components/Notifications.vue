@@ -2,16 +2,13 @@
   <div>
     <div id="note-fixed">
       <div id="note-relative">
-        <div 
-        v-for="note in notifications" 
+        <div
+        v-for="note in notifications"
         @click="removeNotification(note.id)"
-        :class="note.class" 
+        :class="note.class"
         v-text="note.text"></div>
       </div>
     </div>
-    <span id="loader" v-if="loading">
-      <img alt="loading" src="/static/loading.svg">
-    </span>
   </div>
 </template>
 
@@ -27,7 +24,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['notifications', 'loading'])
+    ...mapGetters(['notifications'])
   },
   methods: {
     ...mapActions(['removeNotification'])
@@ -59,14 +56,5 @@ export default {
       background-color: $error;
     }
   }
-}
-#loader {
-  z-index:999;
-  position: fixed;
-  left:0;
-  top:0;
-  width:100%;
-  height:100%;
-  transform: translate(0%, 50%);
 }
 </style>

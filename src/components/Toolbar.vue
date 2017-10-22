@@ -6,7 +6,8 @@
 
     <ul class="menu">
       <li>
-        <router-link :to="{name: 'Deploy'}">Create</router-link>
+        <!-- <router-link :to="{name: 'Deploy'}">Create</router-link> -->
+        <router-link class="pointer btn btn-primary btn-outlined" :to="{name: 'Deploy'}" tag="button">Create</router-link>
       </li>
       <li class="currency">
         <div class="active-currency">{{activeCurrency}} <img src="static/downArrow.svg"/></div>
@@ -77,7 +78,7 @@ export default {
   .logo {
     h1 {
       color: $primary;
-      margin: 10px 20px;
+      margin: 10px 20px 10px 30px;
     }
   }
 
@@ -86,14 +87,13 @@ export default {
     justify-content: space-between;
     list-style: none;
     margin: 0;
-    min-width: 300px;
-    padding: 10px 10px;
+    min-width: 250px;
+    padding: 10px 40px 10px 10px;
   }
 
   .menu {
     li {
       color: $darkgrey;
-      flex: 1;
       font-size: 14pt;
       font-weight: 500;
 
@@ -115,13 +115,17 @@ export default {
         border-radius: 3px;
         font-size: 12pt;
         position: relative;
-        padding: 10px 10px;
+        padding: 10px 7px 10px 12px;
         text-transform: uppercase;
 
         &:hover :not(.justClicked).dropdown {
           display: block;
         }
       }
+    }
+
+    .btn {
+      padding: 11px 20px;
     }
   }
 
@@ -147,6 +151,8 @@ export default {
 
   .active-currency {
     position: relative;
+    text-align: left;
+    width: 100px;
 
     img {
       position: absolute;

@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <toolbar/>
+    <loading/>
     <notifications/>
     <router-view/>
     <section>
@@ -13,6 +14,7 @@
 </template>
 
 <script>
+import Loading from '@/components/Loading'
 import Notifications from '@/components/Notifications'
 import Toolbar from '@/components/Toolbar'
 import FooterInfo from '@/components/FooterInfo'
@@ -40,7 +42,8 @@ export default {
     Toolbar,
     DonateCta,
     FooterInfo,
-    Notifications
+    Notifications,
+    Loading
   }
 }
 </script>

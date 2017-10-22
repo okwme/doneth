@@ -43,7 +43,6 @@ export default {
   data () {
     return {
       abi,
-      address: '',
       Doneth: null,
       members: [],
       name: 'Contract Name',
@@ -54,7 +53,8 @@ export default {
       totalEth: 13,
       totalCurrency: 2349,
       currency: 'USD',
-      createdAt: 1508639178669
+      createdAt: 1508639178669,
+      transactions: []
     }
   },
   computed: {
@@ -79,6 +79,7 @@ export default {
     },
     useContract () {
       this.Doneth = new web3.eth.Contract(this.abi.abi, this.address)
+      if (this.Doneth.name) this.name = this.Doneth.name
       this.pullMembers()
       this.readLogs()
     },
@@ -91,8 +92,8 @@ export default {
       return this.Doneth.methods.getMemberAtKey(new BN(current)).call()
       .then((address) => {
         return this.Doneth.methods.returnMember(address).call()
-        .then(({active, admin, shares, withdrawn}) => {
-          this.members.push({address, active, admin, shares, withdrawn})
+        .then(({active, admin, shares, withdrawn, memberName}) => {
+          this.members.push({address, active, admin, shares, withdrawn, memberName})
           if (current < length - 1) this.pullMembers(current + 1, length)
         })
       })
@@ -103,7 +104,8 @@ export default {
         toBlock: 'latest'
       })
       .then((results) => {
-        console.log(results)
+        this.transactions = results
+        console.log('getPastEvents', results)
       })
     },
     activeMember () {
