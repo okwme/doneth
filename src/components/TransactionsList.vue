@@ -56,6 +56,21 @@ export default {
           sharesIssued: 4435,
           sharesTotal: 100005669
         }
+      }, {
+        sender: {
+          address: '0x0000000000000000000000000000000000000',
+          firstName: 'Billy'
+        },
+        receiver: {
+          address: '0x0000000000000000000000000000000000004',
+          firstName: 'Tim'
+        },
+        transaction: {
+          address: '0x000000000000000000000000000000000000123',
+          createdAt: 1508639178669,
+          sharesIssued: 4435,
+          sharesTotal: 100005669
+        }
       }]
     }
   },

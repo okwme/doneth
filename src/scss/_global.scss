@@ -36,6 +36,18 @@ ul {
   margin: 0px auto 30px;
 }
 
+.page-card-footer {
+  background: darken($white, 3%);
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px;
+
+  .btn {
+    width: 250px;
+    padding: 15px;
+  }
+}
+
 .bk-green {
   background: $primary;
   color: $white;
