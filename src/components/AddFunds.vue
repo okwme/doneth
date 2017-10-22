@@ -81,7 +81,7 @@ export default {
     .btn {
       outline: 0;
       position: relative;
-      z-index: 10;
+      z-index: 7;
     }
   }
 
@@ -96,7 +96,7 @@ export default {
     top: 0;
     max-height: 0;
     width: 0;
-    z-index: 20;
+    z-index: 8;
     transition: opacity 300ms ease 20ms, box-shadow 300ms ease 20ms;
 
     .funds-title {

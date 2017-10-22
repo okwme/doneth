@@ -21,9 +21,9 @@
           <span>Allowed: <strong>{{getAllowedAmount(member.address) || 0}}</strong></span>
         </div>
       </div>
-      <div class="actions" v-if="member.address === account">
+      <div class="actions" :class="{ active: withdrawing }" v-if="member.address === account">
         <div @click="withdrawing = !withdrawing" :class="{ active: withdrawing }" class="btn btn-primary">Withdraw</div>
-        <div class="withdraw-form active" :class="{ active: withdrawing }">
+        <div class="withdraw-form" :class="{ active: withdrawing }">
           <div class="fields">
             <input class="center" type="number" placeholder="Amount (ETH)" v-model="withdrawAmount">
             <input readOnly="true" class="center" type="text" :value="convertedAmount">
@@ -204,7 +204,6 @@ export default {
   }
 
   .actions {
-    background: darken($white, 3%);
 
     .btn {
       border-radius: 3px;
@@ -215,6 +214,10 @@ export default {
         border-radius: 3px 3px 0 0;
       }
     }
+
+    &.active {
+      background: darken($white, 3%);
+    }
   }
 
   .withdraw-form {
@@ -222,9 +225,10 @@ export default {
     flex-direction: column;
     opacity: 0;
     max-height: 0;
-    width: 190px;
+    width: 210px;
     margin: auto;
-    transition: opacity 300ms ease 20ms;
+    padding-bottom: 20px;
+    transition: opacity 220ms ease 20ms;
 
     .fields {
       margin: 10px 0;
@@ -238,7 +242,9 @@ export default {
     .actions {
       display: flex;
 
-      .btn {}
+      .btn {
+        width: calc(50% - 10px);
+      }
 
       .btn-error {
         opacity: .4;
@@ -252,8 +258,7 @@ export default {
     &.active {
       opacity: 1;
       max-height: 400px;
-      width: 380px;
-      transition: opacity 300ms ease 0;
+      transition: opacity 220ms ease 0;
     }
   }
 </style>
