@@ -20,8 +20,8 @@
       </div>
     </div>
     <allocation-bar :patrons="members"/>
-    <patron-card :patrons="members"/>
-    <allocation-form/>
+    <patron-card :address="address" :patrons="members"/>
+    <allocation-form />
     <transactions-list :allocations="transactions"/>
   </div>
 </template>
@@ -85,7 +85,8 @@ export default {
     },
     pullMembers () {
       return this.Doneth.methods.getMemberCount().call().then((count) => {
-        return this.pullMember(0, count)
+        console.log(count)
+        return this.pullMember(0, parseInt(count))
       })
     },
     pullMember (current, length) {
@@ -94,7 +95,8 @@ export default {
         return this.Doneth.methods.returnMember(address).call()
         .then(({active, admin, shares, withdrawn, memberName}) => {
           this.members.push({address, active, admin, shares, withdrawn, memberName})
-          if (current < length - 1) this.pullMembers(current + 1, length)
+          console.log(current, length)
+          if (current + 1 < length) this.pullMember(current + 1, length)
         })
       })
     },

@@ -18,7 +18,8 @@ const state = {
   connected: false,
   conversions: {},
   loading: false,
-  notifications: []
+  notifications: [],
+  Doneth: null
 }
 
 export default new Vuex.Store({
