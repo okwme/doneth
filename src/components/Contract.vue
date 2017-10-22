@@ -11,9 +11,9 @@
 
       <add-funds :address="address"/>
     </div>
-    <allocation-bar :patrons="members"/>
+    <allocation-bar v-if="isAdmin" :patrons="members"/>
     <patron-card :address="address" :patrons="members"/>
-    <allocation-form />
+    <allocation-form v-if="isAdmin" />
     <transactions-list :allocations="sortedLogs"/>
   </div>
 </template>
@@ -39,7 +39,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['metamask', 'members', 'contractName', 'sortedLogs', 'totalBalance', 'totalBalanceRaw', 'currency'])
+    ...mapGetters(['metamask', 'members', 'contractName', 'sortedLogs', 'totalBalance', 'totalBalanceRaw', 'currency', 'account', 'isAdmin'])
   },
   mounted () {
     this.deployDoneth(this.address)

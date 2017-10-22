@@ -49,8 +49,12 @@ export default {
   ADD_MEMBER (state, member) {
     state.members.push(member)
   },
+  CLEAR_LOGS (state) {
+    state.logs = []
+  },
   ADD_LOGS (state, logs) {
-    state.sortedLogs.push(...logs)
+    console.log(logs)
+    state.logs.push(...logs)
   },
   SET_SHARES (state, totalShares) {
     state.totalShares = totalShares
@@ -72,6 +76,14 @@ export default {
   },
   SET_BALANCE (state, totalBalance) {
     state.totalBalance = totalBalance
+  },
+  UPDATE_MEMBER_SHARES (state, {amount, address}) {
+    let memberKey = state.members.findIndex((member) => member.address === address)
+    if (memberKey > -1) {
+      let member = state.members[memberKey]
+      member.shares = parseInt(amount) + parseInt(member.shares)
+      state.members.splice(memberKey, 1, member)
+    }
   },
   UPDATE_MEMBER_WITHDRAWN (state, {amount, address}) {
     let memberKey = state.members.findIndex((member) => member.address === address)

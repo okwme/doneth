@@ -83,7 +83,7 @@ export default {
     box-shadow: 0 1px 10px -2px rgba(0,0,0,0.1);
     overflow: hidden;
     width: 250px;
-    margin: 0 10px 10px;
+    margin: 10px 10px 10px;
     padding-bottom: 10px;
 
     form {

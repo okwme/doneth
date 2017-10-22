@@ -7,7 +7,7 @@
           <template v-if="item.type === 'AddShare'">
             <div class="reference">
               <h3><short-hash :hash="item.who"/> received {{item.addedShares}} new shares</h3>
-              <h4><small>Shares:</small> {{item.addedShares}}/{{item.newTotalShares}}</h4>
+              <h4><small>Shares:</small> {{item.addedShares}}</h4>
             </div>
             <div class="details">
               <div></div>
@@ -16,7 +16,7 @@
           </template>
           <template v-if="item.type === 'Deposit' || item.type === 'Withdraw'">
             <div class="reference">
-              <h3><short-hash :hash="item.who"/> donated {{item.valueConverted}} ETH <small>({{item.value}} WEI)</small></h3>
+              <h3><short-hash :hash="item.who"/> made a {{item.type.toLowerCase()}} of {{item.valueConverted}} ETH <small>({{item.value}} WEI)</small></h3>
               <h4>Block: {{item.block}}</h4>
             </div>
           </template>
@@ -29,6 +29,7 @@
 <script>
 import ShortHash from '@/components/ShortHash'
 import BN from 'bignumber.js'
+import { mapGetters } from 'vuex'
 export default {
 
   name: 'TransactionsList',
@@ -44,18 +45,19 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['sortedLogs', 'members']),
     formattedTransactions () {
-      return this.allocations.map((a) => {
+      return this.sortedLogs.map((a) => {
         let obj = a.returnValues
         obj.type = a.event
         obj.block = a.blockNumber
 
-        if (!a.who) obj.who = a.address
-        console.log(a.value)
+        if (!a.who) obj.who = a.returnValues[0]
+        let member = this.members.find((m) => m.address === obj.who)
+        if (member) obj.who = member.memberName
         if (obj.value) obj.valueConverted = web3.utils.fromWei(new BN(obj.value), 'ether')
-        console.log('------------------obj', obj.value, obj.valueConverted)
         return obj
-      }).reverse()
+      })
     }
   },
   components: {

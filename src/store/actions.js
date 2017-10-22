@@ -132,6 +132,7 @@ export default {
     })
   },
   readLogs ({dispatch, state, commit}) {
+    commit('CLEAR_LOGS')
     state.Doneth.getPastEvents('AddShare', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
@@ -191,7 +192,26 @@ export default {
         })
       })
   },
-  addMember ({state, dispatch}, member) {
+  allocateShares ({state, dispatch, commit}, {address, amount}) {
+    console.log(address)
+    console.log(amount)
+
+    dispatch('setLoading', true)
+    return state.Doneth.methods.addShare(address, new BN(amount)).send({from: state.account}).then((result) => {
+      console.log(result)
+      dispatch('readLogs')
+      dispatch('addNotification', {class: 'success', text: 'New Shares Allocated 🎉'})
+      commit('UPDATE_MEMBER_SHARES', {amount, address})
+      dispatch('setLoading', false)
+      dispatch('getContractInfo')
+      dispatch('pollAllowedAmounts')
+    }).catch((error) => {
+      console.error(error)
+      dispatch('setLoading', false)
+      dispatch('addNotification', {class: 'error', text: 'Unknown Error, check logs'})
+    })
+  },
+  addMember ({state, dispatch, commit}, member) {
     console.log('addNewMember', this.userAddress)
     return new Promise((resolve, reject) => {
       let currentUser = state.members.find((member) => {
@@ -212,6 +232,8 @@ export default {
           reject(error)
         })
         .then((result) => {
+          console.log(result)
+          dispatch('readLogs')
           dispatch('getContractInfo')
           dispatch('pollAllowedAmounts')
           dispatch('setLoading', false)
@@ -278,6 +300,7 @@ export default {
         dispatch('setLoading', true)
         return state.Doneth.methods.withdraw(wei).send({from: state.account}).then((result) => {
           console.log(result)
+          dispatch('readLogs')
           commit('UPDATE_MEMBER_WITHDRAWN', {amount: wei, address: state.account})
           dispatch('setLoading', false)
           dispatch('getContractInfo')
@@ -293,7 +316,7 @@ export default {
       dispatch('addNotification', {class: 'error', text: 'Unknown Error, please check logs'})
     })
   },
-  makeDeposit ({state, dispatch}, amount) {
+  makeDeposit ({state, dispatch, commit}, amount) {
     let wei = web3.utils.toWei(amount)
     console.log(wei)
     dispatch('setLoading', true)
@@ -304,6 +327,7 @@ export default {
     }).then((result) => {
       dispatch('setLoading', false)
       console.log(result)
+      dispatch('readLogs')
       dispatch('getContractInfo')
       dispatch('pollAllowedAmounts')
     }).catch((error) => {

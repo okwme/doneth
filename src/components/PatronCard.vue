@@ -36,7 +36,7 @@
         </div>
       </div>
     </div>
-    <patron-form :address="address"/>
+    <patron-form v-if="isAdmin" :address="address"/>
   </div>
 </template>
 
@@ -60,7 +60,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['account', 'conversions', 'currency', 'totalShares', 'members'])
+    ...mapGetters(['account', 'conversions', 'currency', 'totalShares', 'members', 'isAdmin'])
   },
   watch: {
     withdrawAmount () {
@@ -86,7 +86,7 @@ export default {
     getAllowedAmount (address) {
       let member = this.members.find((member) => member.address === address)
       if (!member || !member.allowedAmount) return 0
-      return member.allowedAmount
+      return new BN(member.allowedAmount).toFixed(4)
     },
     updateConversion () {
       if (!this.withdrawAmount) return
@@ -124,7 +124,12 @@ export default {
     },
     withdraw (member) {
       if (this.withdrawing) {
-        this.makeWithdraw(this.withdrawAmount)
+        this.makeWithdraw(this.withdrawAmount).then((result) => {
+          this.withdrawing = false
+        }).catch((error) => {
+          console.error(error)
+          this.withdrawing = false
+        })
       } else {
         this.withdrawer = member.address
         this.withdrawing = true
