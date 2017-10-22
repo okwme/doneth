@@ -3,7 +3,7 @@
     <section-header :title="'Donate & Help Us Out!'" class="cl-white"></section-header>
     <div class="cta-content">
       <div class="flex-2 cta-copy">
-        <p>Want to help keep this project alive?<br>Send us some ether via this donation address, and it will go directly to development and maintenance, helping easy finanancial contracts remain in your control!<br>Keep being awesome! Your pals,</p>
+        <p>Want to help keep this project alive?<br>Send us some ether via this donation address, and it will go directly to development and maintenance, helping easy financial contracts remain in your control!<br>Keep being awesome! Your pals,</p>
         <ul>
           <li><a href="https://github.com/okwme" target="_blank"><img src="https://avatars3.githubusercontent.com/u/964052?s=460&v=4" alt="okwme"> <span>@okwme</span></a></li>
           <li><a href="https://github.com/trevorjtclarke" target="_blank"><img src="https://avatars2.githubusercontent.com/u/2633184?s=460&v=4" alt="trevorjtclarke"> <span>@trevorjtclarke</span></a></li>
