@@ -27,6 +27,7 @@ module.exports = {
   'globals': {
     'web3' : true,
     'ga' : true,
-    'BrowserSolc' : true
+    'BrowserSolc' : true,
+    '_web3': true
   }
 }
