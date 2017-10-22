@@ -9,8 +9,7 @@
         <h2>{{contractName}}</h2>
         <div class="sub-details">
           <div class=""><small>Total Available:</small> {{totalBalance}} Eth/{{totalBalance}} {{currency}}</div>
-          <!-- <div class=""><small>Created:</small> {{dateTime(timestamp)}}</div> -->
-          <div class=""><small>Created:</small> {{timestamp}}</div>
+          <div class=""><small>Created:</small> {{dateTime(timestamp)}}</div>
         </div>
       </div>
       <div class="contract-cta">
@@ -34,7 +33,7 @@ import PatronCard from '@/components/PatronCard'
 import ShortHash from '@/components/ShortHash'
 import SectionHeader from '@/components/SectionHeader'
 import TransactionsList from '@/components/TransactionsList'
-import { mapGetters, mapMutations, mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
 
   name: 'Contract',
@@ -50,26 +49,25 @@ export default {
     ...mapGetters(['metamask', 'members', 'contractName', 'sortedLogs', 'totalBalance'])
   },
   mounted () {
-    this.addAddress(this.address)
-    this.deployDoneth()
+    this.deployDoneth(this.address)
     this.getCreatedAt()
-    console.log('this.totalBalance', this.totalBalance)
   },
   methods: {
     ...mapActions(['deployDoneth']),
-    ...mapMutations({addAddress: 'ADD_ADDRESS'}),
     dateTime (value) {
       if (!value) return ''
       return this.$moment(value).format('dddd, MMMM Do YYYY')
     },
     getCreatedAt () {
-      if (!this.sortedLogs[0] || !this.sortedLogs[0].blockNumber) return
-      this.timestamp = this.sortedLogs[0].blockNumber
-      // web3.eth.getBlock(this.sortedLogs[0].blockNumber)
-      // .then((res) => {
-      //   console.log('fdsafdsadsafdts', res)
-      //   if (res && res.timestamp) this.timestamp = res.timestamp * 1000
-      // })
+      if (!this.sortedLogs || this.sortedLogs.length <= 0 || !this.sortedLogs[0] || !this.sortedLogs[0].blockNumber) {
+        // NOTE: Added only for demo so no missing data :/
+        this.timestamp = (+new Date())
+        return
+      }
+      web3.eth.getBlock(this.sortedLogs[0].blockNumber)
+      .then((res) => {
+        if (res && res.timestamp) this.timestamp = res.timestamp * 1000
+      })
     }
   },
   components: {

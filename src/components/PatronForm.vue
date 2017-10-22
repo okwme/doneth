@@ -57,6 +57,9 @@ export default {
       this.submitting = true
       this.addMember(member).then(() => {
         this.submitting = false
+        this.userAddress = ''
+        this.sharesTotal = ''
+        this.firstName = ''
       }).catch((error) => {
         console.log('ERROR')
         this.submitting = false

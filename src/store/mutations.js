@@ -27,6 +27,17 @@ export default {
       state.notifications.splice(key, 1)
     }
   },
+  CLEAR_CONTRACT (state) {
+    state.logs = []
+    state.Doneth = null
+    state.address = null
+    state.members = []
+    state.totalShares = 0
+    state.contractName = null
+    state.founder = null
+    state.genesisBlock = 0
+    state.totalWithdrawn = 0
+  },
   ADD_DONETH (state, contract) {
     state.Doneth = contract
   },
@@ -37,7 +48,7 @@ export default {
     state.members.push(member)
   },
   ADD_LOGS (state, logs) {
-    state.logs.push(...logs)
+    state.sortedLogs.push(...logs)
   },
   SET_SHARES (state, totalShares) {
     state.totalShares = totalShares
