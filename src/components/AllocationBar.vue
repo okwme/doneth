@@ -18,6 +18,7 @@ export default {
 
   data () {
     return {
+      totalShares: 2
     }
   },
   methods: {
@@ -25,7 +26,7 @@ export default {
       return (member && member.address) ? `#${member.address.slice(-6)}` : '#CCCCCC'
     },
     percentage (member) {
-      return Math.round((parseInt(member.shares, 10) * 100) / (parseInt(member.shares, 10) * 5)) + '%'
+      return Math.round((parseInt(member.shares, 10) * 100) / this.totalShares) + '%'
     }
   }
 }
