@@ -4,13 +4,14 @@
       <b>{{btntitle || 'Donate Ether'}}</b>
       <sub>{{address}}</sub>
     </div> -->
-    <add-funds :embed="true" :address="address"/>
+     <add-funds :embed="true" :address="address"/>  
   </div>
 </template>
 
 <script>
 import AddFunds from '@/components/AddFunds'
 import ShortHash from '@/components/ShortHash'
+import {mapActions} from 'vuex'
 export default {
 
   name: 'DonateButton',
@@ -24,6 +25,7 @@ export default {
     ShortHash
   },
   mounted () {
+    this.deployDoneth(this.address)
     document.body.classList = document.body.classList + ' embedded-btn'
     document.querySelector('#app').style.margin = '0px'
 
@@ -46,6 +48,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['deployDoneth']),
     donate () {
       if (typeof window.web3 !== 'undefined') {
 

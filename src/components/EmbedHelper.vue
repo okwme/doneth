@@ -37,7 +37,7 @@ export default {
       let mainurl = `https://doneth.org/${this.address}`
       // let mainurl = `http://localhost:8080/${this.address}`
       let url = `${mainurl}/donate-button`
-      this.htm = `<a href="${mainurl}"><iframe src="${url}" width="305px" height="50px"></iframe></a>`
+      this.htm = `<iframe src="${url}" width="305px" height="100px"></iframe>`
     }
   }
 }

@@ -14,16 +14,16 @@
         <span>1 ETH</span> &#8594; <span>{{convertedSingleEth}} {{currency}}</span>
       </div>
       <form @submit.prevent="deposit()">
-      <div class="funds-actions">
-        <label for="">ETH</label>
-        <input placeholder="0" type="number" v-if="depositing" v-model="depositAmount">
-        <label for="">{{currency}}</label>
-        <input placeholder="0" type="string" readonly min="0" v-if="depositing" :value="convertedAmount">
-      </div>
-      <div class="funds-footer">
-        <button v-if="depositing" class="btn btn-error" @click="depositing = false">Cancel</button>
-        <button @click="deposit()" type="button" name="button" class="btn btn-primary">Submit</button>
-      </div>
+        <div class="funds-actions">
+          <label for="">ETH</label>
+          <input placeholder="0" type="number" v-if="depositing" v-model="depositAmount">
+          <label for="">{{currency}}</label>
+          <input placeholder="0" type="string" readonly min="0" v-if="depositing" :value="convertedAmount">
+        </div>
+        <div class="funds-footer">
+          <button v-if="depositing" class="btn btn-error" @click="depositing = false">Cancel</button>
+          <button @click="deposit()" type="button" name="button" class="btn btn-primary">Submit</button>
+        </div>
       </form>
     </div>
   </div>
