@@ -31,6 +31,7 @@ export default {
       web3.eth.net.getId((err, netId) => {
         if (!err) {
           switch (netId) {
+            case 1:
             case 3:
             case 4:
             case 666:
@@ -39,9 +40,9 @@ export default {
               wrongNetwork = true
           }
         }
-        if (!wrongNetwork) {
-          dispatch('setAccountInterval')
-        }
+        // if (!wrongNetwork) {
+        dispatch('setAccountInterval')
+        // }
       })
     }
   },
@@ -53,7 +54,7 @@ export default {
   },
   checkAccount ({commit}) {
     web3.eth.getAccounts((error, accounts) => {
-      console.log(error, this.account, accounts[0], accounts)
+      // console.log(error, this.account, accounts[0], accounts)
       if (error) console.error(error)
       if (accounts.length && this.account !== accounts[0]) {
         commit('SET_ACCOUNT', accounts[0])
