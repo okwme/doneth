@@ -2,26 +2,29 @@
   <div class="add-funds">
     <button @click="depositing = true" type="button" name="button" class="btn btn-primary">
       <b>Add Funds</b>
-      <short-hash :hash="address"/>
+      <template v-if="embed"> {{address}}</template>
+      <short-hash v-else :hash="address"/>
     </button>
-    <div class="funds-form" :class="{ active: depositing }">
-      <div class="funds-title">
+    <div class="funds-form" :class="{ active: depositing, embed: embed }">
+      <div v-if="!embed" class="funds-title">
         <h3>Add Funds</h3>
         <small>{{address}}</small>
       </div>
-      <div class="funds-meta">
+      <div v-if="!embed" class="funds-meta">
         <span>1 ETH</span> &#8594; <span>{{convertedSingleEth}} {{currency}}</span>
       </div>
+      <form @submit.prevent="deposit()">
       <div class="funds-actions">
         <label for="">ETH</label>
-        <input v-if="depositing" v-model="depositAmount">
+        <input placeholder="0" type="number" v-if="depositing" v-model="depositAmount">
         <label for="">{{currency}}</label>
-        <input v-if="depositing" :value="convertedAmount">
+        <input placeholder="0" type="string" readonly min="0" v-if="depositing" :value="convertedAmount">
       </div>
       <div class="funds-footer">
         <button v-if="depositing" class="btn btn-error" @click="depositing = false">Cancel</button>
         <button @click="deposit()" type="button" name="button" class="btn btn-primary">Submit</button>
       </div>
+      </form>
     </div>
   </div>
 </template>
@@ -32,7 +35,16 @@ import { mapGetters, mapActions } from 'vuex'
 export default {
 
   name: 'AddFunds',
-  props: ['address'],
+  props: {
+    'address': {
+      type: String,
+      default: ''
+    },
+    'embed': {
+      type: Boolean,
+      default: false
+    }
+  },
   data () {
     return {
       convertedAmount: null,
@@ -108,7 +120,16 @@ export default {
     width: 0;
     z-index: 8;
     transition: opacity 300ms ease 20ms, box-shadow 300ms ease 20ms;
-
+    &.embed {
+      left: 0;
+      width:100% !important;
+      .funds-actions {
+        padding: 10px 15px; 
+      }
+      label {
+        position: static;
+      }
+    }
     .funds-title {
 
       h3,

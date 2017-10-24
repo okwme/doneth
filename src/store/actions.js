@@ -4,7 +4,7 @@ import axios from 'axios'
 import BN from 'bignumber.js'
 // const ProviderEngine = require('web3-provider-engine/index.js')
 const ZeroClientProvider = require('web3-provider-engine/zero.js')
-
+let web3 = window.web3
 export default {
   connect ({commit, state, dispatch}) {
     commit('SET_LOADING', true)

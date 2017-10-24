@@ -1,13 +1,15 @@
 <template>
   <div class="donate-embed">
-    <button type="button" name="button" class="btn btn-primary">
+<!--     <div @click="donate" name="button" class="btn btn-primary" :class="clickable">
       <b>{{btntitle || 'Donate Ether'}}</b>
       <sub>{{address}}</sub>
-    </button>
+    </div> -->
+    <add-funds :embed="true" :address="address"/>
   </div>
 </template>
 
 <script>
+import AddFunds from '@/components/AddFunds'
 import ShortHash from '@/components/ShortHash'
 export default {
 
@@ -18,6 +20,7 @@ export default {
     }
   },
   components: {
+    AddFunds,
     ShortHash
   },
   mounted () {
@@ -34,16 +37,31 @@ export default {
         }
       }
     }
-
     setTimeout(removeChildNodes, 10)
     setTimeout(removeChildNodes, 100)
+  },
+  computed: {
+    clickable () {
+      return {'no-cursor': typeof web3 === 'undefined'}
+    }
+  },
+  methods: {
+    donate () {
+      if (typeof web3 !== 'undefined') {
+
+      } else {
+        return false
+      }
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
   @import '../scss/variables';
-
+  .no-cursor {
+    cursor: default;
+  }
   .donate-embed {
     display: flex;
     height: 50px;
