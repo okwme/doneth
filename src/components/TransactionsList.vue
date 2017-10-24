@@ -55,7 +55,7 @@ export default {
         if (!a.who) obj.who = a.returnValues[0]
         let member = this.members.find((m) => m.address === obj.who)
         if (member) obj.who = member.memberName
-        if (obj.value) obj.valueConverted = web3.utils.fromWei(new BN(obj.value), 'ether')
+        if (obj.value) obj.valueConverted = window.web3.utils.fromWei(new BN(obj.value), 'ether')
         return obj
       })
     }

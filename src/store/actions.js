@@ -4,13 +4,12 @@ import axios from 'axios'
 import BN from 'bignumber.js'
 // const ProviderEngine = require('web3-provider-engine/index.js')
 const ZeroClientProvider = require('web3-provider-engine/zero.js')
-let web3 = window.web3
 export default {
   connect ({commit, state, dispatch}) {
     commit('SET_LOADING', true)
     let web3Provider = false
-    if (typeof web3 !== 'undefined') {
-      web3Provider = web3.currentProvider
+    if (typeof window.web3 !== 'undefined') {
+      web3Provider = window.web3.currentProvider
       commit('SET_METAMASK', true)
     } else if (!state.retried) {
       commit('SET_RETRY', true)
@@ -24,7 +23,7 @@ export default {
       })
     }
     if (web3Provider) {
-      web3 = new Web3(web3Provider)
+      window.web3 = new Web3(web3Provider)
       commit('SET_LOADING', false)
       commit('SET_CONNECTED', true)
       // let wrongNetwork = false
@@ -53,7 +52,7 @@ export default {
     }, 3000)
   },
   checkAccount ({commit}) {
-    web3.eth.getAccounts((error, accounts) => {
+    window.web3.eth.getAccounts((error, accounts) => {
       // console.log(error, this.account, accounts[0], accounts)
       if (error) console.error(error)
       if (accounts.length && this.account !== accounts[0]) {
@@ -87,10 +86,11 @@ export default {
     commit('SET_LOADING', isLoading)
   },
   deployDoneth ({dispatch, commit, state}, address) {
+    console.log(window.web3.eth)
     if (state.connected) {
       commit('CLEAR_CONTRACT')
       commit('ADD_ADDRESS', address)
-      commit('ADD_DONETH', new web3.eth.Contract(state.abi.abi, state.address))
+      commit('ADD_DONETH', new window.web3.eth.Contract(state.abi.abi, state.address))
       dispatch('populateContractData')
     } else {
       setTimeout(() => {
@@ -277,7 +277,7 @@ export default {
     return result
   },
   makeWithdraw ({state, dispatch, commit}, amount) {
-    let wei = new BN(web3.utils.toWei(amount))
+    let wei = new BN(window.web3.utils.toWei(amount))
     return state.Doneth.methods.calculateTotalWithdrawableAmount(state.account).call().then((result) => {
       let member = state.members.find((member) => member.address === state.account)
       if (!member) return new Error('No Member')
@@ -304,9 +304,9 @@ export default {
     })
   },
   makeDeposit ({state, dispatch, commit}, amount) {
-    let wei = web3.utils.toWei(amount)
+    let wei = window.web3.utils.toWei(amount)
     dispatch('setLoading', true)
-    return web3.eth.sendTransaction({
+    return window.web3.eth.sendTransaction({
       from: state.account,
       to: state.address,
       value: wei

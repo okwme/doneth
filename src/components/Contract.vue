@@ -79,7 +79,7 @@ export default {
         this.timestamp = (+new Date())
         return
       }
-      web3.eth.getBlock(this.sortedLogs[0].blockNumber)
+      window.web3.eth.getBlock(this.sortedLogs[0].blockNumber)
       .then((res) => {
         if (res && res.timestamp) this.timestamp = res.timestamp * 1000
       })

@@ -12,7 +12,7 @@ export default {
   founder: state => state.founder,
   genesisBlock: state => state.genesisBlock,
   totalBalance: state => {
-    return state.totalBalance && web3 && web3.utils && web3.utils.fromWei(state.totalBalance)
+    return state.totalBalance && window.web3 && window.web3.utils && window.web3.utils.fromWei(state.totalBalance)
   },
   totalBalanceMinusWithdrawn: (state, getters) => {
     console.log(getters.totalBalanceRaw)
@@ -20,7 +20,7 @@ export default {
     let foo = new BN(getters.totalBalanceRaw).sub(new BN(getters.totalWithdrawn))
     console.log(foo.toString())
     return 0
-    // return web3.utils.fromWei(foo)
+    // return window.web3.utils.fromWei(foo)
   },
   totalBalanceRaw: state => state.totalBalance,
   totalWithdrawn: state => state.totalWithdrawn,

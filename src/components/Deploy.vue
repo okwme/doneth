@@ -79,7 +79,8 @@ export default {
         alert('unlock your wallet!')
       }
       this.setLoading(true)
-      var contract = new web3.eth.Contract(this.abi)
+      console.log(window.web3)
+      var contract = new window.web3.eth.Contract(this.abi)
       this.deploying = true
       contract.deploy({
         data: this.compiled,

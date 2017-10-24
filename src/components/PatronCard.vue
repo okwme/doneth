@@ -74,8 +74,8 @@ export default {
     ...mapActions(['convertToCurrency', 'makeWithdraw', 'addNotification']),
     isOverdrafted (member, withdrawing) {
       if (isNaN(withdrawing) || isNaN(member.allowedAmount)) return false
-      let allowedAmount = new BN(web3.utils.toWei(member.allowedAmount))
-      withdrawing = new BN(web3.utils.toWei(withdrawing))
+      let allowedAmount = new BN(window.web3.utils.toWei(member.allowedAmount))
+      withdrawing = new BN(window.web3.utils.toWei(withdrawing))
       return allowedAmount.greaterThanOrEqualTo(withdrawing)
     },
     overdrafted (member, withdrawing) {

@@ -98,7 +98,7 @@ export default {
     if (memberKey > -1) {
       let member = state.members[memberKey]
       let remaining = new BN(amount).sub(new BN(member.withdrawn))
-      let wei = new BN(web3.utils.fromWei(remaining)).toString()
+      let wei = new BN(window.web3.utils.fromWei(remaining)).toString()
       member.allowedAmount = wei
       state.members.splice(memberKey, 1, member)
     }

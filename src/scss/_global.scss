@@ -44,7 +44,7 @@ ul {
   background: darken($white, 3%);
   border-radius: 0 0 $border-radius $border-radius;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-around;
   padding: 20px;
 
   .btn {

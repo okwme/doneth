@@ -42,12 +42,12 @@ export default {
   },
   computed: {
     clickable () {
-      return {'no-cursor': typeof web3 === 'undefined'}
+      return {'no-cursor': typeof window.web3 === 'undefined'}
     }
   },
   methods: {
     donate () {
-      if (typeof web3 !== 'undefined') {
+      if (typeof window.web3 !== 'undefined') {
 
       } else {
         return false
