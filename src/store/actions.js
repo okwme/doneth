@@ -53,6 +53,7 @@ export default {
   },
   checkAccount ({commit}) {
     web3.eth.getAccounts((error, accounts) => {
+      console.log(error, this.account, accounts[0], accounts)
       if (error) console.error(error)
       if (accounts.length && this.account !== accounts[0]) {
         commit('SET_ACCOUNT', accounts[0])
