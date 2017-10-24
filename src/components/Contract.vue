@@ -11,7 +11,7 @@
 
       <add-funds :address="address"/>
     </div>
-    <allocation-bar v-if="isAdmin" :patrons="members"/>
+    <allocation-bar :patrons="members"/>
     <patron-card :address="address" :patrons="members"/>
     <allocation-form  v-if="isAdmin" />
     <embed-helper :address="address"/>

@@ -135,7 +135,7 @@ export default {
     display: none;
     position: absolute;
     z-index:999;
-    top: 45px;
+    top: 43px;
     left: 0px;
     width: 100%;
   }

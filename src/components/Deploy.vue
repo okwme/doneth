@@ -66,7 +66,7 @@ export default {
       confirming: false,
       tx: null,
       address: null,
-      countdown: 5
+      countdown: 3
     }
   },
   computed: {
