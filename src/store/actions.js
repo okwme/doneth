@@ -27,23 +27,23 @@ export default {
       web3 = new Web3(web3Provider)
       commit('SET_LOADING', false)
       commit('SET_CONNECTED', true)
-      let wrongNetwork = false
-      web3.eth.net.getId((err, netId) => {
-        if (!err) {
-          switch (netId) {
-            case 1:
-            case 3:
-            case 4:
-            case 666:
-              break
-            default:
-              wrongNetwork = true
-          }
-        }
+      // let wrongNetwork = false
+      // web3.eth.net.getId((err, netId) => {
+      //   if (!err) {
+      //     switch (netId) {
+      //       case 1:
+      //       case 3:
+      //       case 4:
+      //       case 666:
+      //         break
+      //       default:
+      //         wrongNetwork = true
+      //     }
+      //   }
         // if (!wrongNetwork) {
-        dispatch('setAccountInterval')
+      dispatch('setAccountInterval')
         // }
-      })
+      // })
     }
   },
   setAccountInterval ({dispatch}) {
