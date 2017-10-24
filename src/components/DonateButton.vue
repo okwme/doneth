@@ -1,10 +1,10 @@
 <template>
   <div class="donate-embed">
-    <div @click="donate" name="button" class="btn btn-primary" :class="clickable">
+<!--     <div @click="donate" name="button" class="btn btn-primary" :class="clickable">
       <b>{{btntitle || 'Donate Ether'}}</b>
       <sub>{{address}}</sub>
-    </div>
-<!--      <add-funds :embed="true" :address="address"/>   -->
+    </div> -->
+     <add-funds :embed="true" :address="address"/>  
   </div>
 </template>
 
