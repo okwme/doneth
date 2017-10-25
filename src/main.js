@@ -7,7 +7,9 @@ import store from './store'
 import { sync } from 'vuex-router-sync'
 import VueWorker from 'vue-worker'
 import moment from 'moment'
-
+router.afterEach((to, from, next) => {
+  if (ga) ga('send', 'pageview')
+})
 sync(store, router)
 Vue.use(VueWorker)
 
