@@ -3,6 +3,7 @@
     <toolbar/>
     <loading/>
     <notifications/>
+    <meta-mask-callout></meta-mask-callout>
     <router-view/>
     <section>
       <div class="page-card bk-green">
@@ -15,6 +16,7 @@
 
 <script>
 import Loading from '@/components/Loading'
+import MetaMaskCallout from '@/components/MetaMaskCallout'
 import Notifications from '@/components/Notifications'
 import Toolbar from '@/components/Toolbar'
 import FooterInfo from '@/components/FooterInfo'
@@ -42,6 +44,7 @@ export default {
     Toolbar,
     DonateCta,
     FooterInfo,
+    MetaMaskCallout,
     Notifications,
     Loading
   }
