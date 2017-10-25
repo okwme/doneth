@@ -37,8 +37,10 @@ export default {
   methods: {
     ...mapActions(['allocateShares']),
     allocate () {
-      console.log('allocate')
-      this.allocateShares({address: this.patron, amount: this.sharesAllocated})
+      this.allocateShares({address: this.patron, amount: this.sharesAllocated}).then((done) => {
+        this.patron = null
+        this.sharesAllocated = 0
+      })
     }
   }
 }
