@@ -33,12 +33,12 @@ export default {
   methods: {
     ...mapActions([
       'connect',
-      'getConversions'
+      'getConversion'
     ])
   },
   mounted () {
     this.connect()
-    this.getConversions()
+    this.getConversion(0)
   },
   components: {
     Toolbar,

@@ -17,6 +17,7 @@ const state = {
   account: null,
   connected: false,
   currency: 'USD',
+  currenciesArray: ['USD', 'CAD', 'EUR', 'GBP', 'CNY', 'JPY'],
   conversions: {},
   loading: false,
   notifications: [],

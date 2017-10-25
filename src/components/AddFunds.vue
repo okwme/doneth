@@ -58,9 +58,7 @@ export default {
     }
   },
   mounted () {
-    this.convertToCurrency(1).then((amount) => {
-      this.convertedSingleEth = amount
-    })
+    this.setSingleConversion()
   },
   computed: {
     ...mapGetters(['metamask', 'currency'])
@@ -69,12 +67,21 @@ export default {
     depositAmount () {
       this.makeConversion()
     },
+    depositing () {
+      this.setSingleConversion()
+    },
     currency () {
       this.makeConversion()
+      this.setSingleConversion()
     }
   },
   methods: {
     ...mapActions(['makeDeposit', 'convertToCurrency']),
+    setSingleConversion () {
+      this.convertToCurrency(1).then((amount) => {
+        this.convertedSingleEth = amount
+      })
+    },
     makeConversion () {
       if (!this.depositAmount) return 0
       this.convertToCurrency(this.depositAmount).then((amount) => {
