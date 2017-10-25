@@ -86,9 +86,9 @@ export default {
         arguments: [this.name, this.founderName],
         from: this.account
       }).send({
-        from: this.account
+        from: this.account,
         // gas: '4700000',
-        // gasPrice: '20000000000'
+        gasPrice: '20000000000'
       }, (e, transactionHash) => {
         this.deploying = false
         this.confirming = true
