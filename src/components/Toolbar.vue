@@ -1,7 +1,7 @@
 <template>
   <div class="toolbar">
     <div class="logo">
-      <router-link class="pointer" :to="{name: 'Home'}" tag="h1">Don.eth</router-link>
+      <router-link class="pointer" :to="{name: 'Home'}" tag="h1">Doneth</router-link>
     </div>
 
     <ul class="menu">
@@ -135,7 +135,7 @@ export default {
     display: none;
     position: absolute;
     z-index:999;
-    top: 45px;
+    top: 43px;
     left: 0px;
     width: 100%;
   }

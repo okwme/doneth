@@ -58,17 +58,6 @@ export default {
     }
   },
   mounted () {
-    if (this.embed) {
-      // console.warn('EMBEDDED!!')
-      // let iframe = document.querySelector('iframe')
-      console.warn('EMBEDDED!!', window.parent, window.parent.document.querySelector('iframe'))
-      console.warn('iwnod!!', window.document.body)
-      // window.parent.document.frameBorder = 0
-      // window.parent.document.getElementById('myframe').width = '500px'
-      // window.parent.document.getElementById('myframe').height = '500px'
-      var url = (window.location !== window.parent.location) ? document.referrer : document.location.href
-      console.log('url', url)
-    }
     this.convertToCurrency(1).then((amount) => {
       this.convertedSingleEth = amount
     })

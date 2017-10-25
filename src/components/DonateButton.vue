@@ -31,8 +31,6 @@ export default {
     document.body.classList = document.body.classList + ' embedded-btn'
     document.querySelector('#app').style.margin = '0px'
 
-    console.log('isSmall', this.isSmall)
-
     function removeChildNodes () {
       // Hide all the other shits, buttns fur btns
       const appChilds = document.querySelector('#app')
@@ -54,9 +52,7 @@ export default {
   methods: {
     ...mapActions(['deployDoneth']),
     donate () {
-      console.log('HERE', window.location.href)
       let address = window.location.href.split('/')
-      console.log('address', address[3])
       window.parent.location = `https://doneth.org/${address[3]}`
       // if (typeof window.web3 !== 'undefined') {
       //

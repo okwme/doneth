@@ -86,7 +86,6 @@ export default {
     commit('SET_LOADING', isLoading)
   },
   deployDoneth ({dispatch, commit, state}, address) {
-    console.log(window.web3.eth)
     if (state.connected) {
       commit('CLEAR_CONTRACT')
       commit('ADD_ADDRESS', address)
@@ -187,12 +186,8 @@ export default {
   },
 
   allocateShares ({state, dispatch, commit}, {address, amount}) {
-    console.log(address)
-    console.log(amount)
-
     dispatch('setLoading', true)
     return state.Doneth.methods.addShare(address, new BN(amount)).send({from: state.account}).then((result) => {
-      console.log(result)
       dispatch('readLogs')
       dispatch('addNotification', {class: 'success', text: 'New Shares Allocated 🎉'})
       commit('UPDATE_MEMBER_SHARES', {amount, address})
@@ -206,7 +201,6 @@ export default {
     })
   },
   addMember ({state, dispatch, commit}, member) {
-    console.log('addNewMember', this.userAddress)
     return new Promise((resolve, reject) => {
       let currentUser = state.members.find((member) => {
         return member.address === state.account
@@ -224,7 +218,6 @@ export default {
           reject(error)
         })
         .then((result) => {
-          console.log(result)
           dispatch('readLogs')
           dispatch('getContractInfo')
           dispatch('pollAllowedAmounts')
@@ -277,6 +270,7 @@ export default {
     return result
   },
   makeWithdraw ({state, dispatch, commit}, amount) {
+    if (!state.account || !amount) return
     let wei = new BN(window.web3.utils.toWei(amount))
     return state.Doneth.methods.calculateTotalWithdrawableAmount(state.account).call().then((result) => {
       let member = state.members.find((member) => member.address === state.account)
@@ -304,26 +298,22 @@ export default {
     })
   },
   makeDeposit ({state, dispatch, commit}, amount) {
+    if (!state.account || !state.address || !amount) return
     let wei = window.web3.utils.toWei(amount)
     dispatch('setLoading', true)
-    console.log('makeDeposit', {
+    return window.web3.eth.sendTransaction({
       from: state.account,
       to: state.address,
       value: wei
+    }).then((result) => {
+      dispatch('setLoading', false)
+      dispatch('readLogs')
+      dispatch('getContractInfo')
+      dispatch('pollAllowedAmounts')
+    }).catch((error) => {
+      console.error(error)
+      dispatch('setLoading', false)
     })
-    // return window.web3.eth.sendTransaction({
-    //   from: state.account,
-    //   to: state.address,
-    //   value: wei
-    // }).then((result) => {
-    //   dispatch('setLoading', false)
-    //   dispatch('readLogs')
-    //   dispatch('getContractInfo')
-    //   dispatch('pollAllowedAmounts')
-    // }).catch((error) => {
-    //   console.error(error)
-    //   dispatch('setLoading', false)
-    // })
     // state.Doneth.methods.send()
   },
   getAllowed ({state, commit}, address) {
