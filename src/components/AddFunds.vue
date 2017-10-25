@@ -1,13 +1,13 @@
 <template>
   <div class="add-funds">
     <button @click="depositing = true" type="button" name="button" class="btn btn-primary">
-      <b>Add Funds</b>
+      <b>{{btntitle}}</b>
       <template v-if="embed"> {{address}}</template>
       <short-hash v-else :hash="address"/>
     </button>
     <div class="funds-form" :class="{ active: depositing, embed: embed }">
       <div v-if="!embed" class="funds-title">
-        <h3>Add Funds</h3>
+        <h3>{{btntitle}}</h3>
         <small>{{address}}</small>
       </div>
       <div v-if="!embed" class="funds-meta">
@@ -39,6 +39,10 @@ export default {
     'address': {
       type: String,
       default: ''
+    },
+    'btntitle': {
+      type: String,
+      default: 'Add Funds'
     },
     'embed': {
       type: Boolean,
@@ -124,7 +128,7 @@ export default {
       left: 0;
       width:100% !important;
       .funds-actions {
-        padding: 10px 15px; 
+        padding: 10px 15px;
       }
       label {
         position: static;

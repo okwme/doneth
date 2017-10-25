@@ -11,10 +11,10 @@
         </ul>
       </div>
       <div class="flex-1 cta-action">
-        <button type="button" name="button" class="btn btn-white btn-outlined">
+        <a :href="url" class="btn btn-white btn-outlined">
           <b>Donate Ether</b>
           <short-hash :hash="address"/>
-        </button>
+        </a>
       </div>
     </div>
   </div>
@@ -29,7 +29,8 @@ export default {
 
   data () {
     return {
-      address: '0x0000000000000000000000000000000000001'
+      url: `https://doneth.org/0xd078e60818801fcAB0B3868fB2b058C3a7E52240`,
+      address: '0xd078e60818801fcAB0B3868fB2b058C3a7E52240'
     }
   },
   components: {
@@ -69,7 +70,10 @@ export default {
     margin: auto;
 
     .btn {
-      width: 80%;
+      width: 60%;
+      display: block;
+      margin: auto;
+      text-decoration: none;
     }
   }
 

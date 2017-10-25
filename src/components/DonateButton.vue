@@ -1,10 +1,10 @@
 <template>
-  <div class="donate-embed">
+  <div class="donate-embed" :class="{ small: isSmall }">
     <div @click="donate" name="button" class="btn btn-primary" :class="clickable">
       <b>{{btntitle || 'Donate Ether'}}</b>
       <sub>{{address}}</sub>
     </div>
-<!--      <add-funds :embed="true" :address="address"/>   -->
+   <!-- <add-funds :embed="true" :address="address"/>   -->
   </div>
 </template>
 
@@ -18,6 +18,7 @@ export default {
   props: ['address', 'btntitle'],
   data () {
     return {
+      isSmall: false
     }
   },
   components: {
@@ -26,6 +27,7 @@ export default {
   },
   mounted () {
     this.deployDoneth(this.address)
+    this.isSmall = (window.location.href.search('small') > -1)
     document.body.classList = document.body.classList + ' embedded-btn'
     document.querySelector('#app').style.margin = '0px'
 
@@ -50,11 +52,13 @@ export default {
   methods: {
     ...mapActions(['deployDoneth']),
     donate () {
-      if (typeof window.web3 !== 'undefined') {
-
-      } else {
-        return false
-      }
+      let address = window.location.href.split('/')
+      window.parent.location = `https://doneth.org/${address[3]}`
+      // if (typeof window.web3 !== 'undefined') {
+      //
+      // } else {
+      //   return false
+      // }
     }
   }
 }
@@ -67,15 +71,30 @@ export default {
   }
   .donate-embed {
     display: flex;
-    height: 50px;
+    height: 40px;
+    padding: 0;
 
     .btn {
       border-radius: 0px;
       width: 100%;
-      padding-top: 0;
+      height: 40px;
+      padding: 4px 0 5px;
 
       sub {
+        display: block;
         font-size: 8pt;
+      }
+    }
+
+    &.small {
+
+      .btn {
+        height: 22px;
+        padding: 1px 0 5px;
+
+        sub {
+          display: none;
+        }
       }
     }
   }

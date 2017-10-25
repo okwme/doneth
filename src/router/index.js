@@ -34,6 +34,12 @@ export default new Router({
       props: true
     },
     {
+      path: '/:address/donate-button-small',
+      name: 'DonateButton',
+      component: DonateButton,
+      props: true
+    },
+    {
       path: '/:address/donate-button/:btntitle',
       name: 'DonateButton',
       component: DonateButton,

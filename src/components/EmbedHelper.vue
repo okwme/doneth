@@ -5,10 +5,16 @@
 
     <div class="embed-preview">
       <div class="left">
-        <textarea rows="8" cols="40" v-text="codeSnippet"></textarea>
+        <textarea rows="4" cols="40" v-text="codeSnippet"></textarea>
       </div>
       <div class="right" id="embedHere">
         <div v-html="htm"></div>
+      </div>
+      <div class="left">
+        <textarea rows="4" cols="40" v-text="codeSnippetSmall"></textarea>
+      </div>
+      <div class="right" id="embedHere">
+        <div v-html="htmSmall"></div>
       </div>
     </div>
   </section>
@@ -21,12 +27,16 @@ export default {
   props: ['address'],
   data () {
     return {
-      htm: ''
+      htm: '',
+      htmSmall: ''
     }
   },
   computed: {
     codeSnippet () {
       return this.htm
+    },
+    codeSnippetSmall () {
+      return this.htmSmall
     }
   },
   mounted () {
@@ -37,7 +47,9 @@ export default {
       let mainurl = `https://doneth.org/${this.address}`
       // let mainurl = `http://localhost:8080/${this.address}`
       let url = `${mainurl}/donate-button`
-      this.htm = `<iframe src="${url}" width="305px" height="100px"></iframe>`
+      let urlSmall = `${mainurl}/donate-button-small`
+      this.htm = `<iframe border="0" src="${url}" width="305px" height="50px"></iframe>`
+      this.htmSmall = `<iframe border="0" src="${urlSmall}" width="130px" height="28px"></iframe>`
     }
   }
 }
@@ -65,13 +77,16 @@ export default {
   .embed-preview {
     background: darken($white, 3%);
     display: flex;
+    flex-wrap: wrap;
     padding: 20px 10px;
 
     .left,
     .right {
-      flex:1;
+      flex:1 1 50%;
       display: flex;
       padding: 0 10px;
+      max-width: 47%;
+      margin-bottom: 20px;
     }
 
     .right {
@@ -80,6 +95,8 @@ export default {
 
       div {
         display: flex;
+        justify-content: center;
+        margin: auto;
         width: 100%;
       }
     }

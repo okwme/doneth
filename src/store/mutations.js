@@ -53,7 +53,6 @@ export default {
     state.logs = []
   },
   ADD_LOGS (state, logs) {
-    console.log(logs)
     state.logs.push(...logs)
   },
   SET_SHARES (state, totalShares) {
