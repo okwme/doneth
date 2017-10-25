@@ -10,7 +10,7 @@
               <h4><small>Shares:</small> {{item.addedShares}}</h4>
             </div>
             <div class="details">
-              <div></div>
+              <div><a :href="transactionLink(item)">View Transaction Details</a></div>
               <div class="time">Block: {{item.block}}</div>
             </div>
           </template>
@@ -42,6 +42,9 @@ export default {
     dateTime (value) {
       if (!value) return ''
       return this.$moment(value).format('dddd, MMMM Do YYYY')
+    },
+    transactionLink (item) {
+      return `https://etherscan.io/tx/${item.transactionHash}`
     }
   },
   computed: {
@@ -51,6 +54,7 @@ export default {
         let obj = a.returnValues
         obj.type = a.event
         obj.block = a.blockNumber
+        obj.transactionHash = a.transactionHash
 
         if (!a.who) obj.who = a.returnValues[0]
         let member = this.members.find((m) => m.address === obj.who)
