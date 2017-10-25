@@ -1,13 +1,13 @@
 <template>
   <div class="add-funds">
     <button @click="depositing = true" type="button" name="button" class="btn btn-primary">
-      <b>Add Funds</b>
+      <b>{{btntitle}}</b>
       <template v-if="embed"> {{address}}</template>
       <short-hash v-else :hash="address"/>
     </button>
     <div class="funds-form" :class="{ active: depositing, embed: embed }">
       <div v-if="!embed" class="funds-title">
-        <h3>Add Funds</h3>
+        <h3>{{btntitle}}</h3>
         <small>{{address}}</small>
       </div>
       <div v-if="!embed" class="funds-meta">
@@ -40,6 +40,10 @@ export default {
       type: String,
       default: ''
     },
+    'btntitle': {
+      type: String,
+      default: 'Add Funds'
+    },
     'embed': {
       type: Boolean,
       default: false
@@ -54,6 +58,17 @@ export default {
     }
   },
   mounted () {
+    if (this.embed) {
+      // console.warn('EMBEDDED!!')
+      // let iframe = document.querySelector('iframe')
+      console.warn('EMBEDDED!!', window.parent, window.parent.document.querySelector('iframe'))
+      console.warn('iwnod!!', window.document.body)
+      // window.parent.document.frameBorder = 0
+      // window.parent.document.getElementById('myframe').width = '500px'
+      // window.parent.document.getElementById('myframe').height = '500px'
+      var url = (window.location !== window.parent.location) ? document.referrer : document.location.href
+      console.log('url', url)
+    }
     this.convertToCurrency(1).then((amount) => {
       this.convertedSingleEth = amount
     })
@@ -124,7 +139,7 @@ export default {
       left: 0;
       width:100% !important;
       .funds-actions {
-        padding: 10px 15px; 
+        padding: 10px 15px;
       }
       label {
         position: static;

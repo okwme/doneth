@@ -306,19 +306,24 @@ export default {
   makeDeposit ({state, dispatch, commit}, amount) {
     let wei = window.web3.utils.toWei(amount)
     dispatch('setLoading', true)
-    return window.web3.eth.sendTransaction({
+    console.log('makeDeposit', {
       from: state.account,
       to: state.address,
       value: wei
-    }).then((result) => {
-      dispatch('setLoading', false)
-      dispatch('readLogs')
-      dispatch('getContractInfo')
-      dispatch('pollAllowedAmounts')
-    }).catch((error) => {
-      console.error(error)
-      dispatch('setLoading', false)
     })
+    // return window.web3.eth.sendTransaction({
+    //   from: state.account,
+    //   to: state.address,
+    //   value: wei
+    // }).then((result) => {
+    //   dispatch('setLoading', false)
+    //   dispatch('readLogs')
+    //   dispatch('getContractInfo')
+    //   dispatch('pollAllowedAmounts')
+    // }).catch((error) => {
+    //   console.error(error)
+    //   dispatch('setLoading', false)
+    // })
     // state.Doneth.methods.send()
   },
   getAllowed ({state, commit}, address) {
