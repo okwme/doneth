@@ -1,16 +1,16 @@
 pragma solidity ^0.4.15;
 
 /**
- * @title Doneth (Don.eth)
+ * @title Doneth (Doneth)
  * @dev Doneth is a contract that allows members of a project
  * to share donations. Project supporters can submit donations.
  * The admins of the contract determine who is a member, and each
- * member gets a number of shares. The number of shares each 
- * member has determines how much Ether the member can withdraw 
- * from the contract. 
+ * member gets a number of shares. The number of shares each
+ * member has determines how much Ether the member can withdraw
+ * from the contract.
  */
 contract Doneth {
-    using SafeMath for uint256;  
+    using SafeMath for uint256;
 
     // Address of the contract creator
     address public founder;
@@ -24,7 +24,7 @@ contract Doneth {
     // Sum of all withdrawals done by members
     uint256 public totalWithdrawn;
 
-    // Variables to be used in the future 
+    // Variables to be used in the future
     bool public incrementShares;
     uint256 public incrementInterval;
 
@@ -65,13 +65,13 @@ contract Doneth {
         Deposit(msg.sender, msg.value);
     }
 
-    modifier onlyAdmin() { 
-        if (msg.sender != founder && !members[msg.sender].admin) revert();   
+    modifier onlyAdmin() {
+        if (msg.sender != founder && !members[msg.sender].admin) revert();
         _;
     }
 
-    modifier onlyExisting(address who) { 
-        if (!members[who].exists) revert(); 
+    modifier onlyExisting(address who) {
+        if (!members[who].exists) revert();
         _;
     }
 
@@ -79,15 +79,15 @@ contract Doneth {
     function getMemberCount() constant returns(uint){
       return memberKeys.length;
     }
-    
+
     function getMemberAtKey (uint key) constant returns(address) {
       return memberKeys[key];
     }
-    
+
     function getBalance() constant returns(uint256 balance) {
       return this.balance;
     }
-    
+
     function getFounder() constant returns(address) {
       return founder;
     }
@@ -95,13 +95,13 @@ contract Doneth {
     function getContractInfo() constant returns(string, address, uint256, uint256, uint256) {
         return (name, founder, genesisBlockNumber, totalShares, totalWithdrawn);
     }
-    
+
     function returnMember (address _address) constant onlyExisting(_address) returns(bool active, bool admin, uint256 shares, uint256 withdrawn, string memberName) {
       Member memory m = members[_address];
       return (m.active, m.admin, m.shares, m.withdrawn, m.memberName);
     }
 
-    // Function to add members to the contract 
+    // Function to add members to the contract
     function addMember(address who, uint256 shares, bool admin, string memberName) public onlyAdmin() {
         // Don't allow the same member to be added twice
         if (members[who].exists) revert();
@@ -139,7 +139,7 @@ contract Doneth {
     function withdraw(uint256 amount) public onlyExisting(msg.sender) {
         uint256 newTotal = calculateTotalWithdrawableAmount(msg.sender);
         if (amount > newTotal.sub(members[msg.sender].withdrawn)) revert();
-        
+
         members[msg.sender].withdrawn = members[msg.sender].withdrawn.add(amount);
         totalWithdrawn = totalWithdrawn.add(amount);
         msg.sender.transfer(amount);
@@ -152,9 +152,9 @@ contract Doneth {
     function calculateTotalWithdrawableAmount(address who) public constant onlyExisting(who) returns (uint256) {
         // Need to use parts-per notation to compute percentages for lack of floating point division
         uint256 balanceSum = this.balance.add(totalWithdrawn);
-        uint256 ethPerSharePPN = balanceSum.percent(totalShares, PRECISION); 
+        uint256 ethPerSharePPN = balanceSum.percent(totalShares, PRECISION);
         uint256 ethPPN = ethPerSharePPN.mul(members[who].shares);
-        uint256 ethVal = ethPPN.div(10**PRECISION); 
+        uint256 ethVal = ethPPN.div(10**PRECISION);
         Division(ethVal, balanceSum, totalShares);
         return ethVal;
     }
