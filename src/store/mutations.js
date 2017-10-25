@@ -1,5 +1,5 @@
 import BN from 'bignumber.js'
-
+import Vue from 'vue'
 export default {
   SET_LOADING (state, isLoading) {
     state.loading = isLoading
@@ -16,8 +16,10 @@ export default {
   SET_CONNECTED (state, isConnected) {
     state.connected = isConnected
   },
-  SET_CONVERSIONS (state, conversions) {
-    state.conversions = conversions
+  SET_CONVERSION (state, {symbol, amount}) {
+    let conversions = state.conversions
+    conversions[symbol] = amount
+    Vue.set(state, 'conversions', conversions)
   },
   ADD_MSG (state, msg) {
     state.notifications.push(msg)

@@ -52,16 +52,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['conversions', 'currency']),
+    ...mapGetters(['currenciesArray', 'currency']),
     justClicked () {
       return {justClicked: this.clicked}
     },
     options () {
-      let options = []
-      Object.keys(this.conversions).forEach((key, index) => {
-        options.push(key)
-      })
-      return options
+      return this.currenciesArray
     },
     activeCurrency () {
       return `Eth/${this.currency}`

@@ -51,21 +51,30 @@ export default {
       dispatch('checkAccount')
     }, 3000)
   },
-  checkAccount ({commit}) {
+  checkAccount ({commit, state}) {
     window.web3.eth.getAccounts((error, accounts) => {
-      // console.log(error, this.account, accounts[0], accounts)
       if (error) console.error(error)
-      if (accounts.length && this.account !== accounts[0]) {
+      if (state.account !== accounts[0]) {
         commit('SET_ACCOUNT', accounts[0])
-      } else {
+      } else if (!accounts.length) {
         commit('SET_ACCOUNT', null)
       }
     })
   },
-  getConversions ({commit}) {
-    const url = 'https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH&tsyms=USD,EUR,GBP,CNY,JPY'
+  // getConversions ({commit, dispatch}) {
+  //   dispatch('getConversion', 0)
+  //   const url = 'https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH&tsyms=USD,EUR,GBP,CNY,JPY'
+  //   axios.get(url).then((resp) => {
+  //     commit('SET_CONVERSIONS', resp.data.ETH)
+  //   })
+  // },
+  getConversion ({commit, dispatch, getters}, currencyKey) {
+    if (currencyKey > getters.currenciesArray.length - 1) return
+    let currency = getters.currenciesArray[currencyKey]
+    let url = 'https://api.infura.io/v1/ticker/eth' + currency.toLowerCase()
     axios.get(url).then((resp) => {
-      commit('SET_CONVERSIONS', resp.data.ETH)
+      commit('SET_CONVERSION', {symbol: currency, amount: resp.data.bid})
+      dispatch('getConversion', currencyKey + 1)
     })
   },
   addNotification ({commit}, msg) {
@@ -243,6 +252,7 @@ export default {
     let result = new BN(eth).mul(conversion).toFixed(2)
     let symbol = ''
     switch (state.currency) {
+      case ('CAD'):
       case ('USD'):
         symbol = '$'
         break

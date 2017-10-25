@@ -1,9 +1,10 @@
-import BN from 'bignumber.js'
+
 export default {
   account: state => state.account,
   metamask: state => state.metamask,
   connected: state => state.connected,
   conversions: state => state.conversions,
+  currenciesArray: state => state.currenciesArray,
   notifications: state => state.notifications,
   loading: state => state.loading,
   members: state => state.members,
@@ -13,14 +14,6 @@ export default {
   genesisBlock: state => state.genesisBlock,
   totalBalance: state => {
     return state.totalBalance && window.web3 && window.web3.utils && window.web3.utils.fromWei(state.totalBalance)
-  },
-  totalBalanceMinusWithdrawn: (state, getters) => {
-    console.log(getters.totalBalanceRaw)
-    console.log(getters.totalWithdrawn)
-    let foo = new BN(getters.totalBalanceRaw).sub(new BN(getters.totalWithdrawn))
-    console.log(foo.toString())
-    return 0
-    // return window.web3.utils.fromWei(foo)
   },
   totalBalanceRaw: state => state.totalBalance,
   totalWithdrawn: state => state.totalWithdrawn,
