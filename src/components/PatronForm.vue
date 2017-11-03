@@ -50,8 +50,7 @@ export default {
       sharesTotal: '',
       userAddress: '',
       isAdmin: false,
-      submitting: false,
-      confirming: false
+      submitting: false
     }
   },
   computed: {

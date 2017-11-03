@@ -11,9 +11,9 @@
       <input type="number" name="alloc_shares" v-model="sharesAllocated" placeholder="Shares" required>
     </div>
 
-    <div slot="footer">
+    <div class="footer">
       <template v-if="!submitting">
-        <button class="btn btn-secondary" @click="closeModal('modalAddMember')">Cancel</button>
+        <button class="btn btn-secondary" @click="closeModal('modalAllocateShares')">Cancel</button>
         <button class="btn btn-primary" name="button" @click="allocate()">Submit</button>
       </template>
       <template v-if="submitting">
@@ -40,7 +40,7 @@ export default {
     ...mapGetters(['members'])
   },
   methods: {
-    ...mapActions(['allocateShares']),
+    ...mapActions(['allocateShares', 'addNotification']),
     allocate () {
       this.submitting = true
       this.allocateShares({address: this.patron, amount: this.sharesAllocated}).then((done) => {
@@ -57,7 +57,7 @@ export default {
       })
     },
     closeModal (ref) {
-      this.$refs[ref].close()
+      this.$parent.$parent.$refs[ref].close()
     }
   }
 }
@@ -85,6 +85,18 @@ export default {
       font-size: 13pt;
       font-weight: 500;
       padding: 11px 12px 9px;
+    }
+  }
+
+  .footer {
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px -24px -24px;
+    background: #f5f5f5;
+    padding: 15px 24px;
+
+    .btn {
+      min-width: 100px;
     }
   }
 

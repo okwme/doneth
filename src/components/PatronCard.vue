@@ -59,9 +59,6 @@ export default {
       withdrawer: 0
     }
   },
-  mounted () {
-    console.log('mounted', this)
-  },
   computed: {
     ...mapGetters(['account', 'conversions', 'currency', 'totalShares', 'members', 'isAdmin'])
   },
@@ -128,8 +125,7 @@ export default {
       if (this.withdrawing) {
         this.makeWithdraw(this.withdrawAmount).then((result) => {
           this.withdrawing = false
-        }).catch((error) => {
-          console.error(error)
+        }).catch(() => {
           this.withdrawing = false
         })
       } else {

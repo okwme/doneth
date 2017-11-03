@@ -28,6 +28,9 @@ export default {
   methods: {
     openModal (ref) {
       this.$refs[ref].open()
+    },
+    closeModal (ref) {
+      this.$refs[ref].close()
     }
   },
   components: {
