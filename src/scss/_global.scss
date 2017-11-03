@@ -35,8 +35,7 @@ ul {
   background: $white;
   border-radius: $border-radius;
   box-shadow: 0 1px 10px -3px rgba(0,0,0,0.15);
-  width: 60vw;
-  min-width: 760px;
+  width: $page-content-width;
   margin: 0px auto 30px;
 }
 

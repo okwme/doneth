@@ -114,8 +114,7 @@ export default {
 
   .contract-header {
     display: flex;
-    width: 60vw;
-    min-width: 760px;
+    width: $page-content-width;
     margin: 20px auto 0;
 
     h2 {

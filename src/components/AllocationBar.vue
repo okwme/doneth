@@ -49,9 +49,8 @@ export default {
   .allocation-bar {
     display: flex;
     flex-direction: column;
-    min-width: 760px;
     margin: 20px auto;
-    width: 60vw;
+    width: $page-content-width;
   }
 
   .bar-graph {
