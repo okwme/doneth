@@ -43,6 +43,7 @@ export default {
       firstName: '',
       sharesTotal: '',
       userAddress: '',
+      isAdmin: false,
       submitting: false,
       confirming: false
     }

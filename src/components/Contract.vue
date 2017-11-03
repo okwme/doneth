@@ -28,6 +28,7 @@ import PatronCard from '@/components/PatronCard'
 import ShortHash from '@/components/ShortHash'
 import SectionHeader from '@/components/SectionHeader'
 import TransactionsList from '@/components/TransactionsList'
+import UiModal from '@/components/UiModal'
 import { mapGetters, mapActions } from 'vuex'
 export default {
 
@@ -93,7 +94,8 @@ export default {
     PatronCard,
     SectionHeader,
     ShortHash,
-    TransactionsList
+    TransactionsList,
+    UiModal
   }
 }
 </script>

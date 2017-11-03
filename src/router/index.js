@@ -35,13 +35,13 @@ export default new Router({
     },
     {
       path: '/:address/donate-button-small',
-      name: 'DonateButton',
+      name: 'DonateButtonSmall',
       component: DonateButton,
       props: true
     },
     {
       path: '/:address/donate-button/:btntitle',
-      name: 'DonateButton',
+      name: 'DonateButtonTitle',
       component: DonateButton,
       props: true
     },
