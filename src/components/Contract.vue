@@ -12,7 +12,13 @@
       <add-funds :address="address"/>
     </div>
     <allocation-bar :patrons="members"/>
-    <patron-card :address="address" :patrons="members"/>
+    <div class="patron-cards">
+      <expense-card class="expense-card" :address="address" />
+      <div class="patron-card" v-for="member in members">
+        <patron-card :address="address" :patron="member"/>
+      </div>
+      <patron-form v-if="isAdmin" :address="address"/>
+    </div>
     <administration v-if="isAdmin" />
     <embed-helper :address="address"/>
     <transactions-list :allocations="sortedLogs"/>
@@ -25,7 +31,9 @@ import AddFunds from '@/components/AddFunds'
 import AllocationBar from '@/components/AllocationBar'
 import Administration from '@/components/Administration'
 import EmbedHelper from '@/components/EmbedHelper'
+import ExpenseCard from '@/components/ExpenseCard'
 import PatronCard from '@/components/PatronCard'
+import PatronForm from '@/components/PatronForm'
 import ShortHash from '@/components/ShortHash'
 import SectionHeader from '@/components/SectionHeader'
 import TransactionsList from '@/components/TransactionsList'
@@ -91,7 +99,9 @@ export default {
     AllocationBar,
     Administration,
     EmbedHelper,
+    ExpenseCard,
     PatronCard,
+    PatronForm,
     SectionHeader,
     ShortHash,
     TransactionsList
@@ -131,5 +141,35 @@ export default {
       margin: auto 0;
       padding: 10px 0 6px;
     }
+  }
+
+  .patron-cards {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    min-width: 780px;
+    margin: 20px auto 30px;
+    width: 60vw;
+  }
+
+  .patron-card {
+    background: $white;
+    border-radius: $border-radius;
+    box-shadow: 0 1px 10px -2px rgba(0,0,0,0.1);
+    overflow: hidden;
+    margin: 0 10px;
+    transition: all 220ms ease;
+
+    &:hover {
+      box-shadow: 0 1px 20px -2px rgba(0,0,0,0.3);
+    }
+  }
+
+  .expense-card {
+    background: $white;
+    border-radius: $border-radius;
+    box-shadow: 0 1px 10px -2px rgba(0,0,0,0.1);
+    overflow: hidden;
+    margin: 0 10px;
   }
 </style>

@@ -1,47 +1,43 @@
 <template>
-  <div class="patron-cards">
-    <div class="patron-card" v-for="member in members" v-on:mouseenter="toggleActive(member, true)" v-on:mouseleave="toggleActive(member, false)">
-      <div class="user">
-        <div class="avatar" :style="{ background: colorHex(member) }">
-          <div>{{firstName(member)}}</div>
-        </div>
-        <div class="attributes">
-          <h3>{{member.memberName || 'FirstName'}}</h3>
-          <short-hash :hash="member.address || '0x0000000000000'"/>
-        </div>
+  <div v-on:mouseenter="toggleActive(patron, true)" v-on:mouseleave="toggleActive(patron, false)">
+    <div class="user">
+      <div class="avatar" :style="{ background: colorHex(patron) }">
+        <div>{{firstName(patron)}}</div>
       </div>
-      <hr class="divider" :style="{ background: colorHex(member) }">
-      <div class="meta">
-        <div class="meta-item">
-          <span>Shares: <strong>{{member.shares}}</strong></span>
-          <span>Transactions: <strong>{{member.transactions || 0}}</strong></span>
-        </div>
-        <div class="meta-item">
-          <span>Ownership: <strong>{{percentage(member)}}</strong></span>
-          <span>Allowed: <strong>{{getAllowedAmount(member.address) || 0}}</strong></span>
-        </div>
+      <div class="attributes">
+        <h3>{{patron.memberName || 'FirstName'}}</h3>
+        <short-hash :hash="patron.address || '0x0000000000000'"/>
       </div>
-      <div class="actions" :class="{ active: withdrawing }" v-if="member.address === account">
-        <div @click="withdrawing = !withdrawing" :class="{ active: withdrawing }" class="btn btn-primary">Withdraw</div>
-        <div class="withdraw-form" :class="{ active: withdrawing }">
-          <div class="fields">
-            <label for="">ETH</label>
-            <input :class="overdrafted(member, withdrawAmount)" class="center" type="number" placeholder="Amount (ETH)" v-model="withdrawAmount">
-            <input readOnly="true" class="center" type="text" :value="convertedAmount">
-          </div>
-          <div class="actions">
-            <button @click="cancelWithdraw" class="btn btn-error" name="button">Cancel</button>
-            <button @click="withdraw(member)" class="btn btn-primary" name="button">Confirm</button>
-          </div>
+    </div>
+    <hr class="divider" :style="{ background: colorHex(patron) }">
+    <div class="meta">
+      <div class="meta-item">
+        <span>Shares: <strong>{{patron.shares}}</strong></span>
+        <span>Transactions: <strong>{{patron.transactions || 0}}</strong></span>
+      </div>
+      <div class="meta-item">
+        <span>Ownership: <strong>{{percentage(patron)}}</strong></span>
+        <span>Allowed: <strong>{{getAllowedAmount(patron.address) || 0}}</strong></span>
+      </div>
+    </div>
+    <div class="actions" :class="{ active: withdrawing }" v-if="patron.address === account">
+      <div @click="withdrawing = !withdrawing" :class="{ active: withdrawing }" class="btn btn-primary">Withdraw</div>
+      <div class="withdraw-form" :class="{ active: withdrawing }">
+        <div class="fields">
+          <label for="">ETH</label>
+          <input :class="overdrafted(patron, withdrawAmount)" class="center" type="number" placeholder="Amount (ETH)" v-model="withdrawAmount">
+          <input readOnly="true" class="center" type="text" :value="convertedAmount">
+        </div>
+        <div class="actions">
+          <button @click="cancelWithdraw" class="btn btn-error" name="button">Cancel</button>
+          <button @click="withdraw(patron)" class="btn btn-primary" name="button">Confirm</button>
         </div>
       </div>
     </div>
-    <patron-form v-if="isAdmin" :address="address"/>
   </div>
 </template>
 
 <script>
-import PatronForm from '@/components/PatronForm'
 import ShortHash from '@/components/ShortHash'
 import { mapGetters, mapActions } from 'vuex'
 import BN from 'bignumber.js'
@@ -49,7 +45,7 @@ export default {
 
   name: 'PatronCard',
 
-  props: ['address'],
+  props: ['address', 'patron'],
 
   data () {
     return {
@@ -72,21 +68,21 @@ export default {
   },
   methods: {
     ...mapActions(['convertToCurrency', 'makeWithdraw', 'addNotification']),
-    isOverdrafted (member, withdrawing) {
-      if (isNaN(withdrawing) || isNaN(member.allowedAmount)) return false
-      let allowedAmount = new BN(window.web3.utils.toWei(member.allowedAmount))
+    isOverdrafted (patron, withdrawing) {
+      if (isNaN(withdrawing) || isNaN(patron.allowedAmount)) return false
+      let allowedAmount = new BN(window.web3.utils.toWei(patron.allowedAmount))
       withdrawing = new BN(window.web3.utils.toWei(withdrawing))
       return allowedAmount.greaterThanOrEqualTo(withdrawing)
     },
-    overdrafted (member, withdrawing) {
+    overdrafted (patron, withdrawing) {
       return {
-        overdrawn: !this.isOverdrafted(member, withdrawing)
+        overdrawn: !this.isOverdrafted(patron, withdrawing)
       }
     },
     getAllowedAmount (address) {
-      let member = this.members.find((member) => member.address === address)
-      if (!member || !member.allowedAmount) return 0
-      return new BN(member.allowedAmount).toFixed(4)
+      let patron = this.members.find((p) => p.address === address)
+      if (!patron || !patron.allowedAmount) return 0
+      return new BN(patron.allowedAmount).toFixed(4)
     },
     updateConversion () {
       if (!this.withdrawAmount) return
@@ -94,14 +90,14 @@ export default {
         this.convertedAmount = convertedAmount
       })
     },
-    firstName (member) {
-      let initial = (member && member.memberName) ? member.memberName.substring(0, 2) : '0x'
+    firstName (patron) {
+      let initial = (patron && patron.memberName) ? patron.memberName.substring(0, 2) : '0x'
       return initial.toUpperCase()
     },
-    colorHex (member) {
-      return (member && member.address) ? `#${member.address.slice(-6)}` : '#CCCCCC'
+    colorHex (patron) {
+      return (patron && patron.address) ? `#${patron.address.slice(-6)}` : '#CCCCCC'
     },
-    percentage (member) {
+    percentage (patron) {
       let num = parseInt(this.totalShares, 10)
       if (num === 0) {
         this.members.map((p) => {
@@ -110,18 +106,18 @@ export default {
           }
         })
       }
-      return Math.round((parseInt(member.shares, 10) * 100) / num) + '%'
+      return Math.round((parseInt(patron.shares, 10) * 100) / num) + '%'
     },
-    toggleActive: function (member, bool) {
+    toggleActive: function (patron, bool) {
       // TODO: Come back when not confused :)
-      // member.active = (typeof bool === 'undefined') ? true : bool
+      // patron.active = (typeof bool === 'undefined') ? true : bool
       // this.$emit('activemember')
     },
     cancelWithdraw () {
       this.withdrawing = false
       this.withdrawer = null
     },
-    withdraw (member) {
+    withdraw (patron) {
       if (this.withdrawing) {
         this.makeWithdraw(this.withdrawAmount).then((result) => {
           this.withdrawing = false
@@ -129,13 +125,12 @@ export default {
           this.withdrawing = false
         })
       } else {
-        this.withdrawer = member.address
+        this.withdrawer = patron.address
         this.withdrawing = true
       }
     }
   },
   components: {
-    PatronForm,
     ShortHash
   }
 }
@@ -143,30 +138,6 @@ export default {
 
 <style lang="scss" scoped>
   @import '../scss/variables';
-
-  .patron-cards {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    min-width: 780px;
-    margin: 20px auto 30px;
-    width: 60vw;
-  }
-
-  .patron-card {
-    background: $white;
-    border-radius: $border-radius;
-    box-shadow: 0 1px 10px -2px rgba(0,0,0,0.1);
-    overflow: hidden;
-    width: calc(32% - 20px);
-    margin: 0 10px;
-    // padding-bottom: 10px;
-    transition: all 220ms ease;
-
-    &:hover {
-      box-shadow: 0 1px 20px -2px rgba(0,0,0,0.3);
-    }
-  }
 
   .user {
     display: flex;

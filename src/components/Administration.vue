@@ -4,7 +4,7 @@
       <div class="heading">Administration</div>
       <div class="actions">
         <button class="btn btn-primary" @click="openModal('modalAllocateShares')">Allocate Shares</button>
-        <button class="btn btn-primary" @click="openModal('modalAddExpenseFunds')">Add Expense Funds</button>
+        <button class="btn btn-primary" @click="openModal('modalAllocateExpenseFunds')">Allocate Expense Funds</button>
         <button class="btn btn-primary" @click="openModal('modalWithdrawExpense')">Withdraw Expense</button>
       </div>
     </div>
