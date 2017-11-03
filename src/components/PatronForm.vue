@@ -103,10 +103,8 @@ export default {
     color: $lightgrey;
     cursor: pointer;
     overflow: hidden;
-    width: 250px;
-    margin: 10px 10px 10px;
+    margin: 0;
     padding-bottom: 10px;
-    transition: all 220ms ease;
 
     h1 {
       font-size: 75pt;
@@ -117,7 +115,6 @@ export default {
 
     &:hover {
       border-color: $primary;
-      box-shadow: 0 1px 20px -2px rgba(0,0,0,0.3);
       color: $darkgrey;
     }
   }

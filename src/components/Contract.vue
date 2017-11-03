@@ -17,7 +17,7 @@
       <div class="patron-card" v-for="member in members">
         <patron-card :address="address" :patron="member"/>
       </div>
-      <patron-form v-if="isAdmin" :address="address"/>
+      <patron-form class="patron-card" v-if="isAdmin" :address="address"/>
     </div>
     <administration v-if="isAdmin" />
     <embed-helper :address="address"/>
@@ -147,29 +147,25 @@ export default {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    min-width: 780px;
     margin: 20px auto 30px;
-    width: 60vw;
+    width: 820px;
   }
 
-  .patron-card {
-    background: $white;
-    border-radius: $border-radius;
-    box-shadow: 0 1px 10px -2px rgba(0,0,0,0.1);
-    overflow: hidden;
-    margin: 0 10px;
-    transition: all 220ms ease;
-
-    &:hover {
-      box-shadow: 0 1px 20px -2px rgba(0,0,0,0.3);
-    }
-  }
-
+  .patron-card,
   .expense-card {
     background: $white;
     border-radius: $border-radius;
     box-shadow: 0 1px 10px -2px rgba(0,0,0,0.1);
     overflow: hidden;
-    margin: 0 10px;
+    margin: 0 10px 20px;
+    width: calc(33% - 18px);
+  }
+
+  .patron-card {
+    transition: all 220ms ease;
+
+    &:hover {
+      box-shadow: 0 1px 20px -2px rgba(0,0,0,0.3);
+    }
   }
 </style>
