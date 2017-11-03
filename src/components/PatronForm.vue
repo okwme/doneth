@@ -14,6 +14,10 @@
         <label for="add_address">Address:</label>
         <input maxLength="42" type="text" name="add_address" v-model="userAddress" required>
       </div>
+<!--       <div class="field field-address">
+        <label for="add_address">Admin:</label>
+        <input type="checkbox" name="add_admin" v-model="userAdmin" required>
+      </div> -->
       <div class="actions">
         <h2 v-if="submitting">
           <button class="btn btn-primary">Sending...</button>
@@ -39,6 +43,7 @@ export default {
       firstName: '',
       sharesTotal: '',
       userAddress: '',
+      userAdmin: false,
       submitting: false,
       confirming: false
     }

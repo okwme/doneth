@@ -29,8 +29,11 @@ select::-ms-expand {
     min-height: 40px;
   }
 }
-
-input {
+input[type="checkbox"] {
+  -webkit-appearance: checkbox !important;
+  appearance: checkbox !important;
+}
+input{
   -webkit-appearance: none;
   appearance: none;
   border: 1px solid $lightgrey;

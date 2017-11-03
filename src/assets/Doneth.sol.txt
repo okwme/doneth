@@ -45,6 +45,7 @@ contract Doneth {
         uint256 shares;
         uint256 withdrawn;
         string memberName;
+        mapping(address => uint256) tokenWithdrawn;
     }
 
     function Doneth(string _contractName, string _founderName) {
@@ -54,8 +55,39 @@ contract Doneth {
         addMember(msg.sender, 1, true, _founderName);
     }
 
+    mapping(address => ERC20) public tokens;
+    address[] public tokenKeys;
+    struct Token {
+        bool exists;
+        uint256 totalWithdrawn;
+    }
+
+    // deposit to account
+    // means that user sends ERC20 to ERC20 address with contract address as owner
+    // balance is kept on corresponding contract
+
+    function checkERC20Balance(address token) public returns(uint256) {
+        // instantiate token
+        // check balance with this.address
+    }
+
+    function withdrawToken(uint256 amount, address token) public onlyExisting(msg.sender) {
+        uint256 newTotal = calculateTotalWithdrawableTokenAmount(msg.sender, token);
+        if (amount > newTotal.sub(members[msg.sender].tokenWithdrawn[token])) revert();
+
+        members[msg.sender].tokenWithdrawn[token] = members[msg.sender].tokenWithdrawn[token].add(amount);
+        tokens[token].totalWithdrawn = tokens[token].totalWithdrawn.add(amount);
+        // msg.sender.transfer(amount);
+        // HANDLE TOKEN TRANSFER
+        TokenWithdraw(msg.sender, amount, token, tokens[token].totalWithdrawn);
+    }
+
+
+
     event Deposit(address from, uint value);
     event Withdraw(address from, uint value, uint256 newTotalWithdrawn);
+    event TokenWithdraw(address from, address token, uint amount);
+    event PayExpense(address initatedBy, uint value, address to);
     event AddShare(address who, uint256 addedShares, uint256 newTotalShares);
     event RemoveShare(address who, uint256 removedShares, uint256 newTotalShares);
     event Division(uint256 num, uint256 balance, uint256 shares);
@@ -144,6 +176,15 @@ contract Doneth {
         totalWithdrawn = totalWithdrawn.add(amount);
         msg.sender.transfer(amount);
         Withdraw(msg.sender, amount, totalWithdrawn);
+    }
+
+
+    // Function for an admin to send Ether from the contract 
+    // to an arbitrary address.
+    function payExpense(uint256 amount, address to) public onlyAdmin() {
+        if (amount > this.balance) revert();
+        // msg.sender.transfer(amount);
+        PayExpense(msg.sender, amount, to);
     }
 
     // Converts from shares to Eth.
