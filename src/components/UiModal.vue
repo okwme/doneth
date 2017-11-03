@@ -276,7 +276,6 @@ $z-index-modal: 9999;
 .ui-modal__header {
     align-items: center;
     background-color: #F5F5F5;
-    box-shadow: 0 1px 1px rgba(black, 0.16);
     display: flex;
     height: $ui-modal-header-height;
     padding: 0 24px;
@@ -296,6 +295,17 @@ $z-index-modal: 9999;
 .ui-modal__close-button {
     margin-left: auto;
     margin-right: -8px;
+
+    button {
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      font-size: 30pt;
+      line-height: 23pt;
+      margin: 0;
+      outline: 0;
+      padding: 3px 0 10px 10px;
+    }
 }
 
 .ui-modal__body {
@@ -306,13 +316,16 @@ $z-index-modal: 9999;
 
 .ui-modal__footer {
     align-items: center;
+    background-color: #F5F5F5;
     display: flex;
     height: $ui-modal-footer-height;
     justify-content: flex-end;
     padding: 0 24px;
 
-    .ui-button {
+    .btn {
         margin-left: 8px;
+        min-width: 100px;
+
         &:first-child {
             margin-left: 0;
         }

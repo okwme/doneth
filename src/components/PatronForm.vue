@@ -1,7 +1,11 @@
 <template>
-  <div class="patron-form">
-    <form @submit.prevent="addNewMember()">
+  <div>
+    <div class="patron-form" @click="openModal('modalAddMember')">
+      <h1>+</h1>
       <h3>Add Member</h3>
+    </div>
+
+    <ui-modal ref="modalAddMember" title="Add Member">
       <div class="field">
         <label for="add_name">Name:</label>
         <input maxLength="64" type="text" name="add_name" v-model="firstName" required>
@@ -18,20 +22,22 @@
         <input type="checkbox" name="add_admin" v-model="isAdmin">
         <label for="add_admin">Is Admin?</label>
       </div>
-      <div class="actions">
-        <h2 v-if="submitting">
-          <button class="btn btn-primary">Sending...</button>
-        </h2>
+
+      <div slot="footer">
         <template v-if="!submitting">
-          <button class="btn btn-primary" type="submit" name="button">Submit</button>
+          <button class="btn btn-secondary" @click="closeModal('modalAddMember')">Cancel</button>
+          <button class="btn btn-primary" name="button" @click="addNewMember()">Submit</button>
+        </template>
+        <template v-if="submitting">
+          <button class="btn btn-primary">Sending...</button>
         </template>
       </div>
-    </form>
+    </ui-modal>
   </div>
 </template>
 
 <script>
-
+import UiModal from '@/components/UiModal'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -65,15 +71,24 @@ export default {
         this.userAddress = ''
         this.sharesTotal = ''
         this.firstName = ''
+        this.closeModal('modalAddMember')
       }).catch((error) => {
-        console.log('ERROR')
         this.submitting = false
         this.addNotification({
           text: error,
           class: 'error'
         })
       })
+    },
+    openModal (ref) {
+      this.$refs[ref].open()
+    },
+    closeModal (ref) {
+      this.$refs[ref].close()
     }
+  },
+  components: {
+    UiModal
   }
 }
 </script>
@@ -84,35 +99,27 @@ export default {
   .patron-form {
     background: $white;
     border-radius: $border-radius;
-    border: 2px solid $primary;
+    border: 4px dashed $lightgrey;
     box-shadow: 0 1px 10px -2px rgba(0,0,0,0.1);
+    color: $lightgrey;
+    cursor: pointer;
     overflow: hidden;
     width: 250px;
     margin: 10px 10px 10px;
     padding-bottom: 10px;
+    transition: all 220ms ease;
 
-    form {
-      display: flex;
-      flex-direction: column;
+    h1 {
+      font-size: 75pt;
+      font-weight: 100;
+      line-height: 45pt;
+      margin: 30px 0 10px;
     }
 
-    .field {
-      padding: 0 0 10px;
-    }
-
-    .field-address {
-      input {
-        padding-left: 80px;
-        width: 147px;
-      }
-    }
-  }
-
-  .actions {
-
-    .btn {
-      margin: 10px 0 0;
-      width: 70%;
+    &:hover {
+      border-color: $primary;
+      box-shadow: 0 1px 20px -2px rgba(0,0,0,0.3);
+      color: $darkgrey;
     }
   }
 </style>

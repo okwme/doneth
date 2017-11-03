@@ -62,13 +62,15 @@ label {
   }
 
   input {
-    padding-left: 70px;
+    padding: 0 10px 0 70px;
     text-align: right;
-    width: 160px;
-    max-width:100%;
+    max-width: 80%;
   }
 
   &.checkbox {
+    text-align: left;
+    padding-left: 15px;
+
     input {
       -webkit-appearance: checkbox;
       appearance: checkbox;
