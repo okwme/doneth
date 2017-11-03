@@ -1,40 +1,29 @@
 <template>
-  <div>
-    <button v-if="getAllowedAmount(patron.address) > 0" @click="openModal('modalWithdrawFunds')" class="btn btn-primary btn-link">Withdraw Funds</button>
+  <div class="withdraw-form">
+    <div class="funds-meta">
+      {{getAllowedAmount()}} ETH available to allocate
+    </div>
+    <div class="funds-options">
+      <button @click="useAllAmount()" class="btn btn-primary btn-outlined">All</button>
+      <button @click="useHalfAmount()" class="btn btn-primary btn-outlined">Half</button>
+      <button @click="useMinAmount()" class="btn btn-primary btn-outlined">Min</button>
+    </div>
+    <div class="fields">
+      <label for="">ETH</label>
+      <input :class="overdrafted(patron, withdrawAmount)" class="center" type="number" placeholder="Amount (ETH)" v-model="withdrawAmount">
+      <label for="">{{currency}}</label>
+      <input readOnly="true" class="center" type="text" :value="convertedAmount">
+    </div>
 
-    <ui-modal ref="modalWithdrawFunds" title="Withdraw Funds">
-      <div class="withdraw-form">
-        <div class="funds-meta">
-          You have {{getAllowedAmount(patron.address)}} ETH available to withraw
-        </div>
-        <div class="funds-options">
-          <button @click="useAllAmount()" class="btn btn-primary btn-outlined">All</button>
-          <button @click="useHalfAmount()" class="btn btn-primary btn-outlined">Half</button>
-          <button @click="useMinAmount()" class="btn btn-primary btn-outlined">Min</button>
-        </div>
-        <div class="fields">
-          <label for="">ETH</label>
-          <input :class="overdrafted(patron, withdrawAmount)" class="center" type="number" placeholder="Amount (ETH)" v-model="withdrawAmount">
-          <label for="">{{currency}}</label>
-          <input readOnly="true" class="center" type="text" :value="convertedAmount">
-        </div>
-        <p>Optionally send to different address:</p>
-        <div class="field field-address">
-          <label for="add_address">Address:</label>
-          <input maxLength="42" type="text" name="add_address" v-model="userAddress" placeholder="0x000000000..." required>
-        </div>
-      </div>
-
-      <div slot="footer">
-        <template v-if="!submitting">
-          <button class="btn btn-secondary" @click="closeModal('modalWithdrawFunds')">Cancel</button>
-          <button class="btn btn-primary" @click="withdraw(patron)">Submit</button>
-        </template>
-        <template v-if="submitting">
-          <button class="btn btn-primary">Sending...</button>
-        </template>
-      </div>
-    </ui-modal>
+    <div class="footer">
+      <template v-if="!submitting">
+        <button class="btn btn-secondary" @click="closeModal('modalAllocateExpenseFunds')">Cancel</button>
+        <button class="btn btn-primary" @click="withdraw(patron)">Submit</button>
+      </template>
+      <template v-if="submitting">
+        <button class="btn btn-primary">Sending...</button>
+      </template>
+    </div>
   </div>
 </template>
 
@@ -45,7 +34,7 @@ import { mapGetters, mapActions } from 'vuex'
 
 export default {
 
-  name: 'PatronWithdrawForm',
+  name: 'ExpenseAllocateForm',
   props: ['patron'],
   data () {
     return {
@@ -70,21 +59,24 @@ export default {
   },
   methods: {
     ...mapActions(['convertToCurrency', 'makeWithdraw', 'addNotification']),
-    getAllowedAmount (address) {
-      let patron = this.members.find((p) => p.address === address)
-      if (!patron || !patron.allowedAmount) return 0
-      return new BN(patron.allowedAmount).toFixed(4)
+    getAllowedAmount () {
+      return 100
+      // let patron = this.members.find((p) => p.address === address)
+      // if (!patron || !patron.allowedAmount) return 0
+      // return new BN(patron.allowedAmount).toFixed(4)
     },
-    getFullAllowedAmount (address) {
-      let patron = this.members.find((p) => p.address === address)
-      if (!patron || !patron.allowedAmount) return 0
-      return new BN(patron.allowedAmount)
+    getFullAllowedAmount () {
+      return 100
+      // let patron = this.members.find((p) => p.address === address)
+      // if (!patron || !patron.allowedAmount) return 0
+      // return new BN(patron.allowedAmount)
     },
     isOverdrafted (patron, withdrawing) {
-      if (isNaN(withdrawing) || isNaN(patron.allowedAmount)) return false
-      let allowedAmount = new BN(window.web3.utils.toWei(patron.allowedAmount))
-      withdrawing = new BN(window.web3.utils.toWei(withdrawing))
-      return allowedAmount.greaterThanOrEqualTo(withdrawing)
+      return false
+      // if (isNaN(withdrawing) || isNaN(patron.allowedAmount)) return false
+      // let allowedAmount = new BN(window.web3.utils.toWei(patron.allowedAmount))
+      // withdrawing = new BN(window.web3.utils.toWei(withdrawing))
+      // return allowedAmount.greaterThanOrEqualTo(withdrawing)
     },
     overdrafted (patron, withdrawing) {
       return {
@@ -118,19 +110,16 @@ export default {
       }
     },
     useAllAmount () {
-      this.withdrawAmount = this.getFullAllowedAmount(this.patron.address)
+      this.withdrawAmount = this.getFullAllowedAmount()
     },
     useHalfAmount () {
-      this.withdrawAmount = new BN(this.getFullAllowedAmount(this.patron.address) / 2 + '')
+      this.withdrawAmount = new BN(this.getFullAllowedAmount() / 2 + '')
     },
     useMinAmount () {
       this.withdrawAmount = new BN('0.005').toFixed(3)
     },
-    openModal (ref) {
-      this.$refs[ref].open()
-    },
     closeModal (ref) {
-      this.$refs[ref].close()
+      this.$parent.$parent.$refs[ref].close()
     }
   },
   components: {
@@ -149,7 +138,7 @@ export default {
   .withdraw-form {
 
     .fields {
-      margin: 10px auto;
+      margin: 10px auto 30px;
       width: 95%;
 
       label {
@@ -178,6 +167,18 @@ export default {
       &.overdrawn {
         border-color: $error;
       }
+    }
+  }
+
+  .footer {
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px -24px -24px;
+    background: #f5f5f5;
+    padding: 15px 24px;
+
+    .btn {
+      min-width: 100px;
     }
   }
 

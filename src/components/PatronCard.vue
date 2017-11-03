@@ -41,15 +41,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['account', 'conversions', 'currency', 'totalShares', 'members', 'isAdmin'])
-  },
-  watch: {
-    withdrawAmount () {
-      this.updateConversion()
-    },
-    currency () {
-      this.updateConversion()
-    }
+    ...mapGetters(['account', 'totalShares', 'members', 'isAdmin'])
   },
   methods: {
     getAllowedAmount (address) {

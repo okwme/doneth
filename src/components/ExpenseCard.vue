@@ -3,28 +3,26 @@
     <div class="user">
       <h3>Accounts Payable</h3>
     </div>
-    <!-- <hr class="divider" :style="{ background: colorHex(member) }"> -->
+    <goal-bar :total="100" :current="23" />
     <div class="meta">
+      <div class="meta-item">
+        <span>Available: <strong>0.3 ETH / $100</strong></span>
+      </div>
       <div class="meta-item">
         <span>Allotment: <strong>{{percentage(member)}}</strong></span>
         <span>Used: <strong>{{member.shares}}%</strong></span>
-      </div>
-      <div class="meta-item">
-        <span>Available: <strong>0.3 ETH / $100</strong></span>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import GoalBar from '@/components/GoalBar'
 import { mapGetters, mapActions } from 'vuex'
 import BN from 'bignumber.js'
 export default {
-
   name: 'ExpenseCard',
-
   props: ['address'],
-
   data () {
     return {
       withdrawAmount: 0,
@@ -90,6 +88,9 @@ export default {
       }
       return Math.round((parseInt(member.shares, 10) * 100) / num) + '%'
     }
+  },
+  components: {
+    GoalBar
   }
 }
 </script>

@@ -279,9 +279,12 @@ export default {
     let result = new BN(eth).div(conversion).toFixed(8)
     return result
   },
-  makeWithdraw ({state, dispatch, commit}, amount) {
-    if (!state.account || !amount) return
-    let wei = new BN(window.web3.utils.toWei(amount))
+  makeWithdraw ({state, dispatch, commit}, withdrawOptions) {
+    console.log('withdrawOptions', withdrawOptions)
+    if (!state.account || !withdrawOptions.amount) return
+    let wei = new BN(window.web3.utils.toWei(withdrawOptions.amount))
+    // TODO: This wei seems wrong!! Whyyyyyy
+    console.log('wei', wei)
     return state.Doneth.methods.calculateTotalWithdrawableAmount(state.account).call().then((result) => {
       let member = state.members.find((member) => member.address === state.account)
       if (!member) return new Error('No Member')
@@ -290,7 +293,10 @@ export default {
 
       if (result.sub(withdrawnAlready).greaterThanOrEqualTo(wei)) {
         dispatch('setLoading', true)
-        return state.Doneth.methods.withdraw(wei).send({from: state.account}).then((result) => {
+        let options = {from: state.account}
+        // TODO: Is this correct?! "to" option to send to recipient
+        if (withdrawOptions.optionalAddress) options.to = withdrawOptions.optionalAddress
+        return state.Doneth.methods.withdraw(wei).send(options).then((result) => {
           dispatch('readLogs')
           commit('UPDATE_MEMBER_WITHDRAWN', {amount: wei, address: state.account})
           dispatch('setLoading', false)

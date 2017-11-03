@@ -12,12 +12,22 @@
     <ui-modal ref="modalAllocateShares" title="Allocate Shares">
       <allocation-form />
     </ui-modal>
+
+    <ui-modal ref="modalAllocateExpenseFunds" title="Allocate Funds for Expense">
+      <expense-allocate-form />
+    </ui-modal>
+
+    <ui-modal ref="modalWithdrawExpense" title="Withdraw Expense Funds">
+      <expense-withdraw-form />
+    </ui-modal>
   </section>
 </template>
 
 <script>
 import UiModal from '@/components/UiModal'
 import AllocationForm from '@/components/AllocationForm'
+import ExpenseAllocateForm from '@/components/ExpenseAllocateForm'
+import ExpenseWithdrawForm from '@/components/ExpenseWithdrawForm'
 
 export default {
   name: 'Administration',
@@ -35,6 +45,8 @@ export default {
   },
   components: {
     AllocationForm,
+    ExpenseAllocateForm,
+    ExpenseWithdrawForm,
     UiModal
   }
 }
