@@ -1,21 +1,25 @@
 <template>
-  <div class="page-card allocations">
-    <h3>Allocate Shares</h3>
-    <form class="allocations-form" action="" method="post" @submit.prevent="allocate()">
-      <div class="field">
-        <label for="alloc_patron">To:</label>
-        <select name="alloc_patron" v-model="patron" required>
-          <option v-for="item in members" :value="item.address">{{item.memberName}}</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="alloc_shares">Shares:</label>
-        <input type="number" name="alloc_shares" v-model="sharesAllocated" placeholder="Shares" required>
-      </div>
-      <div class="field">
-        <button class="btn btn-primary" type="submit" name="button">Allocate</button>
-      </div>
-    </form>
+  <div>
+    <div class="field">
+      <label for="alloc_patron">To:</label>
+      <select name="alloc_patron" v-model="patron" required>
+        <option v-for="item in members" :value="item.address">{{item.memberName}}</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="alloc_shares">Shares:</label>
+      <input type="number" name="alloc_shares" v-model="sharesAllocated" placeholder="Shares" required>
+    </div>
+
+    <div slot="footer">
+      <template v-if="!submitting">
+        <button class="btn btn-secondary" @click="closeModal('modalAddMember')">Cancel</button>
+        <button class="btn btn-primary" name="button" @click="allocate()">Submit</button>
+      </template>
+      <template v-if="submitting">
+        <button class="btn btn-primary">Sending...</button>
+      </template>
+    </div>
   </div>
 </template>
 
@@ -28,7 +32,8 @@ export default {
   data () {
     return {
       patron: null,
-      sharesAllocated: 0
+      sharesAllocated: 0,
+      submitting: false
     }
   },
   computed: {
@@ -37,10 +42,22 @@ export default {
   methods: {
     ...mapActions(['allocateShares']),
     allocate () {
+      this.submitting = true
       this.allocateShares({address: this.patron, amount: this.sharesAllocated}).then((done) => {
+        this.submitting = false
         this.patron = null
         this.sharesAllocated = 0
+        this.closeModal('modalAllocateShares')
+      }).catch((error) => {
+        this.submitting = false
+        this.addNotification({
+          text: error,
+          class: 'error'
+        })
       })
+    },
+    closeModal (ref) {
+      this.$refs[ref].close()
     }
   }
 }

@@ -13,7 +13,7 @@
     </div>
     <allocation-bar :patrons="members"/>
     <patron-card :address="address" :patrons="members"/>
-    <allocation-form  v-if="isAdmin" />
+    <administration v-if="isAdmin" />
     <embed-helper :address="address"/>
     <transactions-list :allocations="sortedLogs"/>
 
@@ -23,7 +23,7 @@
 <script>
 import AddFunds from '@/components/AddFunds'
 import AllocationBar from '@/components/AllocationBar'
-import AllocationForm from '@/components/AllocationForm'
+import Administration from '@/components/Administration'
 import EmbedHelper from '@/components/EmbedHelper'
 import PatronCard from '@/components/PatronCard'
 import ShortHash from '@/components/ShortHash'
@@ -89,7 +89,7 @@ export default {
   components: {
     AddFunds,
     AllocationBar,
-    AllocationForm,
+    Administration,
     EmbedHelper,
     PatronCard,
     SectionHeader,
