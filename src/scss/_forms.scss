@@ -67,6 +67,15 @@ label {
     width: 160px;
     max-width:100%;
   }
+
+  &.checkbox {
+    input {
+      -webkit-appearance: checkbox;
+      appearance: checkbox;
+      padding: 0;
+      width: auto;
+    }
+  }
 }
 input.center {
   text-align:center;

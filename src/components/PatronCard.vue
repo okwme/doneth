@@ -59,6 +59,9 @@ export default {
       withdrawer: 0
     }
   },
+  mounted () {
+    console.log('mounted', this)
+  },
   computed: {
     ...mapGetters(['account', 'conversions', 'currency', 'totalShares', 'members', 'isAdmin'])
   },

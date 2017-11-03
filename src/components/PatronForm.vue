@@ -14,6 +14,10 @@
         <label for="add_address">Address:</label>
         <input maxLength="42" type="text" name="add_address" v-model="userAddress" required>
       </div>
+      <div class="field checkbox">
+        <input type="checkbox" name="add_admin" v-model="isAdmin">
+        <label for="add_admin">Is Admin?</label>
+      </div>
       <div class="actions">
         <h2 v-if="submitting">
           <button class="btn btn-primary">Sending...</button>
