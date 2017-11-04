@@ -107,6 +107,7 @@ export default {
     }
   },
   populateContractData ({dispatch}) {
+    console.log('populateContractData')
     dispatch('pollMembers').then(() => {
       return dispatch('pollAllowedAmounts')
     })
@@ -120,10 +121,10 @@ export default {
       commit('SET_BLOCK', genesisBlockNumber)
     })
     console.log(state.Doneth)
-    // state.Doneth.methods.totalShares({}).call().then((totalShares) => {
-    //   console.log(totalShares)
-    //   commit('SET_SHARES', totalShares)
-    // })
+    state.Doneth.methods.totalShares().call().then((totalShares) => {
+      console.log(totalShares)
+      commit('SET_SHARES', totalShares)
+    })
     state.Doneth.methods.name().call().then((name) => {
       commit('SET_NAME', name)
     })
@@ -139,7 +140,8 @@ export default {
   },
   readLogs ({dispatch, state, commit}) {
     commit('CLEAR_LOGS')
-    state.Doneth.getPastEvents('AddShare', {
+
+    let p1 = state.Doneth.getPastEvents('AddShare', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
@@ -147,7 +149,7 @@ export default {
       commit('ADD_LOGS', results)
     })
 
-    state.Doneth.getPastEvents('RemoveShare', {
+    let p2 = state.Doneth.getPastEvents('RemoveShare', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
@@ -155,7 +157,7 @@ export default {
       commit('ADD_LOGS', results)
     })
 
-    state.Doneth.getPastEvents('Deposit', {
+    let p3 = state.Doneth.getPastEvents('Deposit', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
@@ -163,13 +165,14 @@ export default {
       commit('ADD_LOGS', results)
     })
 
-    state.Doneth.getPastEvents('Withdraw', {
+    let p4 = state.Doneth.getPastEvents('Withdraw', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
     .then((results) => {
       commit('ADD_LOGS', results)
     })
+    return Promise.all([p1, p2, p3, p4])
   },
   pollAllowedAmounts ({dispatch, state}) {
     return dispatch('pollAllowedAmount', 0)
@@ -199,12 +202,13 @@ export default {
   },
   pollSharedExpense ({state, commit}) {
     return state.Doneth.methods.getSharedExpense().call().then((amount) => {
-      commit('SET_EXPENSE', amount)
+      console.log(amount)
+      return commit('SET_EXPENSE', amount)
     })
   },
   pollSharedExpenseWithdrawn ({state, commit}) {
     return state.Doneth.methods.getSharedExpenseWithdrawn().call().then((amount) => {
-      commit('SET_EXPENSEWITHDRAWN', amount)
+      return commit('SET_EXPENSEWITHDRAWN', amount)
     })
   },
 
