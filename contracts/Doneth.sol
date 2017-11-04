@@ -156,7 +156,8 @@ contract Doneth {
     // expenses. Shared expense allocation subtracts from the withdrawable amount each member 
     // can withdraw based on shares. Only founder can change this amount.
     function changeSharedExpenseAllocation(uint256 newAllocation) public onlyFounder() {
-        if (newAllocation > this.balance) revert();
+        if (newAllocation < sharedExpenseWithdrawn) revert();
+        if (newAllocation.sub(sharedExpenseWithdrawn) > this.balance) revert();
 
         uint256 oldAllocation = sharedExpense;
         sharedExpense = newAllocation;
