@@ -10,7 +10,7 @@
     </div>
     <div class="fields">
       <label for="">ETH</label>
-      <input :class="overdrafted(patron, withdrawAmount)" class="center" type="number" placeholder="Amount (ETH)" v-model="withdrawAmount">
+      <input class="center" type="number" placeholder="Amount (ETH)" v-model="allocateAmount">
       <label for="">{{currency}}</label>
       <input readOnly="true" class="center" type="text" :value="convertedAmount">
     </div>
@@ -18,7 +18,7 @@
     <div class="footer">
       <template v-if="!submitting">
         <button class="btn btn-secondary" @click="closeModal('modalAllocateExpenseFunds')">Cancel</button>
-        <button class="btn btn-primary" @click="withdraw(patron)">Submit</button>
+        <button class="btn btn-primary" @click="allocate()">Submit</button>
       </template>
       <template v-if="submitting">
         <button class="btn btn-primary">Sending...</button>
@@ -38,19 +38,16 @@ export default {
   props: ['patron'],
   data () {
     return {
-      userAddress: null,
-      withdrawAmount: 0,
+      allocateAmount: 0,
       convertedAmount: 0,
-      withdrawer: 0,
-      withdrawing: false,
       submitting: false
     }
   },
   computed: {
-    ...mapGetters(['account', 'members', 'conversions', 'currency'])
+    ...mapGetters(['account', 'conversions', 'currency'])
   },
   watch: {
-    withdrawAmount () {
+    allocateAmount () {
       this.updateConversion()
     },
     currency () {
@@ -58,65 +55,40 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['convertToCurrency', 'makeWithdraw', 'addNotification']),
-    getAllowedAmount () {
-      return 100
-      // let patron = this.members.find((p) => p.address === address)
-      // if (!patron || !patron.allowedAmount) return 0
-      // return new BN(patron.allowedAmount).toFixed(4)
-    },
-    getFullAllowedAmount () {
-      return 100
-      // let patron = this.members.find((p) => p.address === address)
-      // if (!patron || !patron.allowedAmount) return 0
-      // return new BN(patron.allowedAmount)
-    },
-    isOverdrafted (patron, withdrawing) {
-      return false
-      // if (isNaN(withdrawing) || isNaN(patron.allowedAmount)) return false
-      // let allowedAmount = new BN(window.web3.utils.toWei(patron.allowedAmount))
-      // withdrawing = new BN(window.web3.utils.toWei(withdrawing))
-      // return allowedAmount.greaterThanOrEqualTo(withdrawing)
-    },
-    overdrafted (patron, withdrawing) {
-      return {
-        overdrawn: !this.isOverdrafted(patron, withdrawing)
-      }
-    },
-    updateConversion () {
-      if (!this.withdrawAmount) return
-      this.convertToCurrency(this.withdrawAmount).then((convertedAmount) => {
-        this.convertedAmount = convertedAmount
-      })
-    },
-    cancelWithdraw () {
-      this.withdrawing = false
-      this.submitting = false
-      this.withdrawer = null
-    },
-    withdraw (patron) {
-      if (this.withdrawAmount) {
-        this.withdrawer = patron.address
+    ...mapActions(['convertToCurrency', 'allocateExpenseAmount', 'addNotification']),
+    allocate () {
+      if (this.allocateAmount) {
         this.submitting = true
-        console.log('this.userAddress', this.userAddress, this.withdrawAmount)
-        this.makeWithdraw({amount: this.withdrawAmount + '', optionalAddress: this.userAddress}).then((result) => {
-          this.withdrawing = false
+        console.log('this.userAddress', this.allocateAmount)
+        this.allocateExpenseAmount(this.allocateAmount).then((result) => {
           this.submitting = false
-          this.closeModal('modalWithdrawFunds')
+          this.closeModal('modalAllocateExpenseFunds')
         }).catch(() => {
-          this.withdrawing = false
           this.submitting = false
         })
       }
     },
+    getAllowedAmount () {
+      return 100
+      // TODO:!!!!!!!
+      // let patron = this.members.find((p) => p.address === address)
+      // if (!patron || !patron.allowedAmount) return 0
+      // return new BN(patron.allowedAmount)
+    },
+    updateConversion () {
+      if (!this.allocateAmount) return
+      this.convertToCurrency(this.allocateAmount).then((convertedAmount) => {
+        this.convertedAmount = convertedAmount
+      })
+    },
     useAllAmount () {
-      this.withdrawAmount = this.getFullAllowedAmount()
+      this.allocateAmount = this.getFullAllowedAmount()
     },
     useHalfAmount () {
-      this.withdrawAmount = new BN(this.getFullAllowedAmount() / 2 + '')
+      this.allocateAmount = new BN(this.getFullAllowedAmount() / 2 + '')
     },
     useMinAmount () {
-      this.withdrawAmount = new BN('0.005').toFixed(3)
+      this.allocateAmount = new BN('0.005').toFixed(3)
     },
     closeModal (ref) {
       this.$parent.$parent.$refs[ref].close()

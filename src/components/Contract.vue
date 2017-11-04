@@ -17,7 +17,7 @@
       <div class="patron-card" v-for="member in members">
         <patron-card :address="address" :patron="member"/>
       </div>
-      <patron-form class="patron-card" v-if="isAdmin" :address="address"/>
+      <patron-form class="patron-card add-card" v-if="isAdmin" :address="address"/>
     </div>
     <administration v-if="isAdmin" />
     <embed-helper :address="address"/>
@@ -165,6 +165,15 @@ export default {
 
     &:hover {
       box-shadow: 0 1px 20px -2px rgba(0,0,0,0.3);
+    }
+  }
+
+  .add-card {
+    border: 4px dashed $lightgrey;
+    margin: 0 6px 20px;
+
+    &:hover {
+      border-color: $primary;
     }
   }
 </style>

@@ -17,6 +17,8 @@ export default {
   },
   totalBalanceRaw: state => state.totalBalance,
   totalWithdrawn: state => state.totalWithdrawn,
+  totalExpense: state => state.totalExpense,
+  totalExpenseWithdrawn: state => state.totalExpenseWithdrawn,
   logs: state => state.logs,
   currency: state => state.currency,
   sortedLogs: (state) => {

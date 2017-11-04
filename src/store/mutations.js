@@ -72,6 +72,12 @@ export default {
   SET_WITHDRAWN (state, totalWithdrawn) {
     state.totalWithdrawn = totalWithdrawn
   },
+  SET_EXPENSE (state, totalExpense) {
+    state.totalExpense = totalExpense
+  },
+  SET_EXPENSEWITHDRAWN (state, totalExpenseWithdrawn) {
+    state.totalExpenseWithdrawn = totalExpenseWithdrawn
+  },
   SET_CURRENCY (state, currency) {
     state.currency = currency
   },

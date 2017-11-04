@@ -30,6 +30,8 @@ const state = {
   genesisBlock: 0,
   totalWithdrawn: 0,
   totalBalance: 0,
+  totalExpense: 1,
+  totalExpenseWithdrawn: 1,
   logs: [],
   abi
 }

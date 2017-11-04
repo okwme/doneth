@@ -112,6 +112,8 @@ export default {
     })
     dispatch('getContractInfo')
     dispatch('readLogs')
+    dispatch('pollSharedExpense')
+    dispatch('pollSharedExpenseWithdrawn')
   },
   getContractInfo ({state, commit}) {
     state.Doneth.methods.genesisBlockNumber().call().then((genesisBlockNumber) => {
@@ -192,6 +194,16 @@ export default {
           }
         })
       })
+  },
+  pollSharedExpense ({state, commit}) {
+    return state.Doneth.methods.getSharedExpense().call().then((amount) => {
+      commit('SET_EXPENSE', amount)
+    })
+  },
+  pollSharedExpenseWithdrawn ({state, commit}) {
+    return state.Doneth.methods.getSharedExpenseWithdrawn().call().then((amount) => {
+      commit('SET_EXPENSEWITHDRAWN', amount)
+    })
   },
 
   allocateShares ({state, dispatch, commit}, {address, amount}) {
@@ -313,6 +325,41 @@ export default {
       dispatch('addNotification', {class: 'error', text: 'Unknown Error, please check logs'})
     })
   },
+  // TODO: ----------------------------
+  makeExpenseWithdraw ({state, dispatch, commit}, withdrawOptions) {
+    console.log('withdrawOptions', withdrawOptions)
+    if (!state.account || !withdrawOptions.amount) return
+    let wei = new BN(window.web3.utils.toWei(withdrawOptions.amount))
+    // TODO: This wei seems wrong!! Whyyyyyy
+    console.log('wei', wei)
+    return state.Doneth.methods.calculateTotalWithdrawableAmount(state.account).call().then((result) => {
+      let member = state.members.find((member) => member.address === state.account)
+      if (!member) return new Error('No Member')
+      let withdrawnAlready = new BN(member.withdrawn)
+      result = new BN(result)
+
+      if (result.sub(withdrawnAlready).greaterThanOrEqualTo(wei)) {
+        dispatch('setLoading', true)
+        let options = {from: state.account}
+        // TODO: Is this correct?! "to" option to send to recipient
+        if (withdrawOptions.optionalAddress) options.to = withdrawOptions.optionalAddress
+        return state.Doneth.methods.withdrawSharedExpense(wei).send(options).then((result) => {
+          dispatch('readLogs')
+          commit('UPDATE_MEMBER_WITHDRAWN', {amount: wei, address: state.account})
+          dispatch('setLoading', false)
+          dispatch('getContractInfo')
+          dispatch('pollAllowedAmounts')
+          dispatch('addNotification', {class: 'success', text: 'Withdrawn 🎉'})
+        })
+      } else {
+        dispatch('addNotification', {class: 'error', text: 'Insufficient Shares to withdraw that amount'})
+      }
+    }).catch((error) => {
+      console.error(error)
+      dispatch('setLoading', false)
+      dispatch('addNotification', {class: 'error', text: 'Unknown Error, please check logs'})
+    })
+  },
   makeDeposit ({state, dispatch, commit}, amount) {
     if (!state.account || !state.address || !amount) return
     let wei = window.web3.utils.toWei(amount)
@@ -335,6 +382,32 @@ export default {
   getAllowed ({state, commit}, address) {
     return state.Doneth.methods.calculateTotalWithdrawableAmount(address).call().then((amount) => {
       commit('UPDATE_MEMBER_AMOUNT', {address, amount})
+    })
+  },
+  allocateExpenseAmount ({state, dispatch, commit}, amount) {
+    let wei = window.web3.utils.toWei(new BN(amount))
+    return new Promise((resolve, reject) => {
+      dispatch('setLoading', true)
+      return state.Doneth.methods.changeSharedExpenseAllocation(wei).send({from: state.account})
+      .on('transactionHash', (hash) => {
+        console.log('hash', hash)
+      })
+      .on('error', (error) => {
+        console.error(error)
+        dispatch('setLoading', false)
+        reject(error)
+      })
+      .then((result) => {
+        dispatch('pollSharedExpense')
+        dispatch('pollSharedExpenseWithdrawn')
+        dispatch('pollAllowedAmounts')
+        dispatch('setLoading', false)
+        dispatch('addNotification', {
+          text: 'Expense allocated successfully!',
+          class: 'success'
+        })
+        resolve()
+      })
     })
   }
 }

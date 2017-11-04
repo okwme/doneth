@@ -3,14 +3,14 @@
     <div class="user">
       <h3>Accounts Payable</h3>
     </div>
-    <goal-bar :total="100" :current="23" />
+    <goal-bar :total="percentageAllotted" :current="percentageAllotted - percentageUsed" />
     <div class="meta">
       <div class="meta-item">
-        <span>Available: <strong>0.3 ETH / $100</strong></span>
+        <span>Available: <strong>{{totalExpenseWei}} ETH</strong><strong v-if="getConvertedTotal() > 0"> / {{getConvertedTotal()}}</strong></span>
       </div>
       <div class="meta-item">
-        <span>Allotment: <strong>{{percentage(member)}}</strong></span>
-        <span>Used: <strong>{{member.shares}}%</strong></span>
+        <span>Allotted: <strong>{{percentageAllotted}}%</strong></span>
+        <span>Used: <strong>{{percentageUsed}}%</strong></span>
       </div>
     </div>
   </div>
@@ -22,71 +22,39 @@ import { mapGetters, mapActions } from 'vuex'
 import BN from 'bignumber.js'
 export default {
   name: 'ExpenseCard',
-  props: ['address'],
   data () {
     return {
-      withdrawAmount: 0,
-      convertedAmount: 0,
-      withdrawing: false,
-      withdrawer: 0,
-      member: {
-        shares: 1,
-        transactions: 1
-      }
     }
   },
   computed: {
-    ...mapGetters(['account', 'conversions', 'currency', 'totalShares', 'members', 'isAdmin'])
+    ...mapGetters(['account', 'conversions', 'currency', 'totalBalance', 'totalExpense', 'totalExpenseWithdrawn', 'isAdmin']),
+    percentageAllotted () {
+      if (!window.web3 || !window.web3.utils) return
+      let totalWei = window.web3.utils.toWei(this.totalBalance)
+      return ((this.totalExpense + this.totalExpenseWithdrawn) / totalWei).toFixed(2)
+    },
+    percentageUsed () {
+      return this.totalExpenseWithdrawnWei
+    },
+    totalExpenseWei () {
+      if (!window.web3 || !window.web3.utils) return
+      return window.web3.utils.fromWei(new BN(this.totalExpense), 'ether')
+    },
+    totalExpenseWithdrawnWei () {
+      if (!window.web3 || !window.web3.utils) return
+      return window.web3.utils.fromWei(new BN(this.totalExpenseWithdrawn), 'ether')
+    }
   },
   watch: {
-    withdrawAmount () {
-      this.updateConversion()
-    },
     currency () {
-      this.updateConversion()
+      this.getConvertedTotal()
     }
   },
   methods: {
-    ...mapActions(['convertToCurrency', 'makeWithdraw', 'addNotification']),
-    isOverdrafted (member, withdrawing) {
-      if (isNaN(withdrawing) || isNaN(member.allowedAmount)) return false
-      let allowedAmount = new BN(window.web3.utils.toWei(member.allowedAmount))
-      withdrawing = new BN(window.web3.utils.toWei(withdrawing))
-      return allowedAmount.greaterThanOrEqualTo(withdrawing)
-    },
-    overdrafted (member, withdrawing) {
-      return {
-        overdrawn: !this.isOverdrafted(member, withdrawing)
-      }
-    },
-    getAllowedAmount (address) {
-      let member = this.members.find((member) => member.address === address)
-      if (!member || !member.allowedAmount) return 0
-      return new BN(member.allowedAmount).toFixed(4)
-    },
-    updateConversion () {
-      if (!this.withdrawAmount) return
-      this.convertToCurrency(this.withdrawAmount).then((convertedAmount) => {
-        this.convertedAmount = convertedAmount
-      })
-    },
-    firstName (member) {
-      let initial = (member && member.memberName) ? member.memberName.substring(0, 2) : '0x'
-      return initial.toUpperCase()
-    },
-    colorHex (member) {
-      return (member && member.address) ? `#${member.address.slice(-6)}` : '#CCCCCC'
-    },
-    percentage (member) {
-      let num = parseInt(this.totalShares, 10)
-      if (num === 0) {
-        this.members.map((p) => {
-          if (p && p.shares && !isNaN(parseInt(p.shares, 10))) {
-            num += parseInt(p.shares, 10)
-          }
-        })
-      }
-      return Math.round((parseInt(member.shares, 10) * 100) / num) + '%'
+    ...mapActions(['convertToCurrency']),
+    getConvertedTotal () {
+      if (!this.totalExpenseWei) return 0
+      return this.convertToCurrency(new BN(this.totalExpenseWei, 10).toFixed(2))
     }
   },
   components: {

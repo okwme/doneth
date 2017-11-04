@@ -96,15 +96,13 @@ export default {
   @import '../scss/variables';
 
   .patron-form {
-    background: $white;
-    border-radius: $border-radius;
-    border: 4px dashed $lightgrey;
-    box-shadow: 0 1px 10px -2px rgba(0,0,0,0.1);
     color: $lightgrey;
     cursor: pointer;
     overflow: hidden;
-    margin: 0;
+    margin: auto;
     padding-bottom: 10px;
+    transition: color 220ms ease;
+    width: 100%;
 
     h1 {
       font-size: 75pt;
