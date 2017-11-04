@@ -81,7 +81,7 @@ export default {
     },
     overdrafted (patron, withdrawing) {
       return {
-        overdrawn: !this.isOverdrafted(patron, withdrawing)
+        overdrawn: this.isOverdrafted(patron, withdrawing)
       }
     },
     updateConversion () {

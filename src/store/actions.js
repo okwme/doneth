@@ -119,13 +119,15 @@ export default {
     state.Doneth.methods.genesisBlockNumber().call().then((genesisBlockNumber) => {
       commit('SET_BLOCK', genesisBlockNumber)
     })
-    state.Doneth.methods.totalShares().call().then((totalShares) => {
-      commit('SET_SHARES', totalShares)
-    })
+    console.log(state.Doneth)
+    // state.Doneth.methods.totalShares({}).call().then((totalShares) => {
+    //   console.log(totalShares)
+    //   commit('SET_SHARES', totalShares)
+    // })
     state.Doneth.methods.name().call().then((name) => {
       commit('SET_NAME', name)
     })
-    state.Doneth.methods.founder().call().then((founder) => {
+    state.Doneth.methods.getFounder().call().then((founder) => {
       commit('SET_FOUNDER', founder)
     })
     state.Doneth.methods.totalWithdrawn().call().then((totalWithdrawn) => {
@@ -332,7 +334,7 @@ export default {
     let wei = new BN(window.web3.utils.toWei(amount))
     // TODO: This wei seems wrong!! Whyyyyyy
     console.log('wei', wei)
-    return state.Doneth.methods.calculateTotalExpenseWithdrawableAmount(state.account).call().then((result) => {
+    return state.Doneth.methods.calculateTotalExpenseWithdrawableAmount().call().then((result) => {
       result = new BN(result)
       if (result.greaterThanOrEqualTo(wei)) {
         dispatch('setLoading', true)
