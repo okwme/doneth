@@ -194,12 +194,16 @@ contract Doneth {
 
     // Withdraw from shared expense allocation. Total withdrawable is calculated as 
     // sharedExpense - sharedExpenseWithdrawn.
-    function withdrawSharedExpense(uint256 amount) public onlyAdmin() onlyExisting(msg.sender) {
-        if (amount > sharedExpense.sub(sharedExpenseWithdrawn)) revert();
+    function withdrawSharedExpense(uint256 amount, address to) public onlyAdmin() onlyExisting(msg.sender) {
+        if (amount > calculateTotalExpenseWithdrawableAmount()) revert();
         
         sharedExpenseWithdrawn = sharedExpenseWithdrawn.add(amount);
-        msg.sender.transfer(amount);
+        to.transfer(amount);
         WithdrawSharedExpense(msg.sender, amount, sharedExpenseWithdrawn);
+    }
+
+    function calculateTotalExpenseWithdrawableAmount() public constant returns(uint256) {
+        return sharedExpense.sub(sharedExpenseWithdrawn);
     }
 
     // Converts from shares to Eth.

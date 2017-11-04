@@ -326,26 +326,20 @@ export default {
     })
   },
   // TODO: ----------------------------
-  makeExpenseWithdraw ({state, dispatch, commit}, withdrawOptions) {
-    console.log('withdrawOptions', withdrawOptions)
-    if (!state.account || !withdrawOptions.amount) return
-    let wei = new BN(window.web3.utils.toWei(withdrawOptions.amount))
+  makeExpenseWithdraw ({state, dispatch, commit}, {amount, to}) {
+    console.log('withdrawOptions', amount, to)
+    if (!state.account || !amount) return
+    let wei = new BN(window.web3.utils.toWei(amount))
     // TODO: This wei seems wrong!! Whyyyyyy
     console.log('wei', wei)
-    return state.Doneth.methods.calculateTotalWithdrawableAmount(state.account).call().then((result) => {
-      let member = state.members.find((member) => member.address === state.account)
-      if (!member) return new Error('No Member')
-      let withdrawnAlready = new BN(member.withdrawn)
+    return state.Doneth.methods.calculateTotalExpenseWithdrawableAmount(state.account).call().then((result) => {
       result = new BN(result)
-
-      if (result.sub(withdrawnAlready).greaterThanOrEqualTo(wei)) {
+      if (result.greaterThanOrEqualTo(wei)) {
         dispatch('setLoading', true)
         let options = {from: state.account}
-        // TODO: Is this correct?! "to" option to send to recipient
-        if (withdrawOptions.optionalAddress) options.to = withdrawOptions.optionalAddress
-        return state.Doneth.methods.withdrawSharedExpense(wei).send(options).then((result) => {
+        return state.Doneth.methods.withdrawSharedExpense(wei, to).send(options).then((result) => {
           dispatch('readLogs')
-          commit('UPDATE_MEMBER_WITHDRAWN', {amount: wei, address: state.account})
+          // commit('UPDATE_WITHDRAW_WITHDRAWN', {amount, to})
           dispatch('setLoading', false)
           dispatch('getContractInfo')
           dispatch('pollAllowedAmounts')
@@ -398,15 +392,17 @@ export default {
         reject(error)
       })
       .then((result) => {
-        dispatch('pollSharedExpense')
-        dispatch('pollSharedExpenseWithdrawn')
-        dispatch('pollAllowedAmounts')
         dispatch('setLoading', false)
         dispatch('addNotification', {
           text: 'Expense allocated successfully!',
           class: 'success'
         })
-        resolve()
+
+        return Promise.all([
+          dispatch('pollSharedExpense'),
+          dispatch('pollSharedExpenseWithdrawn'),
+          dispatch('pollAllowedAmounts')])
+        .then(resolve())
       })
     })
   }

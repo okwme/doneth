@@ -34,7 +34,6 @@ import { mapGetters, mapActions } from 'vuex'
 export default {
 
   name: 'ExpenseWithdrawForm',
-  props: ['patron'],
   data () {
     return {
       userAddress: null,
@@ -46,7 +45,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['account', 'members', 'conversions', 'currency'])
+    ...mapGetters(['account', 'members', 'conversions', 'currency']),
+    patron () {
+      return this.members.find(m => m.address === this.account)
+    }
   },
   watch: {
     withdrawAmount () {
@@ -57,7 +59,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['convertToCurrency', 'makeWithdraw', 'addNotification']),
+    ...mapActions(['convertToCurrency', 'makeExpenseWithdraw', 'addNotification']),
     getAllowedAmount () {
       return 100
       // let patron = this.members.find((p) => p.address === address)
@@ -98,7 +100,7 @@ export default {
         this.withdrawer = patron.address
         this.submitting = true
         console.log('this.userAddress', this.userAddress, this.withdrawAmount)
-        this.makeWithdraw({amount: this.withdrawAmount + '', optionalAddress: this.userAddress}).then((result) => {
+        this.makeExpenseWithdraw({amount: this.withdrawAmount + '', to: this.userAddress}).then((result) => {
           this.withdrawing = false
           this.submitting = false
           this.closeModal('modalWithdrawFunds')
