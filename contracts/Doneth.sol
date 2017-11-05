@@ -173,7 +173,7 @@ contract Doneth is Ownable {
         addShare(who, shares);
     }
 
-    function updateMember(address who, string name, bool isAdmin, uint256 shares) public onlyAdmin() {
+    function updateMember(address who, uint256 shares, bool isAdmin, string name) public onlyAdmin() {
         if (sha3(members[who].memberName) != sha3(name)) changeMemberName(who, name);
         if (members[who].admin != isAdmin) changeAdminPrivilege(who, isAdmin);
         if (members[who].shares != shares) allocateShares(who, shares);

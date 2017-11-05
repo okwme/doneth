@@ -141,7 +141,7 @@ export default {
   },
 
   methods: {
-    ...mapMutations({setModal: 'SET_MODAL'}),
+    ...mapMutations({setModal: 'SET_MODAL', setEditMember: 'SET_EDIT_MEMBER'}),
     open () {
       console.log('who uses open?')
       // this.setModal(true)
@@ -163,6 +163,7 @@ export default {
       }
       console.log('set false')
       this.setModal(false)
+      this.setEditMember(null)
     },
 
     onOpen () {

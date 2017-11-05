@@ -220,7 +220,7 @@ export default {
       return dispatch('pollAllowedAmount', i + 1)
     })
   },
-  pollMembers ({dispatch, state}) {
+  pollMembers ({dispatch, state, commit}) {
     return state.Doneth.methods.getMemberCount().call().then((count) => {
       return dispatch('pollMember', {i: 0, length: parseInt(count)})
     })
@@ -248,26 +248,8 @@ export default {
     })
   },
 
-  allocateShares ({state, dispatch, commit}, {address, amount}) {
-    return state.Doneth.methods.allocateShares(address, new BN(amount)).send({from: state.account})
-    .on('transactionHash', (hash) => {
-      this.commit('SET_MODAL', false)
-      dispatch('setLoading', true)
-    })
-    .then((result) => {
-      dispatch('readLogs')
-      dispatch('addNotification', {class: 'success', text: 'Shares Re-Allocated 🎉'})
-      commit('UPDATE_MEMBER_SHARES', {amount, address})
-      dispatch('setLoading', false)
-      dispatch('getContractInfo')
-      dispatch('pollAllowedAmounts')
-    }).catch((error) => {
-      console.error('ERROR:', error)
-      dispatch('setLoading', false)
-      dispatch('addNotification', {class: 'error', text: 'Unknown Error, check logs'})
-    })
-  },
-  addMember ({state, dispatch, commit}, member) {
+  updateMember ({state, dispatch, commit}, member) {
+    console.log(member)
     return new Promise((resolve, reject) => {
       let currentUser = state.members.find((member) => {
         return member.address === state.account
@@ -275,7 +257,7 @@ export default {
       if (!currentUser || !currentUser.admin) {
         reject(new Error('Not an Admin'))
       } else {
-        return state.Doneth.methods.addMember(member.userAddress, new BN(member.sharesTotal), member.isAdmin, member.firstName).send({from: state.account})
+        return state.Doneth.methods[member.action](member.userAddress, new BN(member.sharesTotal), member.isAdmin, member.firstName).send({from: state.account})
         .on('transactionHash', (hash) => {
           dispatch('setLoading', true)
           commit('SET_MODAL', false)
@@ -286,15 +268,18 @@ export default {
           reject(error)
         })
         .then((result) => {
+          dispatch('setLoading', false)
+          let msg = member.action === 'addMember' ? 'added' : 'updated'
+          dispatch('addNotification', {
+            text: 'Member ' + msg + ' successfully!',
+            class: 'success'
+          })
+
           dispatch('readLogs')
           dispatch('getContractInfo')
           dispatch('pollAllowedAmounts')
-          dispatch('setLoading', false)
-          dispatch('addNotification', {
-            text: 'Member added successfully!',
-            class: 'success'
-          })
-          dispatch('pollMember', {i: state.members.length, length: state.members + 1})
+          dispatch('pollMembers')
+
           resolve()
         })
       }

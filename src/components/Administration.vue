@@ -3,15 +3,10 @@
     <div class="page-card allocations">
       <div class="heading">Administration</div>
       <div class="actions">
-        <button class="btn btn-primary" @click="openModal('modalAllocateShares')">Allocate Shares</button>
         <button class="btn btn-primary" @click="openModal('modalAllocateExpenseFunds')">Allocate Expense Funds</button>
         <button :disabled="totalExpense === '0'" class="btn btn-primary" @click="openModal('modalWithdrawExpense')">Withdraw Expense</button>
       </div>
     </div>
-
-    <ui-modal modal-id="modalAllocateShares" title="Allocate Shares">
-      <allocation-form />
-    </ui-modal>
 
     <ui-modal modal-id="modalAllocateExpenseFunds" title="Allocate Funds for Expense">
       <expense-allocate-form />
@@ -25,7 +20,6 @@
 
 <script>
 import UiModal from '@/components/UiModal'
-import AllocationForm from '@/components/AllocationForm'
 import ExpenseAllocateForm from '@/components/ExpenseAllocateForm'
 import ExpenseWithdrawForm from '@/components/ExpenseWithdrawForm'
 import {mapState, mapMutations} from 'vuex'
@@ -48,7 +42,6 @@ export default {
     }
   },
   components: {
-    AllocationForm,
     ExpenseAllocateForm,
     ExpenseWithdrawForm,
     UiModal

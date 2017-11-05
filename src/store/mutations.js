@@ -4,6 +4,9 @@ export default {
   SET_MODAL (state, isOpen) {
     state.modalOpen = isOpen
   },
+  SET_EDIT_MEMBER (state, member) {
+    state.editMember = member
+  },
   SET_LOADING (state, isLoading) {
     state.loading = isLoading
   },
@@ -52,7 +55,12 @@ export default {
     state.address = address
   },
   ADD_MEMBER (state, member) {
-    state.members.push(member)
+    let memberKey = state.members.findIndex((m) => m.address === member.address)
+    if (memberKey > -1) {
+      state.members.splice(memberKey, 1, member)
+    } else {
+      state.members.push(member)
+    }
   },
   CLEAR_LOGS (state) {
     state.logs = []

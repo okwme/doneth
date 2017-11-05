@@ -1,5 +1,7 @@
 <template>
-  <div v-on:mouseenter="toggleActive(patron, true)" v-on:mouseleave="toggleActive(patron, false)">
+  <div
+  class="pointer"
+  @click="editMember(patron)" v-on:mouseenter="toggleActive(patron, true)" v-on:mouseleave="toggleActive(patron, false)">
     <div class="user">
       <div class="avatar" :style="{ background: colorHex(patron) }">
         <div>{{firstName(patron)}}</div>
@@ -28,7 +30,7 @@
 <script>
 import ShortHash from '@/components/ShortHash'
 import PatronWithdrawForm from '@/components/PatronWithdrawForm'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import BN from 'bignumber.js'
 export default {
 
@@ -44,6 +46,11 @@ export default {
     ...mapGetters(['account', 'totalShares', 'members', 'isAdmin'])
   },
   methods: {
+    ...mapMutations({setModal: 'SET_MODAL', setEditMember: 'SET_EDIT_MEMBER'}),
+    editMember (patron) {
+      this.setModal('modalAddMember')
+      this.setEditMember(patron)
+    },
     getAllowedAmount (address) {
       let patron = this.members.find((p) => p.address === address)
       if (!patron || !patron.allowedAmount) return 0

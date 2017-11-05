@@ -5,7 +5,7 @@
       <h3>Add Member</h3>
     </div>
 
-    <ui-modal modal-id="modalAddMember" title="Add Member">
+    <ui-modal modal-id="modalAddMember" :title="title">
       <form @submit.prevent="addNewMember()">
         <div class="field">
           <label for="add_name">Name:</label>
@@ -40,7 +40,7 @@
 
 <script>
 import UiModal from '@/components/UiModal'
-import { mapGetters, mapActions, mapMutations } from 'vuex'
+import { mapGetters, mapActions, mapMutations, mapState } from 'vuex'
 
 export default {
 
@@ -56,11 +56,34 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['account', 'metamask', 'connected'])
+    ...mapState(['editMember']),
+    ...mapGetters(['account', 'metamask', 'connected']),
+    title () {
+      return (this.editMember ? 'Edit ' : 'Add ') + 'Member'
+    }
+  },
+  watch: {
+    editMember () {
+      console.log('edit member')
+      if (this.editMember) {
+        this.userAddress = this.editMember.address
+        this.sharesTotal = this.editMember.shares
+        this.firstName = this.editMember.memberName
+        this.isAdmin = this.editMember.admin
+      } else {
+        this.clearData()
+      }
+    }
   },
   methods: {
     ...mapMutations({setModal: 'SET_MODAL'}),
-    ...mapActions(['addNotification', 'setLoading', 'addMember']),
+    ...mapActions(['addNotification', 'setLoading', 'updateMember']),
+    clearData () {
+      this.userAddress = ''
+      this.sharesTotal = ''
+      this.firstName = ''
+      this.isAdmin = false
+    },
     addNewMember () {
       let member = {
         userAddress: this.userAddress,
@@ -69,13 +92,13 @@ export default {
         isAdmin: this.isAdmin
       }
       this.submitting = true
-      this.addMember(member).then(() => {
+      member.action = this.editMember ? 'updateMember' : 'addMember'
+      this.updateMember(member).then(() => {
         this.submitting = false
-        this.userAddress = ''
-        this.sharesTotal = ''
-        this.firstName = ''
+        this.clearData()
         this.closeModal()
       }).catch((error) => {
+        console.error(error)
         this.submitting = false
         this.addNotification({
           text: error,
