@@ -13,6 +13,7 @@ const debug = false
 
 const state = {
   modalOpen: false,
+  editMember: null,
   retried: false,
   metamask: false,
   account: null,

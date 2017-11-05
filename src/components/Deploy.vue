@@ -77,7 +77,6 @@ export default {
       }
       this.setLoading(true)
       var contract = new window.web3.eth.Contract(this.abi.abi)
-      console.log(contract)
       this.deploying = true
       contract.deploy({
         data: this.abi.bytecode,
