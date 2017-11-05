@@ -120,15 +120,10 @@ export default {
     state.Doneth.methods.genesisBlockNumber().call().then((genesisBlockNumber) => {
       commit('SET_BLOCK', genesisBlockNumber)
     })
-    console.log(state.Doneth)
     state.Doneth.methods.totalShares().call().then((totalShares) => {
-      console.log(totalShares)
       commit('SET_SHARES', totalShares)
     })
-    state.Doneth.methods.name().call().then((name) => {
-      commit('SET_NAME', name)
-    })
-    state.Doneth.methods.getFounder().call().then((founder) => {
+    state.Doneth.methods.getOwner().call().then((founder) => {
       commit('SET_FOUNDER', founder)
     })
     state.Doneth.methods.totalWithdrawn().call().then((totalWithdrawn) => {
@@ -172,7 +167,56 @@ export default {
     .then((results) => {
       commit('ADD_LOGS', results)
     })
-    return Promise.all([p1, p2, p3, p4])
+
+    let p5 = state.Doneth.getPastEvents('SetContractName', {
+      fromBlock: state.genesisBlock,
+      toBlock: 'latest'
+    })
+    .then((results) => {
+      commit('ADD_LOGS', results)
+    })
+
+    let p6 = state.Doneth.getPastEvents('SetMemberName', {
+      fromBlock: state.genesisBlock,
+      toBlock: 'latest'
+    })
+    .then((results) => {
+      commit('ADD_LOGS', results)
+    })
+
+    let p7 = state.Doneth.getPastEvents('TokenWithdraw', {
+      fromBlock: state.genesisBlock,
+      toBlock: 'latest'
+    })
+    .then((results) => {
+      commit('ADD_LOGS', results)
+    })
+
+    let p8 = state.Doneth.getPastEvents('ChangePrivilege', {
+      fromBlock: state.genesisBlock,
+      toBlock: 'latest'
+    })
+    .then((results) => {
+      commit('ADD_LOGS', results)
+    })
+
+    let p9 = state.Doneth.getPastEvents('ChangeSharedExpense', {
+      fromBlock: state.genesisBlock,
+      toBlock: 'latest'
+    })
+    .then((results) => {
+      commit('ADD_LOGS', results)
+    })
+
+    let p10 = state.Doneth.getPastEvents('WithdrawSharedExpense', {
+      fromBlock: state.genesisBlock,
+      toBlock: 'latest'
+    })
+    .then((results) => {
+      commit('ADD_LOGS', results)
+    })
+
+    return Promise.all([p1, p2, p3, p4, p5, p6, p7, p8, p9, p10])
   },
   pollAllowedAmounts ({dispatch, state}) {
     return dispatch('pollAllowedAmount', 0)
@@ -192,8 +236,8 @@ export default {
     return state.Doneth.methods.getMemberAtKey(new BN(data.i)).call()
       .then((address) => {
         return state.Doneth.methods.returnMember(address).call()
-        .then(({active, admin, shares, withdrawn, memberName}) => {
-          commit('ADD_MEMBER', {address, active, admin, shares, withdrawn, memberName})
+        .then(({active, admin, shares, withdrawn}) => {
+          commit('ADD_MEMBER', {address, active, admin, shares, withdrawn})
           if (data.i + 1 < data.length) {
             return dispatch('pollMember', {i: data.i + 1, length: data.length})
           }
@@ -202,7 +246,6 @@ export default {
   },
   pollSharedExpense ({state, commit}) {
     return state.Doneth.methods.getSharedExpense().call().then((amount) => {
-      console.log(amount)
       return commit('SET_EXPENSE', amount)
     })
   },
@@ -214,9 +257,9 @@ export default {
 
   allocateShares ({state, dispatch, commit}, {address, amount}) {
     dispatch('setLoading', true)
-    return state.Doneth.methods.addShare(address, new BN(amount)).send({from: state.account}).then((result) => {
+    return state.Doneth.methods.allocateShares(address, new BN(amount)).send({from: state.account}).then((result) => {
       dispatch('readLogs')
-      dispatch('addNotification', {class: 'success', text: 'New Shares Allocated 🎉'})
+      dispatch('addNotification', {class: 'success', text: 'Shares Re-Allocated 🎉'})
       commit('UPDATE_MEMBER_SHARES', {amount, address})
       dispatch('setLoading', false)
       dispatch('getContractInfo')
@@ -236,7 +279,7 @@ export default {
         reject(new Error('Not an Admin'))
       } else {
         dispatch('setLoading', true)
-        return state.Doneth.methods.addMember(member.userAddress, new BN(member.sharesTotal), false, member.firstName).send({from: state.account})
+        return state.Doneth.methods.addMember(member.userAddress, new BN(member.sharesTotal), member.isAdmin, member.firstName).send({from: state.account})
         .on('transactionHash', (hash) => {
         })
         .on('error', (error) => {

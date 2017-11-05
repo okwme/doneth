@@ -7,7 +7,10 @@ export default {
   currenciesArray: state => state.currenciesArray,
   notifications: state => state.notifications,
   loading: state => state.loading,
-  members: state => state.members,
+  members: state => {
+    console.log(state.logs)
+    return state.members
+  },
   totalShares: state => state.totalShares,
   contractName: state => state.contractName,
   founder: state => state.founder,

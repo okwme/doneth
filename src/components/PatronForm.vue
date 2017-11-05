@@ -62,7 +62,8 @@ export default {
       let member = {
         userAddress: this.userAddress,
         sharesTotal: this.sharesTotal,
-        firstName: this.firstName
+        firstName: this.firstName,
+        isAdmin: this.isAdmin
       }
       this.submitting = true
       this.addMember(member).then(() => {

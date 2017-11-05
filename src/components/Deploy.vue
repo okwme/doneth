@@ -73,6 +73,7 @@ export default {
     deploy () {
       if (!this.account) {
         alert('unlock your wallet!')
+        return
       }
       this.setLoading(true)
       var contract = new window.web3.eth.Contract(this.abi.abi)
@@ -85,7 +86,7 @@ export default {
       }).send({
         from: this.account,
         // gas: '4700000',
-        gasPrice: '20000000000'
+        gasPrice: '2000000000'
       }, (e, transactionHash) => {
         this.deploying = false
         this.confirming = true

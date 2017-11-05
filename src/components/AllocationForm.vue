@@ -39,6 +39,14 @@ export default {
   computed: {
     ...mapGetters(['members'])
   },
+  watch: {
+    patron () {
+      console.log('patron changed')
+      console.log(this.patron)
+      let member = this.members.find((m) => m.address === this.patron)
+      this.sharesAllocated = (member && parseInt(member.shares)) || 0
+    }
+  },
   methods: {
     ...mapActions(['allocateShares', 'addNotification']),
     allocate () {
