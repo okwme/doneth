@@ -13,7 +13,7 @@
     </div>
     <allocation-bar :patrons="members"/>
     <div class="patron-cards">
-      <expense-card class="expense-card" :address="address" v-if="totalExpense !== '0'" />
+      <expense-card class="expense-card" :address="address" v-if="totalExpense != 0" />
       <div class="patron-card" v-for="member in members">
         <patron-card :address="address" :patron="member"/>
       </div>

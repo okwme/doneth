@@ -251,7 +251,12 @@ export default {
 
   allocateShares ({state, dispatch, commit}, {address, amount}) {
     dispatch('setLoading', true)
-    return state.Doneth.methods.allocateShares(address, new BN(amount)).send({from: state.account}).then((result) => {
+    return state.Doneth.methods.allocateShares(address, new BN(amount)).send({from: state.account})
+    .on('transactionHash', (hash) => {
+      console.log('hasssssh')
+      return hash
+    })
+    .then((result) => {
       dispatch('readLogs')
       dispatch('addNotification', {class: 'success', text: 'Shares Re-Allocated 🎉'})
       commit('UPDATE_MEMBER_SHARES', {amount, address})

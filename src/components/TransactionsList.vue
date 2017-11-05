@@ -4,10 +4,12 @@
       <div class="heading">Transactions</div>
       <ul class="transactions-list">
         <li class="transaction" v-for="item in formattedTransactions">
-          <template v-if="item.type === 'AddShare'">
+          <template v-if="item.type === 'AddShare' || item.type === 'RemoveShare'">
             <div class="reference">
-              <h3><short-hash :hash="item.who"/> received {{item.addedShares}} new shares</h3>
-              <h4><small>Shares:</small> {{item.addedShares}}</h4>
+              <h3 v-if="item.type === 'AddShare'"><short-hash :hash="item.who"/> received {{item.addedShares}} new shares</h3>
+              <h3 v-else><short-hash :hash="item.who"/> lost {{item.removedShares}} shares</h3>
+
+              <h4><small>Total Shares:</small> {{item.newTotalShares}}</h4>
             </div>
             <div class="details">
               <div><a :href="transactionLink(item)">View Transaction Details</a></div>
