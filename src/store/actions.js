@@ -107,7 +107,6 @@ export default {
     }
   },
   populateContractData ({dispatch}) {
-    console.log('populateContractData')
     dispatch('pollMembers').then(() => {
       return dispatch('pollAllowedAmounts')
     })

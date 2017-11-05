@@ -173,8 +173,20 @@ contract Doneth is Ownable {
         addShare(who, shares);
     }
 
+    function updateMember(address who, string name, bool isAdmin, uint256 shares) public onlyAdmin() {
+        if (sha3(members[who].memberName) != sha3(name)) changeMemberName(who, name);
+        if (members[who].admin != isAdmin) changeAdminPrivilege(who, isAdmin);
+        if (members[who].shares != shares) allocateShares(who, shares);
+    }
+
+    // Only owner or member can change member's name
+    function changeMemberName(address who, string newValue) public  onlyExisting(who) {
+        if (msg.sender != who && msg.sender != owner) revert();
+        members[who].memberName = newValue;
+    }
+
     // Only owner can change admin privileges of members; other admins cannot change other admins
-    function changeAdminPrivilege(address who, bool newValue) public onlyOwner() {
+    function changeAdminPrivilege(address who, bool newValue) public onlyAdmin() {
         bool oldValue = members[who].admin;
         members[who].admin = newValue; 
         ChangePrivilege(who, oldValue, newValue);

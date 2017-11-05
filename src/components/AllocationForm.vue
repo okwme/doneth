@@ -54,9 +54,6 @@ export default {
     allocate () {
       this.submitting = true
       this.allocateShares({address: this.patron, amount: this.sharesAllocated})
-      .on('transactionHash', (hash) => {
-        console.log('component hash', hash)
-      })
       .then((done) => {
         this.submitting = false
         this.patron = null

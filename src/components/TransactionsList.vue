@@ -4,11 +4,13 @@
       <div class="heading">Transactions</div>
       <ul class="transactions-list">
         <li class="transaction" v-for="item in formattedTransactions">
+
           <template v-if="item.type === 'AddShare' || item.type === 'RemoveShare'">
             <div class="reference">
-              <h3 v-if="item.type === 'AddShare'"><short-hash :hash="item.who"/> received {{item.addedShares}} new shares</h3>
-              <h3 v-else><short-hash :hash="item.who"/> lost {{item.removedShares}} shares</h3>
-
+              <h3 v-if="item.type === 'AddShare'">
+                <short-hash :hash="item.who"/> received {{item.addedShares}} new shares</h3>
+              <h3 v-else>
+                <short-hash :hash="item.who"/> lost {{item.removedShares}} shares</h3>
               <h4><small>Total Shares:</small> {{item.newTotalShares}}</h4>
             </div>
             <div class="details">
@@ -16,12 +18,28 @@
               <div class="time">Block: {{item.block}}</div>
             </div>
           </template>
+
           <template v-if="item.type === 'Deposit' || item.type === 'Withdraw'">
             <div class="reference">
               <h3><short-hash :hash="item.who"/> made a {{item.type.toLowerCase()}} of {{item.valueConverted}} ETH <small>({{item.value}} WEI)</small></h3>
               <h4>Block: {{item.block}}</h4>
             </div>
           </template>
+
+          <template v-if="item.type === 'WithdrawSharedExpense'">
+            <div class="reference">
+              <h3><short-hash :hash="item.who"/> made a Shared Expense Withdraw of {{item.valueConverted}} ETH to <short-hash :hash="item.to"/></h3>
+              <h4>Block: {{item.block}}</h4>
+            </div>
+          </template>
+
+          <template v-if="item.type === 'ChangeSharedExpense'">
+            <div class="reference">
+              <h3>The Shared Expense Amount changed from {{item.oldValueConverted}} ETH to {{item.newValueConverted}}  ETH</small></h3>
+              <h4>Block: {{item.block}}</h4>
+            </div>
+          </template>
+
         </li>
       </ul>
     </div>
@@ -58,10 +76,17 @@ export default {
         obj.block = a.blockNumber
         obj.transactionHash = a.transactionHash
 
-        if (!a.who) obj.who = a.returnValues[0]
+        obj.who = a.returnValues.from || a.returnValues[0]
         let member = this.members.find((m) => m.address === obj.who)
         if (member) obj.who = member.memberName
+
+        obj.to = a.returnValues.to
+        let to = this.members.find((m) => m.address === obj.to)
+        if (to) obj.to = to.memberName
+
         if (obj.value) obj.valueConverted = window.web3.utils.fromWei(new BN(obj.value), 'ether')
+        if (obj.oldValue) obj.oldValueConverted = window.web3.utils.fromWei(new BN(obj.oldValue), 'ether')
+        if (obj.newValue) obj.newValueConverted = window.web3.utils.fromWei(new BN(obj.newValue), 'ether')
         return obj
       })
     }
