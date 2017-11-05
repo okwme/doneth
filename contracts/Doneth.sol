@@ -39,6 +39,9 @@ contract Ownable {
 contract Doneth is Ownable {
     using SafeMath for uint256;  
 
+    // Name of the contract
+    string public name;
+
     // Sum of all shares allocated to members
     uint256 public totalShares;
 
@@ -69,11 +72,12 @@ contract Doneth is Ownable {
         bool admin;
         uint256 shares;
         uint256 withdrawn;
+        string memberName;
         mapping(address => uint256) tokensWithdrawn;
     }
 
     function Doneth(string _contractName, string _founderName) {
-        SetContractName(_contractName);
+        name = _contractName;
         genesisBlockNumber = block.number;
         addMember(msg.sender, 1, true, _founderName);
     }
@@ -85,8 +89,6 @@ contract Doneth is Ownable {
         uint256 totalWithdrawn;
     }
 
-    event SetContractName(string name);
-    event SetMemberName(address member, string name);
     event Deposit(address from, uint value);
     event Withdraw(address from, uint value, uint256 newTotalWithdrawn);
     event TokenWithdraw(address from, uint value, address token, uint amount);
@@ -94,6 +96,7 @@ contract Doneth is Ownable {
     event RemoveShare(address who, uint256 removedShares, uint256 newTotalShares);
     event Division(uint256 num, uint256 balance, uint256 shares);
     event ChangePrivilege(address who, bool oldValue, bool newValue);
+    event ChangeContractName(string oldValue, string newValue);
     event ChangeSharedExpense(uint256 contractBalance, uint256 oldValue, uint256 newValue);
     event WithdrawSharedExpense(address from, address to, uint value, uint256 newSharedExpenseWithdrawn);
 
@@ -137,13 +140,13 @@ contract Doneth is Ownable {
         return sharedExpenseWithdrawn;
     }
 
-    function getContractInfo() constant returns(address, uint256, uint256, uint256) {
-        return (owner, genesisBlockNumber, totalShares, totalWithdrawn);
+    function getContractInfo() constant returns(string, address, uint256, uint256, uint256) {
+        return (name, owner, genesisBlockNumber, totalShares, totalWithdrawn);
     }
     
-    function returnMember (address _address) constant onlyExisting(_address) returns(bool active, bool admin, uint256 shares, uint256 withdrawn) {
+    function returnMember (address _address) constant onlyExisting(_address) returns(bool active, bool admin, uint256 shares, uint256 withdrawn, string memberName) {
       Member memory m = members[_address];
-      return (m.active, m.admin, m.shares, m.withdrawn);
+      return (m.active, m.admin, m.shares, m.withdrawn, m.memberName);
     }
 
     function checkERC20Balance(address token) public returns(uint256) {
@@ -163,7 +166,8 @@ contract Doneth is Ownable {
         newMember.exists = true;
         newMember.admin = admin;
         newMember.active = true;
-        SetMemberName(who, memberName);
+        newMember.memberName = memberName;
+
         members[who] = newMember;
         memberKeys.push(who);
         addShare(who, shares);
@@ -178,7 +182,9 @@ contract Doneth is Ownable {
 
     // Only owner can change the contract name
     function changeContractName(string newName) public onlyOwner() {
-        SetContractName(newName);
+        string storage oldName = name;
+        name = newName;
+        ChangeContractName(oldName, newName);
     }
 
     // Shared expense allocation allows all members to withdraw an amount to be used for shared

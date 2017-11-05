@@ -8,6 +8,10 @@ contract('Doneth', function(accounts) {
     });
     
     describe("contract initial state tests", function() {
+        it("should have the name 'test_name'", async function() {
+            const name = await doneth.name();
+            assert.equal(name, "test_name");
+        });
 
         it("should have owner member at the beginning", async function() {
             const count = await doneth.getMemberCount();
@@ -31,6 +35,7 @@ contract('Doneth', function(accounts) {
             assert.equal(ownerMember[1], true); // admin
             assert.equal(ownerMember[2], 1); // shares
             assert.equal(ownerMember[3], 0); // withdrawn
+            assert.equal(ownerMember[4], 'Ray Kroc'); // memberName
         });
     });
 
@@ -41,7 +46,8 @@ contract('Doneth', function(accounts) {
             assert.equal(newMember[0], true); // active
             assert.equal(newMember[1], false); // admin
             assert.equal(newMember[2], 100); // shares
-            assert.equal(newMember[3], 0); // withdrawnName
+            assert.equal(newMember[3], 0); // withdrawn
+            assert.equal(newMember[4], 'Maurice McDonald'); // memberName
         });
 
         it("should remove 50 shares from Maurice", async function() {
@@ -52,6 +58,7 @@ contract('Doneth', function(accounts) {
             assert.equal(newMember[1], false); // admin
             assert.equal(newMember[2], 50); // shares
             assert.equal(newMember[3], 0); // withdrawn
+            assert.equal(newMember[4], 'Maurice McDonald'); // memberName
         });
     });
 
@@ -76,6 +83,7 @@ contract('Doneth', function(accounts) {
             assert.equal(newMember[1], false); // admin
             assert.equal(newMember[2], 75); // shares
             assert.equal(newMember[3], 25); // withdrawn
+            assert.equal(newMember[4], 'Maurice McDonald'); // memberName
 
            // Check that totalWithdrawn is correct
            const newTotal = await doneth.calculateTotalWithdrawableAmount(accounts[1]);
@@ -200,6 +208,8 @@ contract('Doneth', function(accounts) {
         });
 
         it("only owner should be able to call changeContractName()", async function() {
+            var name = await doneth.name();
+            assert.strictEqual(name, "test_name");
 
             await doneth.addMember(accounts[1], 100, true, "Maurice McDonald", {from: accounts[0]});
             try {
@@ -212,6 +222,8 @@ contract('Doneth', function(accounts) {
 
             // Owner should be able to change contract name
             await doneth.changeContractName("test_new_name", {from: accounts[0]});
+            var name = await doneth.name();
+            assert.strictEqual(name, "test_new_name");
         });
     });
 
@@ -277,7 +289,7 @@ contract('Doneth', function(accounts) {
             assert.isTrue(diff > 0.09 && diff < 0.1);
             assert.strictEqual(web3.eth.getBalance(doneth.address).toNumber(), 9*10**17);
             assert.strictEqual(sharedExpenseWithdrawn.toNumber(), 1*10**17);
-            assert.strictEqual(contractInfo[3].toNumber(), 0); // totalWithdrawn
+            assert.strictEqual(contractInfo[4].toNumber(), 0); // totalWithdrawn
         });
 
         it("should only allow withdrawing amount <= remaining sharedExpense", async function() {
@@ -322,7 +334,7 @@ contract('Doneth', function(accounts) {
             var contractStruct = await doneth.getContractInfo();
             assert.strictEqual(web3.eth.getBalance(doneth.address).toNumber(), 5.5*10**17);
             assert.strictEqual(memberStruct[3].toNumber(), 4.5*10**17); // member.withdrawn
-            assert.strictEqual(contractStruct[3].toNumber(), 4.5*10**17); // contract.totalWithdrawn
+            assert.strictEqual(contractStruct[4].toNumber(), 4.5*10**17); // contract.totalWithdrawn
 
             // accounts[1] withdraws 0.1 Eth from sharedExpense
             await doneth.withdrawSharedExpense(1*10**17, accounts[1], {from: accounts[1]}); 
@@ -332,7 +344,7 @@ contract('Doneth', function(accounts) {
             var sharedExpenseWithdrawn = await doneth.getSharedExpenseWithdrawn();
             assert.strictEqual(web3.eth.getBalance(doneth.address).toNumber(), 4.5*10**17);
             assert.strictEqual(memberStruct[3].toNumber(), 0); // member.withdrawn
-            assert.strictEqual(contractStruct[3].toNumber(), 4.5*10**17); // contract.totalWithdrawn
+            assert.strictEqual(contractStruct[4].toNumber(), 4.5*10**17); // contract.totalWithdrawn
             assert.strictEqual(sharedExpense.toNumber(), 1*10**17);
             assert.strictEqual(sharedExpenseWithdrawn.toNumber(), 1*10**17);
 
@@ -348,7 +360,7 @@ contract('Doneth', function(accounts) {
             var sharedExpenseWithdrawn = await doneth.getSharedExpenseWithdrawn();
             assert.strictEqual(web3.eth.getBalance(doneth.address).toNumber(), 0);
             assert.strictEqual(memberStruct[3].toNumber(), 4.5*10**17); // member.withdrawn
-            assert.strictEqual(contractStruct[3].toNumber(), 9*10**17); // contract.totalWithdrawn
+            assert.strictEqual(contractStruct[4].toNumber(), 9*10**17); // contract.totalWithdrawn
             assert.strictEqual(sharedExpense.toNumber(), 1*10**17);
             assert.strictEqual(sharedExpenseWithdrawn.toNumber(), 1*10**17);
         });
