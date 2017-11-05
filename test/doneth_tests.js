@@ -13,15 +13,15 @@ contract('Doneth', function(accounts) {
             assert.equal(name, "test_name");
         });
 
-        it("should have founder member at the beginning", async function() {
+        it("should have owner member at the beginning", async function() {
             const count = await doneth.getMemberCount();
             assert.equal(count, 1);
 
             const retrieveMember = await doneth.getMemberAtKey(0);
             assert.equal(retrieveMember, web3.eth.coinbase); 
 
-            const founder = await doneth.getFounder();
-            assert.equal(founder, web3.eth.coinbase); 
+            const owner = await doneth.owner();
+            assert.equal(owner, web3.eth.coinbase); 
         });
 
         it("should have 0 initial balance", async function() {
@@ -29,13 +29,13 @@ contract('Doneth', function(accounts) {
             assert.equal(initialBalance, 0);
         });
 
-        it("should have proper member fields for founder", async function() {
-            const founderMember = await doneth.returnMember(web3.eth.coinbase);
-            assert.equal(founderMember[0], true); // active
-            assert.equal(founderMember[1], true); // admin
-            assert.equal(founderMember[2], 1); // shares
-            assert.equal(founderMember[3], 0); // withdrawn
-            assert.equal(founderMember[4], 'Ray Kroc'); // memberName
+        it("should have proper member fields for owner", async function() {
+            const ownerMember = await doneth.returnMember(web3.eth.coinbase);
+            assert.equal(ownerMember[0], true); // active
+            assert.equal(ownerMember[1], true); // admin
+            assert.equal(ownerMember[2], 1); // shares
+            assert.equal(ownerMember[3], 0); // withdrawn
+            assert.equal(ownerMember[4], 'Ray Kroc'); // memberName
         });
     });
 
@@ -179,14 +179,14 @@ contract('Doneth', function(accounts) {
             assert.fail('Expected throw not received');
         });
 
-        it("should allow you to perform onlyAdmin() function if non-founder member has admin=true", async function() {
+        it("should allow you to perform onlyAdmin() function if non-owner member has admin=true", async function() {
             await doneth.addMember(accounts[1], 100, true, "Maurice McDonald", {from: accounts[0]});
             await doneth.addMember(accounts[2], 100, true, "John McDonald", {from: accounts[1]});
             const newMember = await doneth.returnMember(accounts[2]);
             assert.isNotNull(newMember);
         });
 
-        it("only founder should be able to call changeAdminPrivilege()", async function() {
+        it("only owner should be able to call changeAdminPrivilege()", async function() {
             await doneth.addMember(accounts[1], 100, true, "Maurice McDonald", {from: accounts[0]});
             await doneth.addMember(accounts[2], 100, true, "John McDonald", {from: accounts[1]});
 
@@ -194,33 +194,33 @@ contract('Doneth', function(accounts) {
             assert.isTrue(newMember[1]);
 
             try {
-                // Non-founder can't changeAdminPrivilege()
+                // Non-owner can't changeAdminPrivilege()
                 await doneth.changeAdminPrivilege(accounts[2], false, {from: accounts[1]});
             } catch (error) {
                 const invalidOpcode = error.message.search('invalid opcode') >= 0;
                 assert(invalidOpcode, "Expected throw, got '" + error + "' instead");
             }
 
-            // Founder should be able to change admin privilege
+            // Owner should be able to change admin privilege
             await doneth.changeAdminPrivilege(accounts[2], false, {from: accounts[0]});
             newMember = await doneth.returnMember(accounts[2]);
             assert.isFalse(newMember[1]);
         });
 
-        it("only founder should be able to call changeContractName()", async function() {
+        it("only owner should be able to call changeContractName()", async function() {
             var name = await doneth.name();
             assert.strictEqual(name, "test_name");
 
             await doneth.addMember(accounts[1], 100, true, "Maurice McDonald", {from: accounts[0]});
             try {
-                // Non-founder can't changeAdminPrivilege()
+                // Non-owner can't changeAdminPrivilege()
                 await doneth.changeContractName("test_new_name", {from: accounts[1]});
             } catch (error) {
                 const invalidOpcode = error.message.search('invalid opcode') >= 0;
                 assert(invalidOpcode, "Expected throw, got '" + error + "' instead");
             }
 
-            // Founder should be able to change contract name
+            // Owner should be able to change contract name
             await doneth.changeContractName("test_new_name", {from: accounts[0]});
             var name = await doneth.name();
             assert.strictEqual(name, "test_new_name");
@@ -229,7 +229,7 @@ contract('Doneth', function(accounts) {
 
     describe("shared expense balance tests", function() {
         it("should have sharedExpense set to 0 at contract initialization", async function() {
-            const sharedExpense = await doneth.getSharedExpense();
+            const sharedExpense = await doneth.sharedExpense();
             assert.strictEqual(sharedExpense.toNumber(), 0);
         });
 
@@ -244,20 +244,20 @@ contract('Doneth', function(accounts) {
             assert.fail('Expected throw not received');
         });
 
-        it("should only allow founder to perform changeSharedExpenseAllocation()", async function() {
+        it("should only allow owner to perform changeSharedExpenseAllocation()", async function() {
             web3.eth.sendTransaction({from: web3.eth.coinbase, to: doneth.address, value: 5000});
             await doneth.addMember(accounts[1], 100, true, "Maurice McDonald", {from: accounts[0]});
             try {
-                // Non-founder cannot call changeSharedExpenseAllocation()
+                // Non-owner cannot call changeSharedExpenseAllocation()
                 await doneth.changeSharedExpenseAllocation(100, {from: accounts[1]});
             } catch (error) {
                 const invalidOpcode = error.message.search('invalid opcode') >= 0;
                 assert(invalidOpcode, "Expected throw, got '" + error + "' instead");
             }
 
-            // Founder should be able to perform changeSharedExpenseAllocation()
+            // Owner should be able to perform changeSharedExpenseAllocation()
             await doneth.changeSharedExpenseAllocation(100, {from: accounts[0]});
-            const sharedExpense = await doneth.getSharedExpense();
+            const sharedExpense = await doneth.sharedExpense();
             assert.strictEqual(sharedExpense.toNumber(), 100);
         });
 
@@ -271,18 +271,18 @@ contract('Doneth', function(accounts) {
 
             try {
                 // Non-admin cannot withdraw from sharedExpense
-                await doneth.withdrawSharedExpense(1*10**17, {from: accounts[1]});
+                await doneth.withdrawSharedExpense(1*10**17, accounts[2], {from: accounts[1]});
             } catch (error) {
                 const invalidOpcode = error.message.search('invalid opcode') >= 0;
                 assert(invalidOpcode, "Expected throw, got '" + error + "' instead");
             }
 
             const oldBalance = web3.fromWei(web3.eth.getBalance(accounts[2]));
-            await doneth.withdrawSharedExpense(1*10**17, {from: accounts[2]}); 
+            await doneth.withdrawSharedExpense(1*10**17, accounts[2], {from: accounts[2]}); 
 
             const newBalance = web3.fromWei(web3.eth.getBalance(accounts[2]));
             const diff = newBalance - oldBalance;
-            const sharedExpenseWithdrawn = await doneth.getSharedExpenseWithdrawn();
+            const sharedExpenseWithdrawn = await doneth.sharedExpenseWithdrawn();
             const contractInfo = await doneth.getContractInfo();
 
             // range for balance difference to account for gas cost
@@ -300,7 +300,7 @@ contract('Doneth', function(accounts) {
 
             try {
                 // cannot overdraw sharedExpense
-                await doneth.withdrawSharedExpense(2*10**17, {from: accounts[2]}); 
+                await doneth.withdrawSharedExpense(2*10**17, accounts[2], {from: accounts[2]}); 
             } catch (error) {
                 const invalidOpcode = error.message.search('invalid opcode') >= 0;
                 assert(invalidOpcode, "Expected throw, got '" + error + "' instead");
@@ -337,11 +337,11 @@ contract('Doneth', function(accounts) {
             assert.strictEqual(contractStruct[4].toNumber(), 4.5*10**17); // contract.totalWithdrawn
 
             // accounts[1] withdraws 0.1 Eth from sharedExpense
-            await doneth.withdrawSharedExpense(1*10**17, {from: accounts[1]}); 
+            await doneth.withdrawSharedExpense(1*10**17, accounts[1], {from: accounts[1]}); 
             var memberStruct = await doneth.returnMember(accounts[1]);
             var contractStruct = await doneth.getContractInfo();
-            var sharedExpense = await doneth.getSharedExpense();
-            var sharedExpenseWithdrawn = await doneth.getSharedExpenseWithdrawn();
+            var sharedExpense = await doneth.sharedExpense();
+            var sharedExpenseWithdrawn = await doneth.sharedExpenseWithdrawn();
             assert.strictEqual(web3.eth.getBalance(doneth.address).toNumber(), 4.5*10**17);
             assert.strictEqual(memberStruct[3].toNumber(), 0); // member.withdrawn
             assert.strictEqual(contractStruct[4].toNumber(), 4.5*10**17); // contract.totalWithdrawn
@@ -356,8 +356,8 @@ contract('Doneth', function(accounts) {
             await doneth.withdraw(4.5*10**17, {from: accounts[1]});
             var memberStruct = await doneth.returnMember(accounts[1]);
             var contractStruct = await doneth.getContractInfo();
-            var sharedExpense = await doneth.getSharedExpense();
-            var sharedExpenseWithdrawn = await doneth.getSharedExpenseWithdrawn();
+            var sharedExpense = await doneth.sharedExpense();
+            var sharedExpenseWithdrawn = await doneth.sharedExpenseWithdrawn();
             assert.strictEqual(web3.eth.getBalance(doneth.address).toNumber(), 0);
             assert.strictEqual(memberStruct[3].toNumber(), 4.5*10**17); // member.withdrawn
             assert.strictEqual(contractStruct[4].toNumber(), 9*10**17); // contract.totalWithdrawn

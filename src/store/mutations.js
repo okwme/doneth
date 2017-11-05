@@ -88,7 +88,7 @@ export default {
     let memberKey = state.members.findIndex((member) => member.address === address)
     if (memberKey > -1) {
       let member = state.members[memberKey]
-      member.shares = parseInt(amount) + parseInt(member.shares)
+      member.shares = parseInt(amount)
       state.members.splice(memberKey, 1, member)
     }
   },

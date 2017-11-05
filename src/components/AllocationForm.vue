@@ -1,25 +1,27 @@
 <template>
   <div>
-    <div class="field">
-      <label for="alloc_patron">To:</label>
-      <select name="alloc_patron" v-model="patron" required>
-        <option v-for="item in members" :value="item.address">{{item.memberName}}</option>
-      </select>
-    </div>
-    <div class="field">
-      <label for="alloc_shares">Shares:</label>
-      <input type="number" name="alloc_shares" v-model="sharesAllocated" placeholder="Shares" required>
-    </div>
+    <form @submit.prevent="allocate()">
+      <div class="field">
+        <label for="alloc_patron">To:</label>
+        <select name="alloc_patron" v-model="patron" required>
+          <option v-for="item in members" :value="item.address">{{item.memberName}}</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="alloc_shares">Shares:</label>
+        <input type="number" name="alloc_shares" v-model="sharesAllocated" placeholder="Shares" required>
+      </div>
 
-    <div class="footer">
-      <template v-if="!submitting">
-        <button class="btn btn-secondary" @click="closeModal('modalAllocateShares')">Cancel</button>
-        <button class="btn btn-primary" name="button" @click="allocate()">Submit</button>
-      </template>
-      <template v-if="submitting">
-        <button class="btn btn-primary">Sending...</button>
-      </template>
-    </div>
+      <div class="footer">
+        <template v-if="!submitting">
+          <button class="btn btn-secondary" @click="closeModal('modalAllocateShares')">Cancel</button>
+          <button class="btn btn-primary" name="button" >Submit</button>
+        </template>
+        <template v-if="submitting">
+          <button class="btn btn-primary">Sending...</button>
+        </template>
+      </div>
+    </form>
   </div>
 </template>
 
@@ -39,11 +41,20 @@ export default {
   computed: {
     ...mapGetters(['members'])
   },
+  watch: {
+    patron () {
+      console.log('patron changed')
+      console.log(this.patron)
+      let member = this.members.find((m) => m.address === this.patron)
+      this.sharesAllocated = (member && parseInt(member.shares)) || 0
+    }
+  },
   methods: {
     ...mapActions(['allocateShares', 'addNotification']),
     allocate () {
       this.submitting = true
-      this.allocateShares({address: this.patron, amount: this.sharesAllocated}).then((done) => {
+      this.allocateShares({address: this.patron, amount: this.sharesAllocated})
+      .then((done) => {
         this.submitting = false
         this.patron = null
         this.sharesAllocated = 0
