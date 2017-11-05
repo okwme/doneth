@@ -1,5 +1,5 @@
 # Ethereal Hackathon
-[Doneth](https:/doneth.org) is a product of the 2017 [Ethereal Hackathon](https://etherealsummit.com/hackathon/) built by [Billy Rennekamp](https://github.com/okwme), [Trevor Clarke](https://github.com/TrevorJTClarke) and [Tim Wu](https://github.com/defactoknife)
+[Doneth](https:/doneth.org) is the [winner](https://devpost.com/software/doneth) of the 2017 [Ethereal Hackathon](https://etherealsummit.com/hackathon/) built by [Billy Rennekamp](https://github.com/okwme), [Trevor Clarke](https://github.com/TrevorJTClarke) and [Tim Wu](https://github.com/defactoknife)
 
 Further contract code can be seen at https://github.com/defactoknife/doneth-truffle
 
