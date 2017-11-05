@@ -194,7 +194,7 @@ export default {
       commit('ADD_LOGS', results)
     })
 
-    let p8 = state.Doneth.getPastEvents('ChangeSharedExpense', {
+    let p8 = state.Doneth.getPastEvents('ChangeMemberName', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
@@ -202,14 +202,22 @@ export default {
       commit('ADD_LOGS', results)
     })
 
-    let p9 = state.Doneth.getPastEvents('WithdrawSharedExpense', {
+    let p9 = state.Doneth.getPastEvents('ChangeSharedExpense', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
     .then((results) => {
       commit('ADD_LOGS', results)
     })
-    return Promise.all([p1, p2, p3, p4, p5, p6, p7, p8, p9])
+
+    let p10 = state.Doneth.getPastEvents('WithdrawSharedExpense', {
+      fromBlock: state.genesisBlock,
+      toBlock: 'latest'
+    })
+    .then((results) => {
+      commit('ADD_LOGS', results)
+    })
+    return Promise.all([p1, p2, p3, p4, p5, p6, p7, p8, p9, p10])
   },
   pollAllowedAmounts ({dispatch, state}) {
     return dispatch('pollAllowedAmount', 0)

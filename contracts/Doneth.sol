@@ -97,6 +97,7 @@ contract Doneth is Ownable {
     // event Division(uint256 num, uint256 balance, uint256 shares);
     event ChangePrivilege(address who, bool oldValue, bool newValue);
     event ChangeContractName(string oldValue, string newValue);
+    event ChangeMemberName(address who, string oldValue, string newValue);
     event ChangeSharedExpense(uint256 contractBalance, uint256 oldValue, uint256 newValue);
     event WithdrawSharedExpense(address from, address to, uint value, uint256 newSharedExpenseWithdrawn);
 
@@ -180,16 +181,18 @@ contract Doneth is Ownable {
     }
 
     // Only owner or member can change member's name
-    function changeMemberName(address who, string newValue) public  onlyExisting(who) {
+    function changeMemberName(address who, string newName) public  onlyExisting(who) {
         if (msg.sender != who && msg.sender != owner) revert();
-        members[who].memberName = newValue;
+        string storage oldName = members[who].memberName;
+        ChangeMemberName(who, oldName, newName);
+        members[who].memberName = newName;
     }
 
     // Only owner can change admin privileges of members; other admins cannot change other admins
     function changeAdminPrivilege(address who, bool newValue) public onlyAdmin() {
         bool oldValue = members[who].admin;
-        members[who].admin = newValue; 
         ChangePrivilege(who, oldValue, newValue);
+        members[who].admin = newValue; 
     }
 
     // Only owner can change the contract name

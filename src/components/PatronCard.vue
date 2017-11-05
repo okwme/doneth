@@ -1,6 +1,6 @@
 <template>
   <div
-  class="pointer"
+  :class="{'pointer': isAdmin}"
   @click="editMember(patron)" v-on:mouseenter="toggleActive(patron, true)" v-on:mouseleave="toggleActive(patron, false)">
     <div class="user">
       <div class="avatar" :style="{ background: colorHex(patron) }">
@@ -48,6 +48,7 @@ export default {
   methods: {
     ...mapMutations({setModal: 'SET_MODAL', setEditMember: 'SET_EDIT_MEMBER'}),
     editMember (patron) {
+      if (!this.isAdmin) return
       this.setModal('modalAddMember')
       this.setEditMember(patron)
     },

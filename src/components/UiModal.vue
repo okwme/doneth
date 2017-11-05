@@ -144,14 +144,11 @@ export default {
     ...mapMutations({setModal: 'SET_MODAL', setEditMember: 'SET_EDIT_MEMBER'}),
     open () {
       console.log('who uses open?')
-      // this.setModal(true)
     },
     close () {
       console.log('who uses close?')
-      // this.setModal(false)
     },
     closeModal (e) {
-      console.log('closeModal')
       if (!this.dismissible) {
         return
       }
@@ -161,7 +158,6 @@ export default {
       if (e.currentTarget === this.$refs.backdrop && e.target !== e.currentTarget) {
         return
       }
-      console.log('set false')
       this.setModal(false)
       this.setEditMember(null)
     },

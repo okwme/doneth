@@ -6,7 +6,6 @@ import actions from './actions'
 import getters from './getters'
 import mutations from './mutations'
 import abi from '../../build/contracts/Doneth.json'
-
 Vue.use(Vuex)
 
 // const debug = process.env.NODE_ENV !== 'production'
