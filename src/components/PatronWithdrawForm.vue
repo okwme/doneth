@@ -2,38 +2,43 @@
   <div>
     <button v-if="getAllowedAmount(patron.address) > 0" @click="openModal('modalWithdrawFunds')" class="btn btn-primary btn-link">Withdraw Funds</button>
 
-    <ui-modal ref="modalWithdrawFunds" title="Withdraw Funds">
-      <div class="withdraw-form">
-        <div class="funds-meta">
-          You have {{getAllowedAmount(patron.address)}} ETH available to withraw
+    <ui-modal modal-id="modalWithdrawFunds" title="Withdraw Funds">
+      <form @submit.prevent="withdraw(patron)">
+        <div class="withdraw-form">
+          <div class="funds-meta">
+            You have {{getAllowedAmount(patron.address)}} ETH available to withraw
+          </div>
+          <div class="funds-options">
+            <button @click.prevent="useAllAmount()" class="btn btn-primary btn-outlined">All</button>
+            <button @click.prevent="useHalfAmount()" class="btn btn-primary btn-outlined">Half</button>
+            <button @click.prevent="useMinAmount()" class="btn btn-primary btn-outlined">Min</button>
+          </div>
+          <div class="fields">
+            <label for="">ETH</label>
+            <input 
+            min="0.000000000000000001"
+            step="0.000000000000000001"
+            :class="overdrafted(patron, withdrawAmount)" class="center" type="number" placeholder="Amount (ETH)" v-model="withdrawAmount">
+            <label for="">{{currency}}</label>
+            <input readOnly="true" class="center" type="text" :value="convertedAmount">
+          </div>
+          <p>Optionally send to different address:</p>
+          <div class="field field-address">
+            <label for="add_address">Address:</label>
+            <input minLength="42" maxLength="42" type="text" name="add_address" v-model="userAddress" placeholder="0x000000000..." required>
+          </div>
         </div>
-        <div class="funds-options">
-          <button @click="useAllAmount()" class="btn btn-primary btn-outlined">All</button>
-          <button @click="useHalfAmount()" class="btn btn-primary btn-outlined">Half</button>
-          <button @click="useMinAmount()" class="btn btn-primary btn-outlined">Min</button>
-        </div>
-        <div class="fields">
-          <label for="">ETH</label>
-          <input :class="overdrafted(patron, withdrawAmount)" class="center" type="number" placeholder="Amount (ETH)" v-model="withdrawAmount">
-          <label for="">{{currency}}</label>
-          <input readOnly="true" class="center" type="text" :value="convertedAmount">
-        </div>
-        <p>Optionally send to different address:</p>
-        <div class="field field-address">
-          <label for="add_address">Address:</label>
-          <input maxLength="42" type="text" name="add_address" v-model="userAddress" placeholder="0x000000000..." required>
-        </div>
-      </div>
 
-      <div slot="footer">
-        <template v-if="!submitting">
-          <button class="btn btn-secondary" @click="closeModal('modalWithdrawFunds')">Cancel</button>
-          <button class="btn btn-primary" @click="withdraw(patron)">Submit</button>
-        </template>
-        <template v-if="submitting">
-          <button class="btn btn-primary">Sending...</button>
-        </template>
-      </div>
+        <div slot="footer">
+          <template v-if="!submitting">
+            <button class="btn btn-secondary" @click.prevent="closeModal()">Cancel</button>
+            <button class="btn btn-primary" >Submit</button>
+          </template>
+          <template v-if="submitting">
+            <button class="btn btn-primary">Sending...</button>
+          </template>
+        </div>
+      </form>
     </ui-modal>
   </div>
 </template>
@@ -41,7 +46,7 @@
 <script>
 import UiModal from '@/components/UiModal'
 import BN from 'bignumber.js'
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 export default {
 
@@ -49,7 +54,7 @@ export default {
   props: ['patron'],
   data () {
     return {
-      userAddress: null,
+      userAddress: this.patron.address,
       withdrawAmount: 0,
       convertedAmount: 0,
       withdrawer: 0,
@@ -69,6 +74,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations({setModal: 'SET_MODAL'}),
     ...mapActions(['convertToCurrency', 'makeWithdraw', 'addNotification']),
     getAllowedAmount (address) {
       let patron = this.members.find((p) => p.address === address)
@@ -81,7 +87,7 @@ export default {
       return new BN(patron.allowedAmount)
     },
     isOverdrafted (patron, withdrawing) {
-      if (isNaN(withdrawing) || isNaN(patron.allowedAmount)) return false
+      if (!withdrawing || !patron.allowedAmount || isNaN(withdrawing) || isNaN(patron.allowedAmount)) return false
       let allowedAmount = new BN(window.web3.utils.toWei(patron.allowedAmount))
       withdrawing = new BN(window.web3.utils.toWei(withdrawing))
       return allowedAmount.greaterThanOrEqualTo(withdrawing)
@@ -110,7 +116,7 @@ export default {
         this.makeWithdraw({amount: this.withdrawAmount + '', optionalAddress: this.userAddress}).then((result) => {
           this.withdrawing = false
           this.submitting = false
-          this.closeModal('modalWithdrawFunds')
+          this.closeModal()
         }).catch(() => {
           this.withdrawing = false
           this.submitting = false
@@ -127,10 +133,11 @@ export default {
       this.withdrawAmount = new BN('0.005').toFixed(3)
     },
     openModal (ref) {
-      this.$refs[ref].open()
+      this.userAddress = this.patron.address
+      this.setModal(ref)
     },
-    closeModal (ref) {
-      this.$refs[ref].close()
+    closeModal () {
+      this.setModal(false)
     }
   },
   components: {

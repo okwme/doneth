@@ -1,36 +1,38 @@
 <template>
   <div class="withdraw-form">
-    <div class="funds-meta">
-      {{getAllowedAmount()}} ETH available to allocate
-    </div>
-    <div class="funds-options">
-      <button @click="useAllAmount()" class="btn btn-primary btn-outlined">All</button>
-      <button @click="useHalfAmount()" class="btn btn-primary btn-outlined">Half</button>
-      <button @click="useMinAmount()" class="btn btn-primary btn-outlined">Min</button>
-    </div>
-    <div class="fields">
-      <label for="">ETH</label>
-      <input class="center" type="number" placeholder="Amount (ETH)" v-model="allocateAmount">
-      <label for="">{{currency}}</label>
-      <input readOnly="true" class="center" type="text" :value="convertedAmount">
-    </div>
+    <form @submit.prevent="allocate()">
+      <div class="funds-meta">
+        {{getAllowedAmount()}} ETH available to allocate
+      </div>
+      <div class="funds-options">
+        <button @click="useAllAmount()" class="btn btn-primary btn-outlined">All</button>
+        <button @click="useHalfAmount()" class="btn btn-primary btn-outlined">Half</button>
+        <button @click="useMinAmount()" class="btn btn-primary btn-outlined">Min</button>
+      </div>
+      <div class="fields">
+        <label for="">ETH</label>
+        <input min="0.000000000000000001"  step="0.000000000000000001"  class="center" type="number" placeholder="Amount (ETH)" v-model="allocateAmount">
+        <label for="">{{currency}}</label>
+        <input readOnly="true" class="center" type="text" :value="convertedAmount">
+      </div>
 
-    <div class="footer">
-      <template v-if="!submitting">
-        <button class="btn btn-secondary" @click="closeModal('modalAllocateExpenseFunds')">Cancel</button>
-        <button class="btn btn-primary" @click="allocate()">Submit</button>
-      </template>
-      <template v-if="submitting">
-        <button class="btn btn-primary">Sending...</button>
-      </template>
-    </div>
+      <div class="footer">
+        <template v-if="!submitting">
+          <button class="btn btn-secondary" @click="closeModal()">Cancel</button>
+          <button class="btn btn-primary" >Submit</button>
+        </template>
+        <template v-if="submitting">
+          <button class="btn btn-primary">Sending...</button>
+        </template>
+      </div>
+    </form>
   </div>
 </template>
 
 <script>
 import UiModal from '@/components/UiModal'
 import BN from 'bignumber.js'
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 export default {
 
@@ -55,6 +57,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations({setModal: 'SET_MODAL'}),
     ...mapActions(['convertToCurrency', 'allocateExpenseAmount', 'addNotification']),
     allocate () {
       if (this.allocateAmount) {
@@ -62,7 +65,7 @@ export default {
         console.log('this.userAddress', this.allocateAmount)
         this.allocateExpenseAmount(this.allocateAmount).then((result) => {
           this.submitting = false
-          this.closeModal('modalAllocateExpenseFunds')
+          this.closeModal()
         }).catch(() => {
           this.submitting = false
         })
@@ -91,7 +94,7 @@ export default {
       this.allocateAmount = new BN('0.005').toFixed(3)
     },
     closeModal (ref) {
-      this.$parent.$parent.$refs[ref].close()
+      this.setModal(false)
     }
   },
   components: {

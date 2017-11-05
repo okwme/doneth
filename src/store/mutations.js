@@ -1,6 +1,9 @@
 import BN from 'bignumber.js'
 import Vue from 'vue'
 export default {
+  SET_MODAL (state, isOpen) {
+    state.modalOpen = isOpen
+  },
   SET_LOADING (state, isLoading) {
     state.loading = isLoading
   },
@@ -74,6 +77,9 @@ export default {
   },
   SET_EXPENSE (state, totalExpense) {
     state.totalExpense = totalExpense
+  },
+  ADD_EXPENSEWITHDRAWN (state, expenseWithdrawn) {
+    state.totalExpenseWithdrawn = new BN(this.state.totalExpenseWithdrawn).add(new BN(expenseWithdrawn)).toString()
   },
   SET_EXPENSEWITHDRAWN (state, totalExpenseWithdrawn) {
     state.totalExpenseWithdrawn = totalExpenseWithdrawn
