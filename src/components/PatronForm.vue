@@ -5,40 +5,42 @@
       <h3>Add Member</h3>
     </div>
 
-    <ui-modal ref="modalAddMember" title="Add Member">
-      <div class="field">
-        <label for="add_name">Name:</label>
-        <input maxLength="64" type="text" name="add_name" v-model="firstName" required>
-      </div>
-      <div class="field">
-        <label for="add_name">Shares:</label>
-        <input min="0" type="number" name="add_shares" v-model="sharesTotal" required>
-      </div>
-      <div class="field field-address">
-        <label for="add_address">Address:</label>
-        <input maxLength="42" type="text" name="add_address" v-model="userAddress" required>
-      </div>
-      <div class="field checkbox">
-        <input type="checkbox" name="add_admin" v-model="isAdmin">
-        <label for="add_admin">Is Admin?</label>
-      </div>
+    <ui-modal modal-id="modalAddMember" title="Add Member">
+      <form @submit.prevent="addNewMember()">
+        <div class="field">
+          <label for="add_name">Name:</label>
+          <input maxLength="64" type="text" name="add_name" v-model="firstName" required>
+        </div>
+        <div class="field">
+          <label for="add_name">Shares:</label>
+          <input min="0" type="number" name="add_shares" v-model="sharesTotal" required>
+        </div>
+        <div class="field field-address">
+          <label for="add_address">Address:</label>
+          <input minLength="42"  maxLength="42" type="text" name="add_address" v-model="userAddress" required>
+        </div>
+        <div class="field checkbox">
+          <input type="checkbox" name="add_admin" v-model="isAdmin">
+          <label for="add_admin">Is Admin?</label>
+        </div>
 
-      <div slot="footer">
-        <template v-if="!submitting">
-          <button class="btn btn-secondary" @click="closeModal('modalAddMember')">Cancel</button>
-          <button class="btn btn-primary" name="button" @click="addNewMember()">Submit</button>
-        </template>
-        <template v-if="submitting">
-          <button class="btn btn-primary">Sending...</button>
-        </template>
-      </div>
+        <div slot="footer">
+          <template v-if="!submitting">
+            <button class="btn btn-secondary" @click.prevent="closeModal()">Cancel</button>
+            <button class="btn btn-primary" name="button" >Submit</button>
+          </template>
+          <template v-if="submitting">
+            <button class="btn btn-primary">Sending...</button>
+          </template>
+        </div>
+      </form>
     </ui-modal>
   </div>
 </template>
 
 <script>
 import UiModal from '@/components/UiModal'
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 export default {
 
@@ -57,6 +59,7 @@ export default {
     ...mapGetters(['account', 'metamask', 'connected'])
   },
   methods: {
+    ...mapMutations({setModal: 'SET_MODAL'}),
     ...mapActions(['addNotification', 'setLoading', 'addMember']),
     addNewMember () {
       let member = {
@@ -71,7 +74,7 @@ export default {
         this.userAddress = ''
         this.sharesTotal = ''
         this.firstName = ''
-        this.closeModal('modalAddMember')
+        this.closeModal()
       }).catch((error) => {
         this.submitting = false
         this.addNotification({
@@ -81,10 +84,10 @@ export default {
       })
     },
     openModal (ref) {
-      this.$refs[ref].open()
+      this.setModal(ref)
     },
-    closeModal (ref) {
-      this.$refs[ref].close()
+    closeModal () {
+      this.setModal(false)
     }
   },
   components: {

@@ -12,6 +12,7 @@ Vue.use(Vuex)
 const debug = false
 
 const state = {
+  modalOpen: false,
   retried: false,
   metamask: false,
   account: null,

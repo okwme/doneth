@@ -14,7 +14,7 @@
 
       <div class="footer">
         <template v-if="!submitting">
-          <button class="btn btn-secondary" @click="closeModal('modalAllocateShares')">Cancel</button>
+          <button class="btn btn-secondary" @click="closeModal()">Cancel</button>
           <button class="btn btn-primary" name="button" >Submit</button>
         </template>
         <template v-if="submitting">
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 export default {
 
   name: 'AllocationForm',
@@ -45,12 +45,14 @@ export default {
     patron () {
       console.log('patron changed')
       console.log(this.patron)
+      if (!this.patron) return
       let member = this.members.find((m) => m.address === this.patron)
       this.sharesAllocated = (member && parseInt(member.shares)) || 0
     }
   },
   methods: {
     ...mapActions(['allocateShares', 'addNotification']),
+    ...mapMutations({setModal: 'SET_MODAL'}),
     allocate () {
       this.submitting = true
       this.allocateShares({address: this.patron, amount: this.sharesAllocated})
@@ -58,8 +60,9 @@ export default {
         this.submitting = false
         this.patron = null
         this.sharesAllocated = 0
-        this.closeModal('modalAllocateShares')
+        this.closeModal()
       }).catch((error) => {
+        console.error('ERROR', error)
         this.submitting = false
         this.addNotification({
           text: error,
@@ -67,8 +70,8 @@ export default {
         })
       })
     },
-    closeModal (ref) {
-      this.$parent.$parent.$refs[ref].close()
+    closeModal () {
+      this.setModal(false)
     }
   }
 }

@@ -1,35 +1,37 @@
 <template>
   <div class="withdraw-form">
-    <div class="funds-meta">
-      {{getAllowedAmount()}} ETH available to withdraw
-    </div>
-    <div class="fields">
-      <label for="">ETH</label>
-      <input :class="overdrafted(patron, withdrawAmount)" class="center" type="number" placeholder="Amount (ETH)" v-model="withdrawAmount">
-      <label for="">{{currency}}</label>
-      <input readOnly="true" class="center" type="text" :value="convertedAmount">
-    </div>
-    <div class="field field-address">
-      <label for="add_address">Address:</label>
-      <input maxLength="42" type="text" name="add_address" v-model="userAddress" placeholder="0x000000000..." required>
-    </div>
+    <form @submit.prevent="withdraw(patron)">
+      <div class="funds-meta">
+        {{getAllowedAmount()}} ETH available to withdraw
+      </div>
+      <div class="fields">
+        <label for="">ETH</label>
+        <input step="0.000000000000000001" min="0.000000000000000001" :class="overdrafted(patron, withdrawAmount)" class="center" type="number" placeholder="Amount (ETH)" v-model="withdrawAmount">
+        <label for="">{{currency}}</label>
+        <input readOnly="true" class="center" type="text" :value="convertedAmount">
+      </div>
+      <div class="field field-address">
+        <label for="add_address">Address:</label>
+        <input minLength="42" maxLength="42" type="text" name="add_address" v-model="userAddress" placeholder="0x000000000..." required>
+      </div>
 
-    <div class="footer">
-      <template v-if="!submitting">
-        <button class="btn btn-secondary" @click="closeModal('modalWithdrawExpense')">Cancel</button>
-        <button class="btn btn-primary" @click="withdraw(patron)">Submit</button>
-      </template>
-      <template v-if="submitting">
-        <button class="btn btn-primary">Sending...</button>
-      </template>
-    </div>
+      <div class="footer">
+        <template v-if="!submitting">
+          <button class="btn btn-secondary" @click.prevent="closeModal()">Cancel</button>
+          <button class="btn btn-primary" >Submit</button>
+        </template>
+        <template v-if="submitting">
+          <button class="btn btn-primary">Sending...</button>
+        </template>
+      </div>
+    </form>
   </div>
 </template>
 
 <script>
 import UiModal from '@/components/UiModal'
 import BN from 'bignumber.js'
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 export default {
 
@@ -59,6 +61,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations({setModal: 'SET_MODAL'}),
     ...mapActions(['convertToCurrency', 'makeExpenseWithdraw', 'addNotification']),
     getAllowedAmount () {
       return 100
@@ -120,7 +123,7 @@ export default {
       this.withdrawAmount = new BN('0.005').toFixed(3)
     },
     closeModal (ref) {
-      this.$parent.$parent.$refs[ref].close()
+      this.setModal(false)
     }
   },
   components: {

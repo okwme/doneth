@@ -9,15 +9,15 @@
       </div>
     </div>
 
-    <ui-modal ref="modalAllocateShares" title="Allocate Shares">
+    <ui-modal modal-id="modalAllocateShares" title="Allocate Shares">
       <allocation-form />
     </ui-modal>
 
-    <ui-modal ref="modalAllocateExpenseFunds" title="Allocate Funds for Expense">
+    <ui-modal modal-id="modalAllocateExpenseFunds" title="Allocate Funds for Expense">
       <expense-allocate-form />
     </ui-modal>
 
-    <ui-modal ref="modalWithdrawExpense" title="Withdraw Expense Funds">
+    <ui-modal modal-id="modalWithdrawExpense" title="Withdraw Expense Funds">
       <expense-withdraw-form />
     </ui-modal>
   </section>
@@ -28,7 +28,7 @@ import UiModal from '@/components/UiModal'
 import AllocationForm from '@/components/AllocationForm'
 import ExpenseAllocateForm from '@/components/ExpenseAllocateForm'
 import ExpenseWithdrawForm from '@/components/ExpenseWithdrawForm'
-import {mapState} from 'vuex'
+import {mapState, mapMutations} from 'vuex'
 export default {
   name: 'Administration',
   data () {
@@ -39,11 +39,12 @@ export default {
     ...mapState(['totalExpense'])
   },
   methods: {
+    ...mapMutations({setModal: 'SET_MODAL'}),
     openModal (ref) {
-      this.$refs[ref].open()
+      this.setModal(ref)
     },
     closeModal (ref) {
-      this.$refs[ref].close()
+      this.setModal(false)
     }
   },
   components: {

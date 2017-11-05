@@ -249,11 +249,10 @@ export default {
   },
 
   allocateShares ({state, dispatch, commit}, {address, amount}) {
-    dispatch('setLoading', true)
     return state.Doneth.methods.allocateShares(address, new BN(amount)).send({from: state.account})
     .on('transactionHash', (hash) => {
-      console.log('hasssssh')
-      return hash
+      this.commit('SET_MODAL', false)
+      dispatch('setLoading', true)
     })
     .then((result) => {
       dispatch('readLogs')
@@ -263,7 +262,7 @@ export default {
       dispatch('getContractInfo')
       dispatch('pollAllowedAmounts')
     }).catch((error) => {
-      console.error(error)
+      console.error('ERROR:', error)
       dispatch('setLoading', false)
       dispatch('addNotification', {class: 'error', text: 'Unknown Error, check logs'})
     })
@@ -276,9 +275,10 @@ export default {
       if (!currentUser || !currentUser.admin) {
         reject(new Error('Not an Admin'))
       } else {
-        dispatch('setLoading', true)
         return state.Doneth.methods.addMember(member.userAddress, new BN(member.sharesTotal), member.isAdmin, member.firstName).send({from: state.account})
         .on('transactionHash', (hash) => {
+          dispatch('setLoading', true)
+          commit('SET_MODAL', false)
         })
         .on('error', (error) => {
           console.error(error)
@@ -351,11 +351,14 @@ export default {
       result = new BN(result)
 
       if (result.sub(withdrawnAlready).greaterThanOrEqualTo(wei)) {
-        dispatch('setLoading', true)
         let options = {from: state.account}
         // TODO: Is this correct?! "to" option to send to recipient
         if (withdrawOptions.optionalAddress) options.to = withdrawOptions.optionalAddress
-        return state.Doneth.methods.withdraw(wei).send(options).then((result) => {
+        return state.Doneth.methods.withdraw(wei).send(options)
+        .on('transactionHash', (hash) => {
+          dispatch('setLoading', true)
+          commit('SET_MODAL', false)
+        }).then((result) => {
           dispatch('readLogs')
           commit('UPDATE_MEMBER_WITHDRAWN', {amount: wei, address: state.account})
           dispatch('setLoading', false)
@@ -382,18 +385,25 @@ export default {
     return state.Doneth.methods.calculateTotalExpenseWithdrawableAmount().call().then((result) => {
       result = new BN(result)
       if (result.greaterThanOrEqualTo(wei)) {
-        dispatch('setLoading', true)
         let options = {from: state.account}
-        return state.Doneth.methods.withdrawSharedExpense(wei, to).send(options).then((result) => {
-          dispatch('readLogs')
-          // commit('UPDATE_WITHDRAW_WITHDRAWN', {amount, to})
+        return state.Doneth.methods.withdrawSharedExpense(wei, to).send(options)
+        .on('transactionHash', (hash) => {
+          this.commit('SET_MODAL', false)
+          dispatch('setLoading', true)
+        })
+        .then((result) => {
+          commit('ADD_EXPENSEWITHDRAWN', wei)
           dispatch('setLoading', false)
-          dispatch('getContractInfo')
-          dispatch('pollAllowedAmounts')
           dispatch('addNotification', {class: 'success', text: 'Withdrawn 🎉'})
+          return Promise.all([
+            dispatch('readLogs'),
+            dispatch('getContractInfo'),
+            dispatch('pollAllowedAmounts')
+          ])
         })
       } else {
         dispatch('addNotification', {class: 'error', text: 'Insufficient Shares to withdraw that amount'})
+        return new Error()
       }
     }).catch((error) => {
       console.error(error)
@@ -411,9 +421,12 @@ export default {
       value: wei
     }).then((result) => {
       dispatch('setLoading', false)
-      dispatch('readLogs')
-      dispatch('getContractInfo')
-      dispatch('pollAllowedAmounts')
+
+      return Promise.all([
+        dispatch('readLogs'),
+        dispatch('getContractInfo'),
+        dispatch('pollAllowedAmounts')
+      ])
     }).catch((error) => {
       console.error(error)
       dispatch('setLoading', false)
@@ -428,10 +441,10 @@ export default {
   allocateExpenseAmount ({state, dispatch, commit}, amount) {
     let wei = window.web3.utils.toWei(new BN(amount))
     return new Promise((resolve, reject) => {
-      dispatch('setLoading', true)
       return state.Doneth.methods.changeSharedExpenseAllocation(wei).send({from: state.account})
       .on('transactionHash', (hash) => {
-        console.log('hash', hash)
+        this.commit('SET_MODAL', false)
+        dispatch('setLoading', true)
       })
       .on('error', (error) => {
         console.error(error)
@@ -446,6 +459,8 @@ export default {
         })
 
         return Promise.all([
+          dispatch('readLogs'),
+          dispatch('getContractInfo'),
           dispatch('pollSharedExpense'),
           dispatch('pollSharedExpenseWithdrawn'),
           dispatch('pollAllowedAmounts')])
