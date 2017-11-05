@@ -123,7 +123,10 @@ export default {
     state.Doneth.methods.totalShares().call().then((totalShares) => {
       commit('SET_SHARES', totalShares)
     })
-    state.Doneth.methods.getOwner().call().then((founder) => {
+    state.Doneth.methods.name().call().then((name) => {
+      commit('SET_NAME', name)
+    })
+    state.Doneth.methods.owner().call().then((founder) => {
       commit('SET_FOUNDER', founder)
     })
     state.Doneth.methods.totalWithdrawn().call().then((totalWithdrawn) => {
@@ -136,7 +139,7 @@ export default {
   readLogs ({dispatch, state, commit}) {
     commit('CLEAR_LOGS')
 
-    let p1 = state.Doneth.getPastEvents('AddShare', {
+    let p1 = state.Doneth.getPastEvents('Deposit', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
@@ -144,7 +147,7 @@ export default {
       commit('ADD_LOGS', results)
     })
 
-    let p2 = state.Doneth.getPastEvents('RemoveShare', {
+    let p2 = state.Doneth.getPastEvents('Withdraw', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
@@ -152,7 +155,7 @@ export default {
       commit('ADD_LOGS', results)
     })
 
-    let p3 = state.Doneth.getPastEvents('Deposit', {
+    let p3 = state.Doneth.getPastEvents('TokenWithdraw', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
@@ -160,7 +163,7 @@ export default {
       commit('ADD_LOGS', results)
     })
 
-    let p4 = state.Doneth.getPastEvents('Withdraw', {
+    let p4 = state.Doneth.getPastEvents('AddShare', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
@@ -168,7 +171,7 @@ export default {
       commit('ADD_LOGS', results)
     })
 
-    let p5 = state.Doneth.getPastEvents('SetContractName', {
+    let p5 = state.Doneth.getPastEvents('RemoveShare', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
@@ -176,7 +179,7 @@ export default {
       commit('ADD_LOGS', results)
     })
 
-    let p6 = state.Doneth.getPastEvents('SetMemberName', {
+    let p6 = state.Doneth.getPastEvents('ChangePrivilege', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
@@ -184,7 +187,7 @@ export default {
       commit('ADD_LOGS', results)
     })
 
-    let p7 = state.Doneth.getPastEvents('TokenWithdraw', {
+    let p7 = state.Doneth.getPastEvents('ChangeContractName', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
@@ -192,7 +195,7 @@ export default {
       commit('ADD_LOGS', results)
     })
 
-    let p8 = state.Doneth.getPastEvents('ChangePrivilege', {
+    let p8 = state.Doneth.getPastEvents('ChangeSharedExpense', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
@@ -200,23 +203,14 @@ export default {
       commit('ADD_LOGS', results)
     })
 
-    let p9 = state.Doneth.getPastEvents('ChangeSharedExpense', {
+    let p9 = state.Doneth.getPastEvents('WithdrawSharedExpense', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
     .then((results) => {
       commit('ADD_LOGS', results)
     })
-
-    let p10 = state.Doneth.getPastEvents('WithdrawSharedExpense', {
-      fromBlock: state.genesisBlock,
-      toBlock: 'latest'
-    })
-    .then((results) => {
-      commit('ADD_LOGS', results)
-    })
-
-    return Promise.all([p1, p2, p3, p4, p5, p6, p7, p8, p9, p10])
+    return Promise.all([p1, p2, p3, p4, p5, p6, p7, p8, p9])
   },
   pollAllowedAmounts ({dispatch, state}) {
     return dispatch('pollAllowedAmount', 0)
@@ -236,8 +230,8 @@ export default {
     return state.Doneth.methods.getMemberAtKey(new BN(data.i)).call()
       .then((address) => {
         return state.Doneth.methods.returnMember(address).call()
-        .then(({active, admin, shares, withdrawn}) => {
-          commit('ADD_MEMBER', {address, active, admin, shares, withdrawn})
+        .then(({active, admin, shares, withdrawn, memberName}) => {
+          commit('ADD_MEMBER', {address, active, admin, shares, withdrawn, memberName})
           if (data.i + 1 < data.length) {
             return dispatch('pollMember', {i: data.i + 1, length: data.length})
           }
@@ -245,12 +239,12 @@ export default {
       })
   },
   pollSharedExpense ({state, commit}) {
-    return state.Doneth.methods.getSharedExpense().call().then((amount) => {
+    return state.Doneth.methods.sharedExpense().call().then((amount) => {
       return commit('SET_EXPENSE', amount)
     })
   },
   pollSharedExpenseWithdrawn ({state, commit}) {
-    return state.Doneth.methods.getSharedExpenseWithdrawn().call().then((amount) => {
+    return state.Doneth.methods.sharedExpenseWithdrawn().call().then((amount) => {
       return commit('SET_EXPENSEWITHDRAWN', amount)
     })
   },

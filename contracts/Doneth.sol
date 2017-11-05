@@ -94,7 +94,7 @@ contract Doneth is Ownable {
     event TokenWithdraw(address from, uint value, address token, uint amount);
     event AddShare(address who, uint256 addedShares, uint256 newTotalShares);
     event RemoveShare(address who, uint256 removedShares, uint256 newTotalShares);
-    event Division(uint256 num, uint256 balance, uint256 shares);
+    // event Division(uint256 num, uint256 balance, uint256 shares);
     event ChangePrivilege(address who, bool oldValue, bool newValue);
     event ChangeContractName(string oldValue, string newValue);
     event ChangeSharedExpense(uint256 contractBalance, uint256 oldValue, uint256 newValue);
@@ -128,17 +128,17 @@ contract Doneth is Ownable {
         return this.balance;
     }
     
-    function getOwner() constant returns(address) {
-        return owner;
-    }
+    // function getOwner() constant returns(address) {
+    //     return owner;
+    // }
 
-    function getSharedExpense() constant returns(uint256) {
-        return sharedExpense;
-    }
+    // function getSharedExpense() constant returns(uint256) {
+    //     return sharedExpense;
+    // }
 
-    function getSharedExpenseWithdrawn() constant returns(uint256) {
-        return sharedExpenseWithdrawn;
-    }
+    // function getSharedExpenseWithdrawn() constant returns(uint256) {
+    //     return sharedExpenseWithdrawn;
+    // }
 
     function getContractInfo() constant returns(string, address, uint256, uint256, uint256) {
         return (name, owner, genesisBlockNumber, totalShares, totalWithdrawn);
@@ -266,7 +266,7 @@ contract Doneth is Ownable {
         uint256 ethPerSharePPN = balanceSum.percent(totalShares, PRECISION); 
         uint256 ethPPN = ethPerSharePPN.mul(members[who].shares);
         uint256 ethVal = ethPPN.div(10**PRECISION); 
-        Division(ethVal, balanceSum, totalShares);
+        // Division(ethVal, balanceSum, totalShares);
         return ethVal;
     }
 
@@ -288,7 +288,7 @@ contract Doneth is Ownable {
         uint256 ethPerSharePPN = balanceSum.percent(totalShares, PRECISION); 
         uint256 ethPPN = ethPerSharePPN.mul(members[who].shares);
         uint256 ethVal = ethPPN.div(10**PRECISION); 
-        Division(ethVal, balanceSum, totalShares);
+        // Division(ethVal, balanceSum, totalShares);
         return ethVal;
     }
 

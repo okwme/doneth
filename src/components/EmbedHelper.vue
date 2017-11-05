@@ -44,8 +44,10 @@ export default {
   },
   methods: {
     iframePreview () {
-      let mainurl = `https://doneth.org/${this.address}`
+      // let mainurl = `https://doneth.org/${this.address}`
       // let mainurl = `http://localhost:8080/${this.address}`
+      let mainurl = window.location.protocol + '//' + window.location.host + '/' + this.address
+      console.log(mainurl)
       let url = `${mainurl}/donate-button`
       let urlSmall = `${mainurl}/donate-button-small`
       this.htm = `<iframe border="0" src="${url}" width="305px" height="50px"></iframe>`

@@ -86,7 +86,7 @@ export default {
       }).send({
         from: this.account,
         // gas: '4700000',
-        gasPrice: '2000000000'
+        gasPrice: '4000000000'
       }, (e, transactionHash) => {
         this.deploying = false
         this.confirming = true

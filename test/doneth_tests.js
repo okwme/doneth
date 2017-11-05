@@ -20,7 +20,7 @@ contract('Doneth', function(accounts) {
             const retrieveMember = await doneth.getMemberAtKey(0);
             assert.equal(retrieveMember, web3.eth.coinbase); 
 
-            const owner = await doneth.getOwner();
+            const owner = await doneth.owner();
             assert.equal(owner, web3.eth.coinbase); 
         });
 
@@ -229,7 +229,7 @@ contract('Doneth', function(accounts) {
 
     describe("shared expense balance tests", function() {
         it("should have sharedExpense set to 0 at contract initialization", async function() {
-            const sharedExpense = await doneth.getSharedExpense();
+            const sharedExpense = await doneth.sharedExpense();
             assert.strictEqual(sharedExpense.toNumber(), 0);
         });
 
@@ -257,7 +257,7 @@ contract('Doneth', function(accounts) {
 
             // Owner should be able to perform changeSharedExpenseAllocation()
             await doneth.changeSharedExpenseAllocation(100, {from: accounts[0]});
-            const sharedExpense = await doneth.getSharedExpense();
+            const sharedExpense = await doneth.sharedExpense();
             assert.strictEqual(sharedExpense.toNumber(), 100);
         });
 
@@ -282,7 +282,7 @@ contract('Doneth', function(accounts) {
 
             const newBalance = web3.fromWei(web3.eth.getBalance(accounts[2]));
             const diff = newBalance - oldBalance;
-            const sharedExpenseWithdrawn = await doneth.getSharedExpenseWithdrawn();
+            const sharedExpenseWithdrawn = await doneth.sharedExpenseWithdrawn();
             const contractInfo = await doneth.getContractInfo();
 
             // range for balance difference to account for gas cost
@@ -340,8 +340,8 @@ contract('Doneth', function(accounts) {
             await doneth.withdrawSharedExpense(1*10**17, accounts[1], {from: accounts[1]}); 
             var memberStruct = await doneth.returnMember(accounts[1]);
             var contractStruct = await doneth.getContractInfo();
-            var sharedExpense = await doneth.getSharedExpense();
-            var sharedExpenseWithdrawn = await doneth.getSharedExpenseWithdrawn();
+            var sharedExpense = await doneth.sharedExpense();
+            var sharedExpenseWithdrawn = await doneth.sharedExpenseWithdrawn();
             assert.strictEqual(web3.eth.getBalance(doneth.address).toNumber(), 4.5*10**17);
             assert.strictEqual(memberStruct[3].toNumber(), 0); // member.withdrawn
             assert.strictEqual(contractStruct[4].toNumber(), 4.5*10**17); // contract.totalWithdrawn
@@ -356,8 +356,8 @@ contract('Doneth', function(accounts) {
             await doneth.withdraw(4.5*10**17, {from: accounts[1]});
             var memberStruct = await doneth.returnMember(accounts[1]);
             var contractStruct = await doneth.getContractInfo();
-            var sharedExpense = await doneth.getSharedExpense();
-            var sharedExpenseWithdrawn = await doneth.getSharedExpenseWithdrawn();
+            var sharedExpense = await doneth.sharedExpense();
+            var sharedExpenseWithdrawn = await doneth.sharedExpenseWithdrawn();
             assert.strictEqual(web3.eth.getBalance(doneth.address).toNumber(), 0);
             assert.strictEqual(memberStruct[3].toNumber(), 4.5*10**17); // member.withdrawn
             assert.strictEqual(contractStruct[4].toNumber(), 9*10**17); // contract.totalWithdrawn
