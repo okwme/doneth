@@ -1,7 +1,7 @@
 <template>
 <transition :name="toggleTransition" @after-enter="onEnter" @after-leave="onLeave">
   <div class="ui-modal ui-modal__mask" :class="classes" :role="role" v-show="isOpen">
-    <div class="ui-modal__wrapper" ref="backdrop" :class="{ 'has-dummy-scrollbar': preventShift }" @click="dismissOnBackdrop && closeModal($event)">
+    <div class="ui-modal__wrapper" ref="backdrop" :class="{ 'has-dummy-scrollbar': preventShift }" @click.self="closeModal($event)">
       <div class="ui-modal__container" ref="container" tabindex="-1" @keydown.esc="dismissOnEsc && closeModal($event)">
         <div class="ui-modal__header" v-if="!removeHeader">
           <slot name="header">
@@ -9,7 +9,7 @@
           </slot>
 
           <div class="ui-modal__close-button">
-            <button @click="closeModal" v-if="dismissOnCloseButton && !removeCloseButton && dismissible">&times;</button>
+            <button @click="closeModal" v-if="dismissOnCloseButton && !removeCloseButton">&times;</button>
           </div>
         </div>
 
@@ -149,15 +149,8 @@ export default {
       console.log('who uses close?')
     },
     closeModal (e) {
-      if (!this.dismissible) {
-        return
-      }
-
-      // Make sure the element clicked was the backdrop and not a child whose click
-      // event has bubbled up
-      if (e.currentTarget === this.$refs.backdrop && e.target !== e.currentTarget) {
-        return
-      }
+      console.log('closeModal')
+      console.log(e.target)
       this.setModal(false)
       this.setEditMember(null)
     },

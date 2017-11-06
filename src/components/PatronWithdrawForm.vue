@@ -30,8 +30,8 @@
 
         <div slot="footer">
           <template v-if="!submitting">
-            <button class="btn btn-secondary" @click.prevent="closeModal()">Cancel</button>
             <button class="btn btn-primary" >Submit</button>
+            <button class="btn btn-secondary" @click.prevent="closeModal()">Cancel</button>
           </template>
           <template v-if="submitting">
             <button class="btn btn-primary">Sending...</button>

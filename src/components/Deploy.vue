@@ -13,12 +13,12 @@
             <template v-if="!deploying && !confirming && !address">
               <div class="field">
                 <label for="alloc_shares">Title:</label>
-                <input maxLength="12" type="text" name="name" v-model="name" required>
+                <input maxLength="21" type="text" name="name" v-model="name" required>
               </div>
 
               <div class="field">
                 <label for="alloc_shares">Founder:</label>
-                <input maxLength="12" type="text" name="founder_name" v-model="founderName" required>
+                <input maxLength="21" type="text" name="founder_name" v-model="founderName" required>
               </div>
               <div class="field">
                 <button class="btn btn-primary" type="submit" name="button">Deploy</button>
