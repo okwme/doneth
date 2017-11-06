@@ -1,3 +1,5 @@
+import BN from 'bignumber.js'
+import utils from 'web3-utils'
 
 export default {
   account: state => state.account,
@@ -13,12 +15,12 @@ export default {
   founder: state => state.founder,
   genesisBlock: state => state.genesisBlock,
   totalBalance: state => {
-    return state.totalBalance && window.web3 && window.web3.utils && window.web3.utils.fromWei(state.totalBalance)
+    return state.totalBalance && utils.fromWei(state.totalBalance)
   },
   totalBalanceRaw: state => state.totalBalance,
   totalWithdrawn: state => state.totalWithdrawn,
-  totalExpense: state => state.totalExpense,
-  totalExpenseWithdrawn: state => state.totalExpenseWithdrawn,
+  totalExpense: state => new BN(state.totalExpense),
+  totalExpenseWithdrawn: state => new BN(state.totalExpenseWithdrawn),
   logs: state => state.logs,
   currency: state => state.currency,
   sortedLogs: (state) => {

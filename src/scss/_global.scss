@@ -66,3 +66,12 @@ ul {
 .flex-2 {
   flex: 2;
 }
+
+*:hover > * > * > {
+  .edit {
+    cursor: pointer;
+  }
+  .edit:after {
+    content: ' ✎';
+  }
+}

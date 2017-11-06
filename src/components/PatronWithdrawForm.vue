@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button v-if="getAllowedAmount(patron.address) > 0" @click="openModal('modalWithdrawFunds')" class="btn btn-primary btn-link">Withdraw Funds</button>
+    <button v-if="getAllowedAmount(patron.address) > 0" @click.stop.prevent="openModal('modalWithdrawFunds')" class="btn btn-primary btn-link">Withdraw Funds</button>
 
     <ui-modal modal-id="modalWithdrawFunds" title="Withdraw Funds">
       <form @submit.prevent="withdraw(patron)">
@@ -11,13 +11,12 @@
           <div class="funds-options">
             <button @click.prevent="useAllAmount()" class="btn btn-primary btn-outlined">All</button>
             <button @click.prevent="useHalfAmount()" class="btn btn-primary btn-outlined">Half</button>
-            <button @click.prevent="useMinAmount()" class="btn btn-primary btn-outlined">Min</button>
           </div>
           <div class="fields">
             <label for="">ETH</label>
             <input 
             min="0.000000000000000001"
-            step="0.000000000000000001"
+            step="0.00001"
             :class="overdrafted(patron, withdrawAmount)" class="center" type="number" placeholder="Amount (ETH)" v-model="withdrawAmount">
             <label for="">{{currency}}</label>
             <input readOnly="true" class="center" type="text" :value="convertedAmount">
@@ -46,6 +45,7 @@
 <script>
 import UiModal from '@/components/UiModal'
 import BN from 'bignumber.js'
+import utils from 'web3-utils'
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 export default {
@@ -88,8 +88,8 @@ export default {
     },
     isOverdrafted (patron, withdrawing) {
       if (!withdrawing || !patron.allowedAmount || isNaN(withdrawing) || isNaN(patron.allowedAmount)) return false
-      let allowedAmount = new BN(window.web3.utils.toWei(patron.allowedAmount))
-      withdrawing = new BN(window.web3.utils.toWei(withdrawing))
+      let allowedAmount = new BN(utils.toWei(patron.allowedAmount))
+      withdrawing = new BN(utils.toWei(withdrawing))
       return allowedAmount.greaterThanOrEqualTo(withdrawing)
     },
     overdrafted (patron, withdrawing) {
@@ -112,7 +112,6 @@ export default {
       if (this.withdrawAmount) {
         this.withdrawer = patron.address
         this.submitting = true
-        console.log('this.userAddress', this.userAddress, this.withdrawAmount)
         this.makeWithdraw({amount: this.withdrawAmount + '', optionalAddress: this.userAddress}).then((result) => {
           this.withdrawing = false
           this.submitting = false
