@@ -7,6 +7,9 @@
   font-weight: 500;
   padding: 7px 12px;
 
+  &[disabled] {
+    opacity: 0.5;
+  }
   b {
     display: block;
     font-size: 13pt;

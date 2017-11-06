@@ -3,14 +3,14 @@
     <div class="user">
       <h3>Accounts Payable</h3>
     </div>
-    <goal-bar :total="percentageAllotted" :current="percentageAllotted - percentageUsed" />
+    <goal-bar :total="allotted" :current="allotted - used" />
     <div class="meta">
       <div class="meta-item">
         <span>Available: <strong>{{totalExpenseWei}} ETH</strong><strong v-if="getConvertedTotal() > 0"> / {{getConvertedTotal()}}</strong></span>
       </div>
       <div class="meta-item">
-        <span>Allotted: <strong>{{percentageAllotted}}%</strong></span>
-        <span>Used: <strong>{{percentageUsed}}%</strong></span>
+        <span>Allotted: <strong>{{allotted}} ETH</strong></span>
+        <span>Used: <strong>{{used}} ETH</strong></span>
       </div>
     </div>
   </div>
@@ -20,6 +20,7 @@
 import GoalBar from '@/components/GoalBar'
 import { mapGetters, mapActions } from 'vuex'
 import BN from 'bignumber.js'
+import Web3 from 'web3'
 export default {
   name: 'ExpenseCard',
   data () {
@@ -28,21 +29,14 @@ export default {
   },
   computed: {
     ...mapGetters(['account', 'conversions', 'currency', 'totalBalance', 'totalExpense', 'totalExpenseWithdrawn', 'isAdmin']),
-    percentageAllotted () {
-      if (!window.web3 || !window.web3.utils) return
-      let totalWei = window.web3.utils.toWei(this.totalBalance)
-      return ((this.totalExpense + this.totalExpenseWithdrawn) / totalWei).toFixed(2)
+    allotted () {
+      return Web3.utils.fromWei(this.totalExpense)
     },
-    percentageUsed () {
-      return this.totalExpenseWithdrawnWei
+    used () {
+      return Web3.utils.fromWei(this.totalExpenseWithdrawn)
     },
     totalExpenseWei () {
-      if (!window.web3 || !window.web3.utils) return
-      return window.web3.utils.fromWei(new BN(this.totalExpense), 'ether')
-    },
-    totalExpenseWithdrawnWei () {
-      if (!window.web3 || !window.web3.utils) return
-      return window.web3.utils.fromWei(new BN(this.totalExpenseWithdrawn), 'ether')
+      return Web3.utils.fromWei(new BN(this.totalExpense).sub(new BN(this.totalExpenseWithdrawn)))
     }
   },
   watch: {

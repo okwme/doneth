@@ -7,7 +7,7 @@
       </div>
       <div class="flex-1 cta-action">
         <a :href="url" target="_blank" class="btn btn-white btn-outlined">
-          <img width="250px" src="static/metamask.png" alt="">
+          <img width="250px" src="/static/metamask.png" alt="">
         </a>
       </div>
     </div>

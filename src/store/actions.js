@@ -125,7 +125,7 @@ export default {
     state.Doneth.methods.name().call().then((name) => {
       commit('SET_NAME', name)
     })
-    state.Doneth.methods.founder().call().then((founder) => {
+    state.Doneth.methods.owner().call().then((founder) => {
       commit('SET_FOUNDER', founder)
     })
     state.Doneth.methods.totalWithdrawn().call().then((totalWithdrawn) => {
@@ -137,7 +137,8 @@ export default {
   },
   readLogs ({dispatch, state, commit}) {
     commit('CLEAR_LOGS')
-    state.Doneth.getPastEvents('AddShare', {
+
+    let p1 = state.Doneth.getPastEvents('Deposit', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
@@ -145,7 +146,7 @@ export default {
       commit('ADD_LOGS', results)
     })
 
-    state.Doneth.getPastEvents('RemoveShare', {
+    let p2 = state.Doneth.getPastEvents('Withdraw', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
@@ -153,7 +154,7 @@ export default {
       commit('ADD_LOGS', results)
     })
 
-    state.Doneth.getPastEvents('Deposit', {
+    let p3 = state.Doneth.getPastEvents('TokenWithdraw', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
@@ -161,13 +162,62 @@ export default {
       commit('ADD_LOGS', results)
     })
 
-    state.Doneth.getPastEvents('Withdraw', {
+    let p4 = state.Doneth.getPastEvents('AddShare', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
     .then((results) => {
       commit('ADD_LOGS', results)
     })
+
+    let p5 = state.Doneth.getPastEvents('RemoveShare', {
+      fromBlock: state.genesisBlock,
+      toBlock: 'latest'
+    })
+    .then((results) => {
+      commit('ADD_LOGS', results)
+    })
+
+    let p6 = state.Doneth.getPastEvents('ChangePrivilege', {
+      fromBlock: state.genesisBlock,
+      toBlock: 'latest'
+    })
+    .then((results) => {
+      commit('ADD_LOGS', results)
+    })
+
+    let p7 = state.Doneth.getPastEvents('ChangeContractName', {
+      fromBlock: state.genesisBlock,
+      toBlock: 'latest'
+    })
+    .then((results) => {
+      commit('ADD_LOGS', results)
+    })
+
+    let p8 = state.Doneth.getPastEvents('ChangeMemberName', {
+      fromBlock: state.genesisBlock,
+      toBlock: 'latest'
+    })
+    .then((results) => {
+      commit('ADD_LOGS', results)
+    })
+
+    let p9 = state.Doneth.getPastEvents('ChangeSharedExpense', {
+      fromBlock: state.genesisBlock,
+      toBlock: 'latest'
+    })
+    .then((results) => {
+      commit('ADD_LOGS', results)
+    })
+
+    let p10 = state.Doneth.getPastEvents('WithdrawSharedExpense', {
+      fromBlock: state.genesisBlock,
+      toBlock: 'latest'
+    })
+    .then((results) => {
+      commit('ADD_LOGS', results)
+    })
+    return Promise.all([p1, p2, p3, p4, p5, p6, p7, p8, p9, p10])
   },
   pollAllowedAmounts ({dispatch, state}) {
     return dispatch('pollAllowedAmount', 0)
@@ -178,7 +228,7 @@ export default {
       return dispatch('pollAllowedAmount', i + 1)
     })
   },
-  pollMembers ({dispatch, state}) {
+  pollMembers ({dispatch, state, commit}) {
     return state.Doneth.methods.getMemberCount().call().then((count) => {
       return dispatch('pollMember', {i: 0, length: parseInt(count)})
     })
@@ -196,32 +246,18 @@ export default {
       })
   },
   pollSharedExpense ({state, commit}) {
-    return state.Doneth.methods.getSharedExpense().call().then((amount) => {
-      commit('SET_EXPENSE', amount)
+    return state.Doneth.methods.sharedExpense().call().then((amount) => {
+      return commit('SET_EXPENSE', amount)
     })
   },
   pollSharedExpenseWithdrawn ({state, commit}) {
-    return state.Doneth.methods.getSharedExpenseWithdrawn().call().then((amount) => {
-      commit('SET_EXPENSEWITHDRAWN', amount)
+    return state.Doneth.methods.sharedExpenseWithdrawn().call().then((amount) => {
+      return commit('SET_EXPENSEWITHDRAWN', amount)
     })
   },
 
-  allocateShares ({state, dispatch, commit}, {address, amount}) {
-    dispatch('setLoading', true)
-    return state.Doneth.methods.addShare(address, new BN(amount)).send({from: state.account}).then((result) => {
-      dispatch('readLogs')
-      dispatch('addNotification', {class: 'success', text: 'New Shares Allocated 🎉'})
-      commit('UPDATE_MEMBER_SHARES', {amount, address})
-      dispatch('setLoading', false)
-      dispatch('getContractInfo')
-      dispatch('pollAllowedAmounts')
-    }).catch((error) => {
-      console.error(error)
-      dispatch('setLoading', false)
-      dispatch('addNotification', {class: 'error', text: 'Unknown Error, check logs'})
-    })
-  },
-  addMember ({state, dispatch, commit}, member) {
+  updateMember ({state, dispatch, commit}, member) {
+    console.log(member)
     return new Promise((resolve, reject) => {
       let currentUser = state.members.find((member) => {
         return member.address === state.account
@@ -229,9 +265,10 @@ export default {
       if (!currentUser || !currentUser.admin) {
         reject(new Error('Not an Admin'))
       } else {
-        dispatch('setLoading', true)
-        return state.Doneth.methods.addMember(member.userAddress, new BN(member.sharesTotal), false, member.firstName).send({from: state.account})
+        return state.Doneth.methods[member.action](member.userAddress, new BN(member.sharesTotal), member.isAdmin, member.firstName).send({from: state.account})
         .on('transactionHash', (hash) => {
+          dispatch('setLoading', true)
+          commit('SET_MODAL', false)
         })
         .on('error', (error) => {
           console.error(error)
@@ -239,15 +276,18 @@ export default {
           reject(error)
         })
         .then((result) => {
+          dispatch('setLoading', false)
+          let msg = member.action === 'addMember' ? 'added' : 'updated'
+          dispatch('addNotification', {
+            text: 'Member ' + msg + ' successfully!',
+            class: 'success'
+          })
+
           dispatch('readLogs')
           dispatch('getContractInfo')
           dispatch('pollAllowedAmounts')
-          dispatch('setLoading', false)
-          dispatch('addNotification', {
-            text: 'Member added successfully!',
-            class: 'success'
-          })
-          dispatch('pollMember', {i: state.members.length, length: state.members + 1})
+          dispatch('pollMembers')
+
           resolve()
         })
       }
@@ -304,11 +344,14 @@ export default {
       result = new BN(result)
 
       if (result.sub(withdrawnAlready).greaterThanOrEqualTo(wei)) {
-        dispatch('setLoading', true)
         let options = {from: state.account}
         // TODO: Is this correct?! "to" option to send to recipient
         if (withdrawOptions.optionalAddress) options.to = withdrawOptions.optionalAddress
-        return state.Doneth.methods.withdraw(wei).send(options).then((result) => {
+        return state.Doneth.methods.withdraw(wei).send(options)
+        .on('transactionHash', (hash) => {
+          dispatch('setLoading', true)
+          commit('SET_MODAL', false)
+        }).then((result) => {
           dispatch('readLogs')
           commit('UPDATE_MEMBER_WITHDRAWN', {amount: wei, address: state.account})
           dispatch('setLoading', false)
@@ -326,33 +369,34 @@ export default {
     })
   },
   // TODO: ----------------------------
-  makeExpenseWithdraw ({state, dispatch, commit}, withdrawOptions) {
-    console.log('withdrawOptions', withdrawOptions)
-    if (!state.account || !withdrawOptions.amount) return
-    let wei = new BN(window.web3.utils.toWei(withdrawOptions.amount))
+  makeExpenseWithdraw ({state, dispatch, commit}, {amount, to}) {
+    console.log('withdrawOptions', amount, to)
+    if (!state.account || !amount) return
+    let wei = new BN(window.web3.utils.toWei(amount))
     // TODO: This wei seems wrong!! Whyyyyyy
     console.log('wei', wei)
-    return state.Doneth.methods.calculateTotalWithdrawableAmount(state.account).call().then((result) => {
-      let member = state.members.find((member) => member.address === state.account)
-      if (!member) return new Error('No Member')
-      let withdrawnAlready = new BN(member.withdrawn)
+    return state.Doneth.methods.calculateTotalExpenseWithdrawableAmount().call().then((result) => {
       result = new BN(result)
-
-      if (result.sub(withdrawnAlready).greaterThanOrEqualTo(wei)) {
-        dispatch('setLoading', true)
+      if (result.greaterThanOrEqualTo(wei)) {
         let options = {from: state.account}
-        // TODO: Is this correct?! "to" option to send to recipient
-        if (withdrawOptions.optionalAddress) options.to = withdrawOptions.optionalAddress
-        return state.Doneth.methods.withdrawSharedExpense(wei).send(options).then((result) => {
-          dispatch('readLogs')
-          commit('UPDATE_MEMBER_WITHDRAWN', {amount: wei, address: state.account})
+        return state.Doneth.methods.withdrawSharedExpense(wei, to).send(options)
+        .on('transactionHash', (hash) => {
+          this.commit('SET_MODAL', false)
+          dispatch('setLoading', true)
+        })
+        .then((result) => {
+          commit('ADD_EXPENSEWITHDRAWN', wei)
           dispatch('setLoading', false)
-          dispatch('getContractInfo')
-          dispatch('pollAllowedAmounts')
           dispatch('addNotification', {class: 'success', text: 'Withdrawn 🎉'})
+          return Promise.all([
+            dispatch('readLogs'),
+            dispatch('getContractInfo'),
+            dispatch('pollAllowedAmounts')
+          ])
         })
       } else {
         dispatch('addNotification', {class: 'error', text: 'Insufficient Shares to withdraw that amount'})
+        return new Error()
       }
     }).catch((error) => {
       console.error(error)
@@ -370,9 +414,12 @@ export default {
       value: wei
     }).then((result) => {
       dispatch('setLoading', false)
-      dispatch('readLogs')
-      dispatch('getContractInfo')
-      dispatch('pollAllowedAmounts')
+
+      return Promise.all([
+        dispatch('readLogs'),
+        dispatch('getContractInfo'),
+        dispatch('pollAllowedAmounts')
+      ])
     }).catch((error) => {
       console.error(error)
       dispatch('setLoading', false)
@@ -387,10 +434,10 @@ export default {
   allocateExpenseAmount ({state, dispatch, commit}, amount) {
     let wei = window.web3.utils.toWei(new BN(amount))
     return new Promise((resolve, reject) => {
-      dispatch('setLoading', true)
       return state.Doneth.methods.changeSharedExpenseAllocation(wei).send({from: state.account})
       .on('transactionHash', (hash) => {
-        console.log('hash', hash)
+        this.commit('SET_MODAL', false)
+        dispatch('setLoading', true)
       })
       .on('error', (error) => {
         console.error(error)
@@ -398,15 +445,19 @@ export default {
         reject(error)
       })
       .then((result) => {
-        dispatch('pollSharedExpense')
-        dispatch('pollSharedExpenseWithdrawn')
-        dispatch('pollAllowedAmounts')
         dispatch('setLoading', false)
         dispatch('addNotification', {
           text: 'Expense allocated successfully!',
           class: 'success'
         })
-        resolve()
+
+        return Promise.all([
+          dispatch('readLogs'),
+          dispatch('getContractInfo'),
+          dispatch('pollSharedExpense'),
+          dispatch('pollSharedExpenseWithdrawn'),
+          dispatch('pollAllowedAmounts')])
+        .then(resolve())
       })
     })
   }

@@ -35,11 +35,15 @@
  * https://github.com/JosephusPaye/Keen-UI/blob/master/src/UiModal.vue
  */
 import classlist from './helpers/classlist'
-
+import {mapState, mapMutations} from 'vuex'
 export default {
   name: 'ui-modal',
 
   props: {
+    modalId: {
+      type: String,
+      default: null
+    },
     title: {
       type: String,
       default: 'UiModal title'
@@ -80,12 +84,15 @@ export default {
 
   data () {
     return {
-      isOpen: false,
       lastfocusedElement: null
     }
   },
 
   computed: {
+    ...mapState(['modalOpen']),
+    isOpen () {
+      return this.modalOpen === this.modalId
+    },
     classes () {
       return [
         `ui-modal--size-${this.size}`,
@@ -93,7 +100,7 @@ export default {
           'has-footer': this.hasFooter
         },
         {
-          'is-open': this.isOpen
+          'is-open': this.modalOpen
         }
       ]
     },
@@ -120,28 +127,27 @@ export default {
   },
 
   watch: {
-    isOpen () {
+    modalOpen () {
       this.$nextTick(() => {
-        this[this.isOpen ? 'onOpen' : 'onClose']()
+        this[this.modalOpen ? 'onOpen' : 'onClose']()
       })
     }
   },
 
   beforeDestroy () {
-    if (this.isOpen) {
+    if (this.modalOpen) {
       this.teardownModal()
     }
   },
 
   methods: {
+    ...mapMutations({setModal: 'SET_MODAL', setEditMember: 'SET_EDIT_MEMBER'}),
     open () {
-      this.isOpen = true
+      console.log('who uses open?')
     },
-
     close () {
-      this.isOpen = false
+      console.log('who uses close?')
     },
-
     closeModal (e) {
       if (!this.dismissible) {
         return
@@ -152,8 +158,8 @@ export default {
       if (e.currentTarget === this.$refs.backdrop && e.target !== e.currentTarget) {
         return
       }
-
-      this.isOpen = false
+      this.setModal(false)
+      this.setEditMember(null)
     },
 
     onOpen () {

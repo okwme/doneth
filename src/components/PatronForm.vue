@@ -5,40 +5,42 @@
       <h3>Add Member</h3>
     </div>
 
-    <ui-modal ref="modalAddMember" title="Add Member">
-      <div class="field">
-        <label for="add_name">Name:</label>
-        <input maxLength="64" type="text" name="add_name" v-model="firstName" required>
-      </div>
-      <div class="field">
-        <label for="add_name">Shares:</label>
-        <input min="0" type="number" name="add_shares" v-model="sharesTotal" required>
-      </div>
-      <div class="field field-address">
-        <label for="add_address">Address:</label>
-        <input maxLength="42" type="text" name="add_address" v-model="userAddress" required>
-      </div>
-      <div class="field checkbox">
-        <input type="checkbox" name="add_admin" v-model="isAdmin">
-        <label for="add_admin">Is Admin?</label>
-      </div>
+    <ui-modal modal-id="modalAddMember" :title="title">
+      <form @submit.prevent="addNewMember()">
+        <div class="field">
+          <label for="add_name">Name:</label>
+          <input maxLength="64" type="text" name="add_name" v-model="firstName" required>
+        </div>
+        <div class="field">
+          <label for="add_name">Shares:</label>
+          <input min="0" type="number" name="add_shares" v-model="sharesTotal" required>
+        </div>
+        <div class="field field-address">
+          <label for="add_address">Address:</label>
+          <input minLength="42"  maxLength="42" type="text" name="add_address" v-model="userAddress" required>
+        </div>
+        <div class="field checkbox">
+          <input :disabled="userAddress === account" type="checkbox" name="add_admin" v-model="isAdmin">
+          <label for="add_admin">Is Admin?</label>
+        </div>
 
-      <div slot="footer">
-        <template v-if="!submitting">
-          <button class="btn btn-secondary" @click="closeModal('modalAddMember')">Cancel</button>
-          <button class="btn btn-primary" name="button" @click="addNewMember()">Submit</button>
-        </template>
-        <template v-if="submitting">
-          <button class="btn btn-primary">Sending...</button>
-        </template>
-      </div>
+        <div slot="footer">
+          <template v-if="!submitting">
+            <button class="btn btn-secondary" @click.prevent="closeModal()">Cancel</button>
+            <button class="btn btn-primary" name="button" >Submit</button>
+          </template>
+          <template v-if="submitting">
+            <button class="btn btn-primary">Sending...</button>
+          </template>
+        </div>
+      </form>
     </ui-modal>
   </div>
 </template>
 
 <script>
 import UiModal from '@/components/UiModal'
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations, mapState } from 'vuex'
 
 export default {
 
@@ -54,24 +56,49 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['account', 'metamask', 'connected'])
+    ...mapState(['editMember']),
+    ...mapGetters(['account', 'metamask', 'connected']),
+    title () {
+      return (this.editMember ? 'Edit ' : 'Add ') + 'Member'
+    }
+  },
+  watch: {
+    editMember () {
+      console.log('edit member')
+      if (this.editMember) {
+        this.userAddress = this.editMember.address
+        this.sharesTotal = this.editMember.shares
+        this.firstName = this.editMember.memberName
+        this.isAdmin = this.editMember.admin
+      } else {
+        this.clearData()
+      }
+    }
   },
   methods: {
-    ...mapActions(['addNotification', 'setLoading', 'addMember']),
+    ...mapMutations({setModal: 'SET_MODAL'}),
+    ...mapActions(['addNotification', 'setLoading', 'updateMember']),
+    clearData () {
+      this.userAddress = ''
+      this.sharesTotal = ''
+      this.firstName = ''
+      this.isAdmin = false
+    },
     addNewMember () {
       let member = {
         userAddress: this.userAddress,
         sharesTotal: this.sharesTotal,
-        firstName: this.firstName
+        firstName: this.firstName,
+        isAdmin: this.isAdmin
       }
       this.submitting = true
-      this.addMember(member).then(() => {
+      member.action = this.editMember ? 'updateMember' : 'addMember'
+      this.updateMember(member).then(() => {
         this.submitting = false
-        this.userAddress = ''
-        this.sharesTotal = ''
-        this.firstName = ''
-        this.closeModal('modalAddMember')
+        this.clearData()
+        this.closeModal()
       }).catch((error) => {
+        console.error(error)
         this.submitting = false
         this.addNotification({
           text: error,
@@ -80,10 +107,10 @@ export default {
       })
     },
     openModal (ref) {
-      this.$refs[ref].open()
+      this.setModal(ref)
     },
-    closeModal (ref) {
-      this.$refs[ref].close()
+    closeModal () {
+      this.setModal(false)
     }
   },
   components: {

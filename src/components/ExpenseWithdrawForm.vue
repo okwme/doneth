@@ -1,40 +1,41 @@
 <template>
   <div class="withdraw-form">
-    <div class="funds-meta">
-      {{getAllowedAmount()}} ETH available to withdraw
-    </div>
-    <div class="fields">
-      <label for="">ETH</label>
-      <input :class="overdrafted(patron, withdrawAmount)" class="center" type="number" placeholder="Amount (ETH)" v-model="withdrawAmount">
-      <label for="">{{currency}}</label>
-      <input readOnly="true" class="center" type="text" :value="convertedAmount">
-    </div>
-    <div class="field field-address">
-      <label for="add_address">Address:</label>
-      <input maxLength="42" type="text" name="add_address" v-model="userAddress" placeholder="0x000000000..." required>
-    </div>
+    <form @submit.prevent="withdraw(patron)">
+      <div class="funds-meta">
+        {{getAllowedAmount()}} ETH available to withdraw
+      </div>
+      <div class="fields">
+        <label for="">ETH</label>
+        <input step="0.000000000000000001" min="0.000000000000000001" :class="overdrafted(patron, withdrawAmount)" class="center" type="number" placeholder="Amount (ETH)" v-model="withdrawAmount">
+        <label for="">{{currency}}</label>
+        <input readOnly="true" class="center" type="text" :value="convertedAmount">
+      </div>
+      <div class="field field-address">
+        <label for="add_address">Address:</label>
+        <input minLength="42" maxLength="42" type="text" name="add_address" v-model="userAddress" placeholder="0x000000000..." required>
+      </div>
 
-    <div class="footer">
-      <template v-if="!submitting">
-        <button class="btn btn-secondary" @click="closeModal('modalWithdrawExpense')">Cancel</button>
-        <button class="btn btn-primary" @click="withdraw(patron)">Submit</button>
-      </template>
-      <template v-if="submitting">
-        <button class="btn btn-primary">Sending...</button>
-      </template>
-    </div>
+      <div class="footer">
+        <template v-if="!submitting">
+          <button class="btn btn-secondary" @click.prevent="closeModal()">Cancel</button>
+          <button class="btn btn-primary" >Submit</button>
+        </template>
+        <template v-if="submitting">
+          <button class="btn btn-primary">Sending...</button>
+        </template>
+      </div>
+    </form>
   </div>
 </template>
 
 <script>
 import UiModal from '@/components/UiModal'
 import BN from 'bignumber.js'
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 export default {
 
   name: 'ExpenseWithdrawForm',
-  props: ['patron'],
   data () {
     return {
       userAddress: null,
@@ -46,7 +47,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['account', 'members', 'conversions', 'currency'])
+    ...mapGetters(['account', 'members', 'conversions', 'currency']),
+    patron () {
+      return this.members.find(m => m.address === this.account)
+    }
   },
   watch: {
     withdrawAmount () {
@@ -57,7 +61,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['convertToCurrency', 'makeWithdraw', 'addNotification']),
+    ...mapMutations({setModal: 'SET_MODAL'}),
+    ...mapActions(['convertToCurrency', 'makeExpenseWithdraw', 'addNotification']),
     getAllowedAmount () {
       return 100
       // let patron = this.members.find((p) => p.address === address)
@@ -79,7 +84,7 @@ export default {
     },
     overdrafted (patron, withdrawing) {
       return {
-        overdrawn: !this.isOverdrafted(patron, withdrawing)
+        overdrawn: this.isOverdrafted(patron, withdrawing)
       }
     },
     updateConversion () {
@@ -98,7 +103,7 @@ export default {
         this.withdrawer = patron.address
         this.submitting = true
         console.log('this.userAddress', this.userAddress, this.withdrawAmount)
-        this.makeWithdraw({amount: this.withdrawAmount + '', optionalAddress: this.userAddress}).then((result) => {
+        this.makeExpenseWithdraw({amount: this.withdrawAmount + '', to: this.userAddress}).then((result) => {
           this.withdrawing = false
           this.submitting = false
           this.closeModal('modalWithdrawFunds')
@@ -118,7 +123,7 @@ export default {
       this.withdrawAmount = new BN('0.005').toFixed(3)
     },
     closeModal (ref) {
-      this.$parent.$parent.$refs[ref].close()
+      this.setModal(false)
     }
   },
   components: {
