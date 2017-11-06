@@ -77,6 +77,8 @@ contract Doneth is Ownable {
     }
 
     function Doneth(string _contractName, string _founderName) {
+        if (bytes(_contractName).length > 21) revert();
+        if (bytes(_founderName).length > 21) revert();
         name = _contractName;
         genesisBlockNumber = block.number;
         addMember(msg.sender, 1, true, _founderName);
@@ -142,7 +144,7 @@ contract Doneth is Ownable {
     // }
 
     function getContractInfo() constant returns(string, address, uint256, uint256, uint256) {
-        return (name, owner, genesisBlockNumber, totalShares, totalWithdrawn);
+        return (string(name), owner, genesisBlockNumber, totalShares, totalWithdrawn);
     }
     
     function returnMember (address _address) constant onlyExisting(_address) returns(bool active, bool admin, uint256 shares, uint256 withdrawn, string memberName) {
@@ -162,6 +164,7 @@ contract Doneth is Ownable {
     function addMember(address who, uint256 shares, bool admin, string memberName) public onlyAdmin() {
         // Don't allow the same member to be added twice
         if (members[who].exists) revert();
+        if (bytes(memberName).length > 21) revert();
 
         Member memory newMember;
         newMember.exists = true;
@@ -183,23 +186,22 @@ contract Doneth is Ownable {
     // Only owner or member can change member's name
     function changeMemberName(address who, string newName) public  onlyExisting(who) {
         if (msg.sender != who && msg.sender != owner) revert();
-        string storage oldName = members[who].memberName;
-        ChangeMemberName(who, oldName, newName);
+        if (bytes(newName).length > 21) revert();
+        ChangeMemberName(who, members[who].memberName, newName);
         members[who].memberName = newName;
     }
 
     // Only owner can change admin privileges of members; other admins cannot change other admins
     function changeAdminPrivilege(address who, bool newValue) public onlyAdmin() {
-        bool oldValue = members[who].admin;
-        ChangePrivilege(who, oldValue, newValue);
+        ChangePrivilege(who, members[who].admin, newValue);
         members[who].admin = newValue; 
     }
 
     // Only owner can change the contract name
     function changeContractName(string newName) public onlyOwner() {
-        string storage oldName = name;
+        if (bytes(newName).length > 21) revert();
+        ChangeContractName(name, newName);
         name = newName;
-        ChangeContractName(oldName, newName);
     }
 
     // Shared expense allocation allows all members to withdraw an amount to be used for shared

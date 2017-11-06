@@ -26,8 +26,8 @@
 
         <div slot="footer">
           <template v-if="!submitting">
-            <button class="btn btn-secondary" @click.prevent="closeModal()">Cancel</button>
             <button class="btn btn-primary" name="button" >Submit</button>
+            <button class="btn btn-secondary" @click.prevent="closeModal()">Cancel</button>
           </template>
           <template v-if="submitting">
             <button class="btn btn-primary">Sending...</button>
@@ -84,6 +84,7 @@ export default {
       this.isAdmin = false
     },
     addNewMember () {
+      console.log('add member?')
       let member = {
         userAddress: this.userAddress,
         sharesTotal: this.sharesTotal,
