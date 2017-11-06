@@ -2,23 +2,25 @@
   <div class="withdraw-form">
     <form @submit.prevent="allocate()">
       <div class="funds-meta">
-        {{getAllowedAmount()}} ETH available to allocate
+        {{totalBalance}} ETH available to allocate
       </div>
       <div class="funds-options">
-        <button @click="useAllAmount()" class="btn btn-primary btn-outlined">All</button>
-        <button @click="useHalfAmount()" class="btn btn-primary btn-outlined">Half</button>
-        <button @click="useMinAmount()" class="btn btn-primary btn-outlined">Min</button>
+        <button @click.prevent="useAllAmount()" class="btn btn-primary btn-outlined">All</button>
+        <button @click.prevent="useHalfAmount()" class="btn btn-primary btn-outlined">Half</button>
+<!--         <button @click.prevent="useMinAmount()" class="btn btn-primary btn-outlined">Min</button> -->
       </div>
       <div class="fields">
         <label for="">ETH</label>
-        <input min="0.000000000000000001"  step="0.000000000000000001"  class="center" type="number" placeholder="Amount (ETH)" v-model="allocateAmount">
+        <input 
+        :class="overdrafted(allocateAmount)"
+        min="0.000000000000000001"  step="0.0001"  class="center" type="number" placeholder="Amount (ETH)" v-model="allocateAmount">
         <label for="">{{currency}}</label>
         <input readOnly="true" class="center" type="text" :value="convertedAmount">
       </div>
 
       <div class="footer">
         <template v-if="!submitting">
-          <button class="btn btn-secondary" @click="closeModal()">Cancel</button>
+          <button class="btn btn-secondary" @click.prevent="closeModal()">Cancel</button>
           <button class="btn btn-primary" >Submit</button>
         </template>
         <template v-if="submitting">
@@ -32,6 +34,7 @@
 <script>
 import UiModal from '@/components/UiModal'
 import BN from 'bignumber.js'
+import utils from 'web3-utils'
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 export default {
@@ -46,7 +49,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['account', 'conversions', 'currency'])
+    ...mapGetters(['account', 'conversions', 'currency', 'totalExpense', 'totalExpenseWithdrawn', 'totalBalance'])
   },
   watch: {
     allocateAmount () {
@@ -56,13 +59,20 @@ export default {
       this.updateConversion()
     }
   },
+  mounted () {
+    this.allocateAmount = utils.fromWei(this.totalExpense)
+  },
   methods: {
     ...mapMutations({setModal: 'SET_MODAL'}),
     ...mapActions(['convertToCurrency', 'allocateExpenseAmount', 'addNotification']),
+    overdrafted (amount) {
+      return {
+        overdrawn: new BN(amount).greaterThan(this.totalBalance)
+      }
+    },
     allocate () {
       if (this.allocateAmount) {
         this.submitting = true
-        console.log('this.userAddress', this.allocateAmount)
         this.allocateExpenseAmount(this.allocateAmount).then((result) => {
           this.submitting = false
           this.closeModal()
@@ -71,12 +81,8 @@ export default {
         })
       }
     },
-    getAllowedAmount () {
-      return 100
-      // TODO:!!!!!!!
-      // let patron = this.members.find((p) => p.address === address)
-      // if (!patron || !patron.allowedAmount) return 0
-      // return new BN(patron.allowedAmount)
+    getFullAllowedAmount () {
+      return this.totalBalance
     },
     updateConversion () {
       if (!this.allocateAmount) return
@@ -88,7 +94,7 @@ export default {
       this.allocateAmount = this.getFullAllowedAmount()
     },
     useHalfAmount () {
-      this.allocateAmount = new BN(this.getFullAllowedAmount() / 2 + '')
+      this.allocateAmount = new BN(this.getFullAllowedAmount()).div(2).toString()
     },
     useMinAmount () {
       this.allocateAmount = new BN('0.005').toFixed(3)

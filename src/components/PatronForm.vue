@@ -64,7 +64,6 @@ export default {
   },
   watch: {
     editMember () {
-      console.log('edit member')
       if (this.editMember) {
         this.userAddress = this.editMember.address
         this.sharesTotal = this.editMember.shares

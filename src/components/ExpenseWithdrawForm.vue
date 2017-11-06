@@ -4,9 +4,13 @@
       <div class="funds-meta">
         {{getAllowedAmount()}} ETH available to withdraw
       </div>
+      <div class="funds-options">
+        <button @click.prevent="useAllAmount()" class="btn btn-primary btn-outlined">All</button>
+        <button @click.prevent="useHalfAmount()" class="btn btn-primary btn-outlined">Half</button>
+      </div>
       <div class="fields">
         <label for="">ETH</label>
-        <input step="0.000000000000000001" min="0.000000000000000001" :class="overdrafted(patron, withdrawAmount)" class="center" type="number" placeholder="Amount (ETH)" v-model="withdrawAmount">
+        <input step="0.0001" min="0.000000000000000001" :class="overdrafted(patron, withdrawAmount)" class="center" type="number" placeholder="Amount (ETH)" v-model="withdrawAmount">
         <label for="">{{currency}}</label>
         <input readOnly="true" class="center" type="text" :value="convertedAmount">
       </div>
@@ -31,6 +35,7 @@
 <script>
 import UiModal from '@/components/UiModal'
 import BN from 'bignumber.js'
+import utils from 'web3-utils'
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 export default {
@@ -47,7 +52,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['account', 'members', 'conversions', 'currency']),
+    ...mapGetters(['account', 'members', 'conversions', 'currency', 'totalExpense', 'totalExpenseWithdrawn', 'totalBalance']),
     patron () {
       return this.members.find(m => m.address === this.account)
     }
@@ -70,17 +75,11 @@ export default {
       // return new BN(patron.allowedAmount).toFixed(4)
     },
     getFullAllowedAmount () {
-      return 100
-      // let patron = this.members.find((p) => p.address === address)
-      // if (!patron || !patron.allowedAmount) return 0
-      // return new BN(patron.allowedAmount)
+      return new BN(utils.fromWei(this.totalExpense)).sub(this.totalExpenseWithdrawn)
     },
     isOverdrafted (patron, withdrawing) {
-      return false
-      // if (isNaN(withdrawing) || isNaN(patron.allowedAmount)) return false
-      // let allowedAmount = new BN(window.web3.utils.toWei(patron.allowedAmount))
-      // withdrawing = new BN(window.web3.utils.toWei(withdrawing))
-      // return allowedAmount.greaterThanOrEqualTo(withdrawing)
+      if (isNaN(withdrawing) || withdrawing === '') return false
+      return new BN(withdrawing).greaterThan(this.getFullAllowedAmount())
     },
     overdrafted (patron, withdrawing) {
       return {
@@ -88,10 +87,13 @@ export default {
       }
     },
     updateConversion () {
-      if (!this.withdrawAmount) return
-      this.convertToCurrency(this.withdrawAmount).then((convertedAmount) => {
-        this.convertedAmount = convertedAmount
-      })
+      if (!this.withdrawAmount) {
+        this.convertedAmount = 0
+      } else {
+        this.convertToCurrency(this.withdrawAmount).then((convertedAmount) => {
+          this.convertedAmount = convertedAmount
+        })
+      }
     },
     cancelWithdraw () {
       this.withdrawing = false
@@ -102,7 +104,6 @@ export default {
       if (this.withdrawAmount) {
         this.withdrawer = patron.address
         this.submitting = true
-        console.log('this.userAddress', this.userAddress, this.withdrawAmount)
         this.makeExpenseWithdraw({amount: this.withdrawAmount + '', to: this.userAddress}).then((result) => {
           this.withdrawing = false
           this.submitting = false

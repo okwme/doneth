@@ -1,25 +1,24 @@
 <template>
   <div
-  :class="{'pointer': isAdmin}"
-  @click="editMember(patron)" v-on:mouseenter="toggleActive(patron, true)" v-on:mouseleave="toggleActive(patron, false)">
+  v-on:mouseenter="toggleActive(patron, true)" v-on:mouseleave="toggleActive(patron, false)">
     <div class="user">
       <div class="avatar" :style="{ background: colorHex(patron) }">
         <div>{{firstName(patron)}}</div>
       </div>
       <div class="attributes">
-        <h3>{{patron.memberName || 'FirstName'}}</h3>
+        <h3  :class="{edit: isAdmin}"  @click="editMember(patron)">{{patron.memberName || 'FirstName'}}</h3>
         <short-hash :hash="patron.address || '0x0000000000000'"/>
       </div>
     </div>
     <hr class="divider" :style="{ background: colorHex(patron) }">
     <div class="meta">
       <div class="meta-item">
-        <span>Shares: <strong>{{patron.shares}}</strong></span>
-        <span>Transactions: <strong>{{patron.transactions || 0}}</strong></span>
+        <span>Available: <strong>{{patron.allowedAmount || 0}} ETH</strong></span>
+        <span>Shares: <strong>{{patron.shares}}/{{totalShares}}</strong></span>
       </div>
       <div class="meta-item">
-        <span>Ownership: <strong>{{percentage(patron)}}</strong></span>
-        <span>Allowed: <strong>{{getAllowedAmount(patron.address) || 0}}</strong></span>
+        <span>Alloted: <strong>{{alloted(patron)}}</strong></span>
+        <span>Used: <strong>{{fromWei(patron.withdrawn) || 0}}</strong></span>
       </div>
     </div>
 
@@ -32,6 +31,7 @@ import ShortHash from '@/components/ShortHash'
 import PatronWithdrawForm from '@/components/PatronWithdrawForm'
 import { mapGetters, mapMutations } from 'vuex'
 import BN from 'bignumber.js'
+import utils from 'web3-utils'
 export default {
 
   name: 'PatronCard',
@@ -43,7 +43,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['account', 'totalShares', 'members', 'isAdmin'])
+    ...mapGetters(['account', 'totalShares', 'members', 'isAdmin', 'totalBalance', 'totalWithdrawn', 'totalExpense', 'totalExpenseWithdrawn', 'totalShares'])
   },
   methods: {
     ...mapMutations({setModal: 'SET_MODAL', setEditMember: 'SET_EDIT_MEMBER'}),
@@ -51,6 +51,17 @@ export default {
       if (!this.isAdmin) return
       this.setModal('modalAddMember')
       this.setEditMember(patron)
+    },
+    fromWei (amount) {
+      return utils.fromWei(amount)
+    },
+    alloted (patron) {
+      return new BN(this.totalBalance)
+      .add(this.fromWei(this.totalWithdrawn))
+      .sub(this.fromWei(this.totalExpense))
+      .add(this.totalExpenseWithdrawn)
+      .div(this.totalShares)
+      .mul(patron.shares).toString()
     },
     getAllowedAmount (address) {
       let patron = this.members.find((p) => p.address === address)
