@@ -257,7 +257,6 @@ export default {
   },
 
   updateMember ({state, dispatch, commit}, member) {
-    console.log(member)
     return new Promise((resolve, reject) => {
       let currentUser = state.members.find((member) => {
         return member.address === state.account
@@ -332,11 +331,8 @@ export default {
     return result
   },
   makeWithdraw ({state, dispatch, commit}, withdrawOptions) {
-    console.log('withdrawOptions', withdrawOptions)
     if (!state.account || !withdrawOptions.amount) return
     let wei = new BN(window.web3.utils.toWei(withdrawOptions.amount))
-    // TODO: This wei seems wrong!! Whyyyyyy
-    console.log('wei', wei)
     return state.Doneth.methods.calculateTotalWithdrawableAmount(state.account).call().then((result) => {
       let member = state.members.find((member) => member.address === state.account)
       if (!member) return new Error('No Member')
@@ -370,11 +366,8 @@ export default {
   },
   // TODO: ----------------------------
   makeExpenseWithdraw ({state, dispatch, commit}, {amount, to}) {
-    console.log('withdrawOptions', amount, to)
     if (!state.account || !amount) return
     let wei = new BN(window.web3.utils.toWei(amount))
-    // TODO: This wei seems wrong!! Whyyyyyy
-    console.log('wei', wei)
     return state.Doneth.methods.calculateTotalExpenseWithdrawableAmount().call().then((result) => {
       result = new BN(result)
       if (result.greaterThanOrEqualTo(wei)) {
