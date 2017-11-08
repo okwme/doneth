@@ -70,6 +70,16 @@
             </div>
           </template>
 
+          <template v-else-if="item.type === 'ChangeContractName'">
+            <div class="reference">
+              <h3>Contract name changed from {{item.oldValue }} to {{item.newValue }}</h3>
+            </div>
+            <div class="details">
+              <div><a :href="transactionLink(item)">View Transaction Details</a></div>
+              <div class="time">Block: {{item.block}}</div>
+            </div>
+          </template>
+
           <template v-else>
             <pre>{{item}}</pre>
           </template>

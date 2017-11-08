@@ -453,5 +453,31 @@ export default {
         .then(resolve())
       })
     })
+  },
+  updateContractName ({state, dispatch, commit}, name) {
+    if (name.length > 21) return
+    return state.Doneth.methods.changeContractName(name).send({from: state.account})
+      .on('transactionHash', (hash) => {
+        dispatch('setLoading', true)
+        commit('SET_MODAL', false)
+      })
+      .on('error', (error) => {
+        console.error(error)
+        dispatch('setLoading', false)
+        dispatch('addNotification', {
+          text: error,
+          class: 'error'
+        })
+      })
+      .then((result) => {
+        dispatch('setLoading', false)
+        dispatch('addNotification', {
+          text: 'Contract name changed successfully!',
+          class: 'success'
+        })
+
+        dispatch('readLogs')
+        dispatch('getContractInfo')
+      })
   }
 }
