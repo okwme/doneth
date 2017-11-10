@@ -2,19 +2,20 @@ pragma solidity ^0.4.15;
 
 /**
  * @title Doneth (Doneth)
- * @dev Doneth is a contract that allows members of a project
- * to share donations. Project supporters can submit donations.
- * The admins of the contract determine who is a member, and each
- * member gets a number of shares. The number of shares each 
- * member has determines how much Ether the member can withdraw 
- * from the contract. 
+ * @dev Doneth is a contract that allows shared access to funds
+ * in the form of Ether and ERC20 tokens. It is especially relevant
+ * to donation based projects. The admins of the contract determine 
+ * who is a member, and each member gets a number of shares. The 
+ * number of shares each member has determines how much Ether/ERC20 
+ * the member can withdraw from the contract.
  */
 
 /*
  * Ownable
  *
  * Base contract with an owner.
- * Provides onlyOwner modifier, which prevents function from running if it is called by anyone other than the owner.
+ * Provides onlyOwner modifier, which prevents function from running
+ * if it is called by anyone other than the owner.
  */
 
 contract Ownable {
@@ -48,10 +49,6 @@ contract Doneth is Ownable {
     // Sum of all withdrawals done by members
     uint256 public totalWithdrawn;
 
-    // Variables to be used in the future 
-    bool public incrementShares;
-    uint256 public incrementInterval;
-
     // Block number of when the contract was created
     uint256 public genesisBlockNumber;
 
@@ -67,7 +64,6 @@ contract Doneth is Ownable {
     address[] public memberKeys;
     struct Member {
         bool exists;
-        bool active;
         bool admin;
         uint256 shares;
         uint256 withdrawn;
@@ -118,28 +114,28 @@ contract Doneth is Ownable {
     }
 
     // Series of getter functions for contract data
-    function getMemberCount() constant returns(uint) {
+    function getMemberCount() public constant returns(uint) {
         return memberKeys.length;
     }
     
-    function getMemberAtKey(uint key) constant returns(address) {
+    function getMemberAtKey(uint key) public constant returns(address) {
         return memberKeys[key];
     }
     
-    function getBalance() constant returns(uint256 balance) {
+    function getBalance() public constant returns(uint256 balance) {
         return this.balance;
     }
     
-    function getContractInfo() constant returns(string, address, uint256, uint256, uint256) {
+    function getContractInfo() public constant returns(string, address, uint256, uint256, uint256) {
         return (string(name), owner, genesisBlockNumber, totalShares, totalWithdrawn);
     }
     
-    function returnMember(address _address) constant onlyExisting(_address) returns(bool active, bool admin, uint256 shares, uint256 withdrawn, string memberName) {
+    function returnMember(address _address) public constant onlyExisting(_address) returns(bool admin, uint256 shares, uint256 withdrawn, string memberName) {
       Member memory m = members[_address];
-      return (m.active, m.admin, m.shares, m.withdrawn, m.memberName);
+      return (m.admin, m.shares, m.withdrawn, m.memberName);
     }
 
-    function checkERC20Balance(address token) public returns(uint256) {
+    function checkERC20Balance(address token) public constant returns(uint256) {
         uint256 balance = ERC20(token).balanceOf(address(this));
         if (!tokens[token].exists && balance > 0) {
             tokens[token].exists = true;
@@ -156,7 +152,6 @@ contract Doneth is Ownable {
         Member memory newMember;
         newMember.exists = true;
         newMember.admin = admin;
-        newMember.active = true;
         newMember.memberName = memberName;
 
         members[who] = newMember;
@@ -170,9 +165,9 @@ contract Doneth is Ownable {
         if (members[who].shares != shares) allocateShares(who, shares);
     }
 
-    // Only owner or member can change member's name
+    // Only owner, admin or member can change member's name
     function changeMemberName(address who, string newName) public onlyExisting(who) {
-        if (msg.sender != who && msg.sender != owner) revert();
+        if (msg.sender != who && msg.sender != owner && !members[msg.sender].admin) revert();
         if (bytes(newName).length > 21) revert();
         ChangeMemberName(who, members[who].memberName, newName);
         members[who].memberName = newName;
@@ -183,23 +178,22 @@ contract Doneth is Ownable {
         members[who].admin = newValue; 
     }
 
-    // Only owner can change the contract name
-    function changeContractName(string newName) public onlyOwner() {
+    // Only admins and owners can change the contract name
+    function changeContractName(string newName) public onlyAdmin() {
         if (bytes(newName).length > 21) revert();
         ChangeContractName(name, newName);
         name = newName;
     }
 
-    // Shared expense allocation allows all members to withdraw an amount to be used for shared
-    // expenses. Shared expense allocation subtracts from the withdrawable amount each member 
-    // can withdraw based on shares. Only owner can change this amount.
+    // Shared expense allocation allows admins to withdraw an amount to be used for shared
+    // expenses. Shared expense allocation subtracts from the total balance of the contract. 
+    // Only owner can change this amount.
     function changeSharedExpenseAllocation(uint256 newAllocation) public onlyOwner() {
         if (newAllocation < sharedExpenseWithdrawn) revert();
         if (newAllocation.sub(sharedExpenseWithdrawn) > this.balance) revert();
 
-        uint256 oldAllocation = sharedExpense;
+        ChangeSharedExpense(this.balance, sharedExpense, newAllocation);
         sharedExpense = newAllocation;
-        ChangeSharedExpense(this.balance, oldAllocation, newAllocation);
     }
 
     // Set share amount explicitly by calculating difference then adding or removing accordingly
@@ -254,8 +248,8 @@ contract Doneth is Ownable {
     }
 
     // Withdraw from shared expense allocation. Total withdrawable is calculated as 
-    // sharedExpense - sharedExpenseWithdrawn. Only Admin can withdraw from shared expense.
-    function withdrawSharedExpense(uint256 amount, address to) public onlyAdmin() onlyExisting(msg.sender) {
+    // sharedExpense minus sharedExpenseWithdrawn. Only Admin can withdraw from shared expense.
+    function withdrawSharedExpense(uint256 amount, address to) public onlyAdmin() {
         if (amount > calculateTotalExpenseWithdrawableAmount()) revert();
         
         sharedExpenseWithdrawn = sharedExpenseWithdrawn.add(amount);
@@ -263,23 +257,9 @@ contract Doneth is Ownable {
         WithdrawSharedExpense(msg.sender, to, amount, sharedExpenseWithdrawn);
     }
 
-    function calculateTotalWithdrawableTokenAmount(address who, address token) public constant returns(uint256) {
-        uint256 balanceSum = checkERC20Balance(token).add(tokens[token].totalWithdrawn);
-
-        // Need to use parts-per notation to compute percentages for lack of floating point division
-        uint256 ethPerSharePPN = balanceSum.percent(totalShares, PRECISION); 
-        uint256 ethPPN = ethPerSharePPN.mul(members[who].shares);
-        uint256 ethVal = ethPPN.div(10**PRECISION); 
-        return ethVal;
-    }
-
-    function calculateTotalExpenseWithdrawableAmount() public constant returns(uint256) {
-        return sharedExpense.sub(sharedExpenseWithdrawn);
-    }
-
     // Converts from shares to Eth.
-    // Ex: 100 shares, 1000 total shares, 100 Eth balance
-    // 100 Eth / 1000 total shares = 1/10 eth per share * 100 shares = 10 Eth to cash out
+    // Ex: 2 shares, 4 total shares, 40 Eth balance
+    // 40 Eth / 4 total shares = 10 eth per share * 2 shares = 20 Eth to cash out
     function calculateTotalWithdrawableAmount(address who) public constant onlyExisting(who) returns (uint256) {
         // Total balance to calculate share from = 
         // contract balance + totalWithdrawn - sharedExpense + sharedExpenseWithdrawn
@@ -292,6 +272,21 @@ contract Doneth is Ownable {
         uint256 ethPPN = ethPerSharePPN.mul(members[who].shares);
         uint256 ethVal = ethPPN.div(10**PRECISION); 
         return ethVal;
+    }
+
+
+    function calculateTotalWithdrawableTokenAmount(address who, address token) public constant returns(uint256) {
+        uint256 balanceSum = checkERC20Balance(token).add(tokens[token].totalWithdrawn);
+
+        // Need to use parts-per notation to compute percentages for lack of floating point division
+        uint256 tokPerSharePPN = balanceSum.percent(totalShares, PRECISION); 
+        uint256 tokPPN = tokPerSharePPN.mul(members[who].shares);
+        uint256 tokVal = tokPPN.div(10**PRECISION); 
+        return tokVal;
+    }
+
+    function calculateTotalExpenseWithdrawableAmount() public constant returns(uint256) {
+        return sharedExpense.sub(sharedExpenseWithdrawn);
     }
 
     // Used for testing
