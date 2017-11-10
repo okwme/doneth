@@ -142,15 +142,7 @@ export default {
 
   methods: {
     ...mapMutations({setModal: 'SET_MODAL', setEditMember: 'SET_EDIT_MEMBER'}),
-    open () {
-      console.log('who uses open?')
-    },
-    close () {
-      console.log('who uses close?')
-    },
     closeModal (e) {
-      console.log('closeModal')
-      console.log(e.target)
       this.setModal(false)
       this.setEditMember(null)
     },

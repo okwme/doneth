@@ -38,7 +38,6 @@ export default {
     if (typeof web3 !== 'undefined') {
       // Carry on :)
     } else {
-      console.log('No web3? You should consider trying MetaMask!')
       // Show SUPER ANNOYING ALERT!!
       this.showAlert = true
     }

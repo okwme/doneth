@@ -84,7 +84,6 @@ export default {
       this.isAdmin = false
     },
     addNewMember () {
-      console.log('add member?')
       let member = {
         userAddress: this.userAddress,
         sharesTotal: this.sharesTotal,

@@ -91,7 +91,7 @@ export default {
         this.confirming = true
         this.tx = transactionHash
       })
-      .on('error', (error) => {
+      .on('error', () => {
         this.confirming = false
         this.deploying = false
         this.setLoading(false)
@@ -99,7 +99,6 @@ export default {
           text: 'Error has occured, please check logs',
           class: 'error'
         })
-        console.log('ERROR', error)
       })
       .then((newContractInstance) => {
         this.setLoading(false)

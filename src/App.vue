@@ -64,6 +64,12 @@ body {
   min-height: 100vh;
   padding: 0px;
   margin: 0px;
+
+  &.embedded-btn {
+    position: fixed;
+    width: 100%;
+    overflow: hidden;
+  }
 }
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

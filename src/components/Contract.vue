@@ -2,7 +2,7 @@
   <div class="contract">
     <div class="contract-header">
       <div class="contract-details">
-        <h2>{{contractName}}</h2>
+        <h2 :class="{edit: isAdmin}" @click="openModal('modalSetContractName')">{{contractName}}</h2>
         <div class="sub-details">
           <div class=""><small>Total Available:</small> {{totalBalance}} Eth ({{totalBalanceEther}})</div>
           <div class=""><small>Created:</small> {{dateTime(timestamp)}}</div>
@@ -23,6 +23,30 @@
     <embed-helper :address="address"/>
     <transactions-list :allocations="sortedLogs"/>
 
+    <ui-modal modal-id="modalSetContractName" title="Change Contract Name">
+      <form @submit.prevent="changeContractName()">
+        <div class="withdraw-form">
+          <div class="funds-meta">
+            Note: Longer names cost more!
+          </div>
+          <div class="field field-address">
+            <label for="add_address">Name:</label>
+            <input maxLength="21" type="text" name="contract_name" v-model="newContractName" required>
+          </div>
+        </div>
+
+        <div slot="footer">
+          <template v-if="!submitting">
+            <button class="btn btn-primary" >Submit</button>
+            <button class="btn btn-secondary" @click.prevent="closeModal()">Cancel</button>
+          </template>
+          <template v-if="submitting">
+            <button class="btn btn-primary">Sending...</button>
+          </template>
+        </div>
+      </form>
+    </ui-modal>
+
   </div>
 </template>
 
@@ -37,7 +61,8 @@ import PatronForm from '@/components/PatronForm'
 import ShortHash from '@/components/ShortHash'
 import SectionHeader from '@/components/SectionHeader'
 import TransactionsList from '@/components/TransactionsList'
-import { mapGetters, mapActions } from 'vuex'
+import UiModal from '@/components/UiModal'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 export default {
 
   name: 'Contract',
@@ -46,7 +71,9 @@ export default {
     return {
       createdAt: 1508639178669,
       timestamp: null,
-      totalBalanceEther: 0
+      totalBalanceEther: 0,
+      newContractName: '',
+      submitting: false
     }
   },
   computed: {
@@ -71,7 +98,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['deployDoneth', 'makeDeposit', 'convertToCurrency', 'convertFromCurrency']),
+    ...mapMutations({setModal: 'SET_MODAL'}),
+    ...mapActions(['deployDoneth', 'makeDeposit', 'convertToCurrency', 'convertFromCurrency', 'updateContractName']),
     convertTotalBalance () {
       if (!this.totalBalance) return
       this.convertToCurrency(this.totalBalance).then((amount) => {
@@ -92,6 +120,20 @@ export default {
       .then((res) => {
         if (res && res.timestamp) this.timestamp = res.timestamp * 1000
       })
+    },
+    changeContractName () {
+      if (!this.isAdmin) return
+      this.submitting = true
+      this.updateContractName(this.newContractName)
+    },
+    openModal (ref) {
+      this.newContractName = this.contractName
+      this.submitting = false
+      this.setModal(ref)
+    },
+    closeModal () {
+      this.submitting = false
+      this.setModal(false)
     }
   },
   components: {
@@ -104,7 +146,8 @@ export default {
     PatronForm,
     SectionHeader,
     ShortHash,
-    TransactionsList
+    TransactionsList,
+    UiModal
   }
 }
 </script>
@@ -121,6 +164,14 @@ export default {
       font-size: 16pt;
       margin: 0;
       padding: 0;
+
+      &:after {
+        opacity: .3;
+      }
+
+      &:hover:after {
+        opacity: 1;
+      }
     }
   }
 
