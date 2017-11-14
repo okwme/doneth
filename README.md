@@ -21,3 +21,48 @@ Teach kids finance and let them start to manage their own assets. Easily setup a
 
 ### Trust Fund
 Fill a contract with a trust fund and limit the ability to withdraw to specific parties at specific increments.
+
+
+## Truffle Setup
+``` bash
+# make sure you're using node >= v7.6
+
+# install truffle
+npm install -g truffle
+
+# compile truffle
+truffle compile
+
+# test truffle
+truffle develop
+truffle(develop)> test test/doneth_tests.js
+````
+
+
+## Build Setup
+
+``` bash
+# install dependencies
+npm install
+
+# serve with hot reload at localhost:8080
+npm run dev
+
+# build for production with minification
+npm run build
+
+# build for production and view the bundle analyzer report
+npm run build --report
+
+# run unit tests
+npm run unit
+
+# run e2e tests
+npm run e2e
+
+# run all tests
+npm test
+```
+
+For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+

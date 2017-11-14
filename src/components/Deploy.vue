@@ -13,12 +13,12 @@
             <template v-if="!deploying && !confirming && !address">
               <div class="field">
                 <label for="alloc_shares">Title:</label>
-                <input maxLength="12" type="text" name="name" v-model="name" required>
+                <input maxLength="21" type="text" name="name" v-model="name" required>
               </div>
 
               <div class="field">
                 <label for="alloc_shares">Founder:</label>
-                <input maxLength="12" type="text" name="founder_name" v-model="founderName" required>
+                <input maxLength="21" type="text" name="founder_name" v-model="founderName" required>
               </div>
               <div class="field">
                 <button class="btn btn-primary" type="submit" name="button">Deploy</button>
@@ -46,11 +46,9 @@
 
 <script>
 
-import abi from '../assets/Doneth.json'
-import contract from '../assets/Doneth.sol.txt'
 import SectionHeader from '@/components/SectionHeader'
 
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapState } from 'vuex'
 export default {
 
   name: 'Deploy',
@@ -59,9 +57,6 @@ export default {
     return {
       name: '',
       founderName: '',
-      abi: abi.abi,
-      compiled: abi.unlinked_binary,
-      contract,
       deploying: false,
       confirming: false,
       tx: null,
@@ -70,31 +65,33 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['account', 'metamask'])
+    ...mapGetters(['account', 'metamask']),
+    ...mapState(['abi'])
   },
   methods: {
     ...mapActions(['addNotification', 'setLoading']),
     deploy () {
       if (!this.account) {
         alert('unlock your wallet!')
+        return
       }
       this.setLoading(true)
-      var contract = new window.web3.eth.Contract(this.abi)
+      var contract = new window.web3.eth.Contract(this.abi.abi)
       this.deploying = true
       contract.deploy({
-        data: this.compiled,
+        data: this.abi.bytecode,
         arguments: [this.name, this.founderName],
         from: this.account
       }).send({
         from: this.account,
         // gas: '4700000',
-        gasPrice: '20000000000'
+        gasPrice: '4000000000'
       }, (e, transactionHash) => {
         this.deploying = false
         this.confirming = true
         this.tx = transactionHash
       })
-      .on('error', (error) => {
+      .on('error', () => {
         this.confirming = false
         this.deploying = false
         this.setLoading(false)
@@ -102,7 +99,6 @@ export default {
           text: 'Error has occured, please check logs',
           class: 'error'
         })
-        console.log('ERROR', error)
       })
       .then((newContractInstance) => {
         this.setLoading(false)

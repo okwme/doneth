@@ -41,8 +41,11 @@ export default {
         }
       }
     }
+
+    // super hacky? yep
     setTimeout(removeChildNodes, 10)
     setTimeout(removeChildNodes, 100)
+    setTimeout(removeChildNodes, 300)
   },
   computed: {
     clickable () {
@@ -69,6 +72,7 @@ export default {
   .no-cursor {
     cursor: default;
   }
+
   .donate-embed {
     display: flex;
     height: 40px;

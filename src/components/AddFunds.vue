@@ -21,8 +21,8 @@
           <input placeholder="0" type="string" readonly min="0" v-if="depositing" :value="convertedAmount">
         </div>
         <div class="funds-footer">
-          <button v-if="depositing" class="btn btn-error" @click="depositing = false">Cancel</button>
           <button @click="deposit()" type="button" name="button" class="btn btn-primary">Submit</button>
+          <button v-if="depositing" class="btn btn-error" @click="depositing = false">Cancel</button>
         </div>
       </form>
     </div>

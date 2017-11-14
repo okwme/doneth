@@ -1,6 +1,12 @@
 import BN from 'bignumber.js'
 import Vue from 'vue'
 export default {
+  SET_MODAL (state, isOpen) {
+    state.modalOpen = isOpen
+  },
+  SET_EDIT_MEMBER (state, member) {
+    state.editMember = member
+  },
   SET_LOADING (state, isLoading) {
     state.loading = isLoading
   },
@@ -49,7 +55,12 @@ export default {
     state.address = address
   },
   ADD_MEMBER (state, member) {
-    state.members.push(member)
+    let memberKey = state.members.findIndex((m) => m.address === member.address)
+    if (memberKey > -1) {
+      state.members.splice(memberKey, 1, member)
+    } else {
+      state.members.push(member)
+    }
   },
   CLEAR_LOGS (state) {
     state.logs = []
@@ -72,6 +83,15 @@ export default {
   SET_WITHDRAWN (state, totalWithdrawn) {
     state.totalWithdrawn = totalWithdrawn
   },
+  SET_EXPENSE (state, totalExpense) {
+    state.totalExpense = totalExpense
+  },
+  ADD_EXPENSEWITHDRAWN (state, expenseWithdrawn) {
+    state.totalExpenseWithdrawn = new BN(this.state.totalExpenseWithdrawn).add(new BN(expenseWithdrawn)).toString()
+  },
+  SET_EXPENSEWITHDRAWN (state, totalExpenseWithdrawn) {
+    state.totalExpenseWithdrawn = totalExpenseWithdrawn
+  },
   SET_CURRENCY (state, currency) {
     state.currency = currency
   },
@@ -82,7 +102,7 @@ export default {
     let memberKey = state.members.findIndex((member) => member.address === address)
     if (memberKey > -1) {
       let member = state.members[memberKey]
-      member.shares = parseInt(amount) + parseInt(member.shares)
+      member.shares = parseInt(amount)
       state.members.splice(memberKey, 1, member)
     }
   },

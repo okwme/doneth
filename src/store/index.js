@@ -5,13 +5,15 @@ import createLogger from 'vuex/dist/logger'
 import actions from './actions'
 import getters from './getters'
 import mutations from './mutations'
-import abi from '../assets/Doneth.json'
+import abi from '../../build/contracts/Doneth.json'
 Vue.use(Vuex)
 
 // const debug = process.env.NODE_ENV !== 'production'
 const debug = false
 
 const state = {
+  modalOpen: false,
+  editMember: null,
   retried: false,
   metamask: false,
   account: null,
@@ -30,6 +32,8 @@ const state = {
   genesisBlock: 0,
   totalWithdrawn: 0,
   totalBalance: 0,
+  totalExpense: 0,
+  totalExpenseWithdrawn: 0,
   logs: [],
   abi
 }
