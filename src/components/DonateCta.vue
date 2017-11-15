@@ -29,8 +29,8 @@ export default {
 
   data () {
     return {
-      url: `https://doneth.org/0xd078e60818801fcAB0B3868fB2b058C3a7E52240`,
-      address: '0xd078e60818801fcAB0B3868fB2b058C3a7E52240'
+      url: `https://doneth.org/0xb02bfbd57a9c6bf16eeedf346d5464a3f0dd9bc1`,
+      address: '0xb02bfbd57a9c6bf16eeedf346d5464a3f0dd9bc1'
     }
   },
   components: {
