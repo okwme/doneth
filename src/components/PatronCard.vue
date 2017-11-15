@@ -54,7 +54,7 @@ export default {
     },
     fromWei (amount) {
       console.log(amount)
-      return utils.fromWei(amount)
+      return utils.fromWei(amount.toString())
     },
     alloted (patron) {
       return new BN(this.totalBalance)
