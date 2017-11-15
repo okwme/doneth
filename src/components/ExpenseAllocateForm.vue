@@ -60,7 +60,7 @@ export default {
     }
   },
   mounted () {
-    this.allocateAmount = utils.fromWei(this.totalExpense)
+    this.allocateAmount = utils.fromWei(this.totalExpense.toString())
   },
   methods: {
     ...mapMutations({setModal: 'SET_MODAL'}),

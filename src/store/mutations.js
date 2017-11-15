@@ -1,5 +1,6 @@
 import BN from 'bignumber.js'
 import Vue from 'vue'
+import utils from 'web3-utils'
 export default {
   SET_MODAL (state, isOpen) {
     state.modalOpen = isOpen
@@ -119,7 +120,7 @@ export default {
     if (memberKey > -1) {
       let member = state.members[memberKey]
       let remaining = new BN(amount).sub(new BN(member.withdrawn))
-      let wei = new BN(window.web3.utils.fromWei(remaining)).toString()
+      let wei = new BN(utils.fromWei(remaining.toString())).toString()
       member.allowedAmount = wei
       state.members.splice(memberKey, 1, member)
     }

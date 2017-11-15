@@ -75,7 +75,7 @@ export default {
       // return new BN(patron.allowedAmount).toFixed(4)
     },
     getFullAllowedAmount () {
-      return new BN(utils.fromWei(this.totalExpense)).sub(this.totalExpenseWithdrawn)
+      return new BN(utils.fromWei(this.totalExpense.toString())).sub(this.totalExpenseWithdrawn)
     },
     isOverdrafted (patron, withdrawing) {
       if (isNaN(withdrawing) || withdrawing === '') return false

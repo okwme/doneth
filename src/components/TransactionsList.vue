@@ -93,6 +93,7 @@
 import ShortHash from '@/components/ShortHash'
 import BN from 'bignumber.js'
 import { mapGetters } from 'vuex'
+import utils from 'web3-utils'
 export default {
 
   name: 'TransactionsList',
@@ -127,14 +128,14 @@ export default {
         let to = this.members.find((m) => m.address === obj.to)
         if (to) obj.to = to.memberName
 
-        if (obj.value) obj.valueConverted = window.web3.utils.fromWei(new BN(obj.value), 'ether')
+        if (obj.value) obj.valueConverted = utils.fromWei(new BN(obj.value), 'ether')
 
         if (obj.oldValue && typeof (obj.oldValue) === 'number') {
-          obj.oldValueConverted = window.web3.utils.fromWei(new BN(obj.oldValue), 'ether')
+          obj.oldValueConverted = utils.fromWei(new BN(obj.oldValue), 'ether')
         }
 
         if (obj.newValue && typeof (obj.newValue) === 'number') {
-          obj.newValueConverted = window.web3.utils.fromWei(new BN(obj.newValue), 'ether')
+          obj.newValueConverted = utils.fromWei(new BN(obj.newValue), 'ether')
         }
         return obj
       })

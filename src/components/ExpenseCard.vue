@@ -30,13 +30,13 @@ export default {
   computed: {
     ...mapGetters(['account', 'conversions', 'currency', 'totalBalance', 'totalExpense', 'totalExpenseWithdrawn', 'isAdmin']),
     allotted () {
-      return Web3.utils.fromWei(this.totalExpense)
+      return Web3.utils.fromWei(this.totalExpense.toString())
     },
     used () {
-      return Web3.utils.fromWei(this.totalExpenseWithdrawn)
+      return Web3.utils.fromWei(this.totalExpenseWithdrawn.toString())
     },
     totalExpenseWei () {
-      return Web3.utils.fromWei(new BN(this.totalExpense).sub(new BN(this.totalExpenseWithdrawn)))
+      return Web3.utils.fromWei(new BN(this.totalExpense).sub(new BN(this.totalExpenseWithdrawn)).toString())
     }
   },
   watch: {

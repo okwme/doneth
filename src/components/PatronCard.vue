@@ -53,7 +53,6 @@ export default {
       this.setEditMember(patron)
     },
     fromWei (amount) {
-      console.log(amount)
       return utils.fromWei(amount.toString())
     },
     alloted (patron) {

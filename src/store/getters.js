@@ -15,7 +15,7 @@ export default {
   founder: state => state.founder,
   genesisBlock: state => state.genesisBlock,
   totalBalance: state => {
-    return state.totalBalance && utils.fromWei(state.totalBalance)
+    return state.totalBalance && utils.fromWei(state.totalBalance.toString())
   },
   totalBalanceRaw: state => state.totalBalance,
   totalWithdrawn: state => state.totalWithdrawn,
