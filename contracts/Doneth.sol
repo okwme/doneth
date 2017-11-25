@@ -130,7 +130,7 @@ contract Doneth is Ownable {
         return (name, owner, genesisBlockNumber, totalShares, totalWithdrawn);
     }
     
-    function returnMember(address _address) public constant onlyExisting(_address) returns(bool admin, uint256 shares, uint256 withdrawn, string memberName) {
+    function getMember(address _address) public constant onlyExisting(_address) returns(bool admin, uint256 shares, uint256 withdrawn, string memberName) {
       Member memory m = members[_address];
       return (m.admin, m.shares, m.withdrawn, m.memberName);
     }
