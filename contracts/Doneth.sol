@@ -126,8 +126,8 @@ contract Doneth is Ownable {
         return this.balance;
     }
     
-    function getContractInfo() public constant returns(string, address, uint256, uint256, uint256) {
-        return (string(name), owner, genesisBlockNumber, totalShares, totalWithdrawn);
+    function getContractInfo() public constant returns(string name, address owner, uint256 genesisBlockNumber, uint256 totalShares, uint256 totalWithdrawn) {
+        return (name, owner, genesisBlockNumber, totalShares, totalWithdrawn);
     }
     
     function returnMember(address _address) public constant onlyExisting(_address) returns(bool admin, uint256 shares, uint256 withdrawn, string memberName) {
@@ -136,6 +136,14 @@ contract Doneth is Ownable {
     }
 
     function checkERC20Balance(address token) public constant returns(uint256) {
+        uint256 balance = ERC20(token).balanceOf(address(this));
+        if (!tokens[token].exists && balance > 0) {
+            tokens[token].exists = true;
+        }
+        return balance;
+    }
+
+    function updateERC20Balance(address token) public returns(uint256) {
         uint256 balance = ERC20(token).balanceOf(address(this));
         if (!tokens[token].exists && balance > 0) {
             tokens[token].exists = true;
@@ -188,7 +196,7 @@ contract Doneth is Ownable {
     // Shared expense allocation allows admins to withdraw an amount to be used for shared
     // expenses. Shared expense allocation subtracts from the total balance of the contract. 
     // Only owner can change this amount.
-    function changeSharedExpenseAllocation(uint256 newAllocation) public onlyOwner() {
+    function changeSharedExpenseAllocation(uint256 newAllocation) public onlyAdmin() {
         if (newAllocation < sharedExpenseWithdrawn) revert();
         if (newAllocation.sub(sharedExpenseWithdrawn) > this.balance) revert();
 
