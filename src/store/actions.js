@@ -236,7 +236,7 @@ export default {
   pollMember ({dispatch, state, commit}, data) {
     return state.Doneth.methods.getMemberAtKey(new BN(data.i)).call()
       .then((address) => {
-        return state.Doneth.methods.returnMember(address).call()
+        return state.Doneth.methods.getMember(address).call()
         .then(({active, admin, shares, withdrawn, memberName}) => {
           commit('ADD_MEMBER', {address, active, admin, shares, withdrawn, memberName})
           if (data.i + 1 < data.length) {
