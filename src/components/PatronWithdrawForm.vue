@@ -88,6 +88,8 @@ export default {
     },
     isOverdrafted (patron, withdrawing) {
       if (!withdrawing || !patron.allowedAmount || isNaN(withdrawing) || isNaN(patron.allowedAmount)) return false
+      withdrawing = typeof withdrawing === 'object' ? withdrawing.toString() : withdrawing
+      patron.allowedAmount = typeof patron.allowedAmount === 'object' ? patron.allowedAmount.toString() : patron.allowedAmount
       let allowedAmount = new BN(utils.toWei(patron.allowedAmount))
       withdrawing = new BN(utils.toWei(withdrawing))
       return allowedAmount.greaterThanOrEqualTo(withdrawing)

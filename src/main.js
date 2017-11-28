@@ -16,6 +16,7 @@ Vue.use(VueWorker)
 Object.defineProperty(Vue.prototype, '$moment', { value: moment })
 
 Vue.config.productionTip = false
+Vue.config.devtools = true
 
 /* eslint-disable no-new */
 new Vue({

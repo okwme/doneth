@@ -109,6 +109,9 @@ export default {
     },
     transactionLink (item) {
       return `https://etherscan.io/tx/${item.transactionHash}`
+    },
+    fromWei (amount, to = 'ether') {
+      return utils.fromWei(new BN(amount).toString(), to)
     }
   },
   computed: {
@@ -128,14 +131,14 @@ export default {
         let to = this.members.find((m) => m.address === obj.to)
         if (to) obj.to = to.memberName
 
-        if (obj.value) obj.valueConverted = utils.fromWei(new BN(obj.value), 'ether')
+        if (obj.value) obj.valueConverted = this.fromWei(obj.value, 'ether')
 
         if (obj.oldValue && typeof (obj.oldValue) === 'number') {
-          obj.oldValueConverted = utils.fromWei(new BN(obj.oldValue), 'ether')
+          obj.oldValueConverted = this.fromWei(obj.value, 'ether')
         }
 
         if (obj.newValue && typeof (obj.newValue) === 'number') {
-          obj.newValueConverted = utils.fromWei(new BN(obj.newValue), 'ether')
+          obj.newValueConverted = this.fromWei(obj.value, 'ether')
         }
         return obj
       })
