@@ -1,0 +1,65 @@
+.btn {
+  background: transparent;
+  border: 2px solid transparent;
+  color: $primary;
+  cursor: pointer;
+  font-size: 12pt;
+  font-weight: 500;
+  padding: 7px 12px;
+
+  &[disabled] {
+    opacity: 0.5;
+  }
+  b {
+    display: block;
+    font-size: 13pt;
+  }
+
+  &.btn-outlined {
+    background: transparent;
+    border: 2px solid $white;
+    border-radius: 3px;
+    color: $white;
+  }
+  &.btn-white {
+    background: $white;
+
+    &.btn-outlined {
+      background: transparent;
+    }
+  }
+
+  &.btn-primary {
+    background: $primary;
+    color: $white;
+    transition: all 220ms ease;
+
+    &.btn-outlined {
+      background: transparent;
+      border-color: $primary;
+      color: $primary;
+
+      &:hover {
+        background: $primary;
+        color: $white;
+      }
+    }
+  }
+
+  &.btn-error {
+    background: $error;
+    color: $white;
+    transition: all 220ms ease;
+
+    &.btn-outlined {
+      background: transparent;
+      border-color: $error;
+      color: $error;
+
+      &:hover {
+        background: $error;
+        color: $white;
+      }
+    }
+  }
+}

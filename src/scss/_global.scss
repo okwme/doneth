@@ -1,0 +1,77 @@
+@import 'variables';
+
+section {
+  width: 100%;
+}
+
+p {
+  margin: 0px;
+  padding: 20px;
+  text-align: left;
+}
+
+hr {
+  border: 0px;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  display: inline-block;
+  margin: 5px;
+}
+
+iframe {
+  border: 0;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.page-card {
+  background: $white;
+  border-radius: $border-radius;
+  box-shadow: 0 1px 10px -3px rgba(0,0,0,0.15);
+  width: $page-content-width;
+  margin: 0px auto 30px;
+}
+
+.page-card-footer {
+  background: darken($white, 3%);
+  border-radius: 0 0 $border-radius $border-radius;
+  display: flex;
+  justify-content: space-around;
+  padding: 20px;
+
+  .btn {
+    width: 250px;
+    padding: 15px;
+  }
+}
+
+.bk-green {
+  background: $primary;
+  color: $white;
+}
+
+.wd-50 {
+  width: 50%;
+}
+.flex-1 {
+  flex: 1;
+}
+.flex-2 {
+  flex: 2;
+}
+
+*:hover > * > * > {
+  .edit {
+    cursor: pointer;
+  }
+  .edit:after {
+    content: ' ✎';
+  }
+}

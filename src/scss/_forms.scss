@@ -1,0 +1,85 @@
+@import 'variables';
+
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  background: $white url('/static/downarrow.svg') right 5px center no-repeat;
+  background-size: 15px 16px;
+  border: 1px solid $lightgrey;
+  border-radius: 3px;
+  color: $darkgrey;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 13pt;
+  height: 45px;
+  margin: 0;
+  outline: none;
+  padding: 7px 18px 7px 7px;
+  width: 98%;
+}
+
+select::-ms-expand {
+  display: none;
+}
+
+.input-select {
+  position: relative;
+
+  select {
+    min-height: 40px;
+  }
+}
+
+input {
+  -webkit-appearance: none;
+  appearance: none;
+  border: 1px solid $lightgrey;
+  border-radius: 3px;
+  color: $darkgrey;
+  cursor: pointer;
+  font-size: 13pt;
+  display: inline-block;
+  height: 41px;
+  margin: 0;
+  outline: none;
+  width: 100%;
+}
+
+label {
+  font-weight: 500;
+  position: absolute;
+  padding: 12px;
+  text-align: left;
+}
+
+.field {
+  flex: 1;
+  padding: 10px;
+  position: relative;
+
+  select {
+    padding-left: 40px;
+  }
+
+  input {
+    padding: 0 10px 0 70px;
+    text-align: right;
+    max-width: 80%;
+  }
+
+  &.checkbox {
+    text-align: left;
+    padding-left: 15px;
+
+    input {
+      -webkit-appearance: checkbox;
+      appearance: checkbox;
+      padding: 0;
+      width: auto;
+    }
+  }
+}
+input.center {
+  text-align:center;
+  width: 160px;
+}
