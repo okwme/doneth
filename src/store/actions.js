@@ -72,7 +72,9 @@ export default {
     commit('UPDATE_LAST_CONVERTED', new Date().getTime())
     console.log('getConversion')
     if (currencyKey > getters.currenciesArray.length - 1) return
+    console.log('here')
     let currency = getters.currenciesArray[currencyKey]
+    console.log(currency)
     let url = 'https://api.etherscan.io/api?module=stats&action=ethprice&apikey=QCNRXK7D434BB6DQSFMAGFSNNDY5EMTXE6'
     // let url = 'https://api.infura.io/v1/ticker/eth' + currency.toLowerCase()
     axios.get(url).then((resp) => {
