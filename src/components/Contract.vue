@@ -14,7 +14,7 @@
     <allocation-bar :patrons="members"/>
     <div class="patron-cards">
       <expense-card class="expense-card" :address="address" v-if="totalExpense != 0" />
-      <div class="patron-card" v-for="member in members">
+      <div class="patron-card" v-for="member in members" v-bind:key="member.address" >
         <patron-card :address="address" :patron="member"/>
       </div>
       <patron-form class="patron-card add-card" v-if="isAdmin" :address="address"/>
@@ -79,10 +79,13 @@ export default {
   computed: {
     ...mapGetters(['metamask', 'members', 'contractName', 'sortedLogs', 'totalBalance', 'totalBalanceRaw', 'currency', 'account', 'isAdmin', 'totalExpense'])
   },
-  mounted () {
-    this.deployDoneth(this.address)
-    this.getCreatedAt()
-    this.convertTotalBalance()
+  async mounted () {
+    this.connect()
+    setTimeout(() => {
+      this.deployDoneth(this.address)
+      this.getCreatedAt()
+      this.convertTotalBalance()
+    }, 1000)
   },
   watch: {
     depositAmount () {
@@ -99,7 +102,7 @@ export default {
   },
   methods: {
     ...mapMutations({setModal: 'SET_MODAL'}),
-    ...mapActions(['deployDoneth', 'makeDeposit', 'convertToCurrency', 'convertFromCurrency', 'updateContractName']),
+    ...mapActions(['deployDoneth', 'makeDeposit', 'convertToCurrency', 'convertFromCurrency', 'updateContractName', 'connect']),
     convertTotalBalance () {
       if (!this.totalBalance) return
       this.convertToCurrency(this.totalBalance).then((amount) => {

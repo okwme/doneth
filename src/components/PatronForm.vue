@@ -20,7 +20,7 @@
           <input minLength="42"  maxLength="42" type="text" name="add_address" v-model="userAddress" required>
         </div>
         <div class="field checkbox">
-          <input :disabled="userAddress === account" type="checkbox" name="add_admin" v-model="isAdmin">
+          <input :disabled="userAddress.toLowerCase() === account.toLowerCase()" type="checkbox" name="add_admin" v-model="isAdmin">
           <label for="add_admin">Is Admin?</label>
         </div>
 

@@ -54,7 +54,7 @@ export default {
   computed: {
     ...mapGetters(['account', 'members', 'conversions', 'currency', 'totalExpense', 'totalExpenseWithdrawn', 'totalBalance']),
     patron () {
-      return this.members.find(m => m.address === this.account)
+      return this.members.find(m => m.address.toLowerCase() === this.account.toLowerCase())
     }
   },
   watch: {
@@ -70,16 +70,16 @@ export default {
     ...mapActions(['convertToCurrency', 'makeExpenseWithdraw', 'addNotification']),
     getAllowedAmount () {
       return 100
-      // let patron = this.members.find((p) => p.address === address)
+      // let patron = this.members.find((p) => p.address.toLowerCase() === address.toLowerCase())
       // if (!patron || !patron.allowedAmount) return 0
       // return new BN(patron.allowedAmount).toFixed(4)
     },
     getFullAllowedAmount () {
-      return new BN(utils.fromWei(this.totalExpense.toString())).sub(this.totalExpenseWithdrawn)
+      return new BN(utils.fromWei(this.totalExpense.toString())).minus(this.totalExpenseWithdrawn)
     },
     isOverdrafted (patron, withdrawing) {
       if (isNaN(withdrawing) || withdrawing === '') return false
-      return new BN(withdrawing).greaterThan(this.getFullAllowedAmount())
+      return new BN(withdrawing).gt(this.getFullAllowedAmount())
     },
     overdrafted (patron, withdrawing) {
       return {

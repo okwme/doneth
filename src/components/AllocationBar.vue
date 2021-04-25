@@ -1,10 +1,10 @@
 <template>
   <div class="allocation-bar">
     <div class="bar-graph">
-      <div class="bar-item" :class="{ active: (member.active === true) }" v-for="member in patrons" :style="{ background: colorHex(member), width: percentage(member) + '%' }"></div>
+      <div class="bar-item" :class="{ active: (member.active === true) }" v-bind:key="member.address" v-for="member in patrons" :style="{ background: colorHex(member), width: percentage(member) + '%' }"></div>
     </div>
     <div class="allocation-details">
-      <div class="detail-item" v-for="member in patrons" :style="{ width: percentage(member) + '%' }">{{Math.round(percentage(member)) + '%'}}</div>
+      <div class="detail-item" v-for="member in patrons" v-bind:key="member.address" :style="{ width: percentage(member) + '%' }">{{Math.round(percentage(member)) + '%'}}</div>
     </div>
   </div>
 </template>

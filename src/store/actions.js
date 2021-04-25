@@ -2,48 +2,46 @@
 import Web3 from 'web3'
 import axios from 'axios'
 import BN from 'bignumber.js'
+// import Web3Modal from 'web3modal'
+// import WalletConnectProvider from "@walletconnect/web3-provider";
+
 // const ProviderEngine = require('web3-provider-engine/index.js')
-const ZeroClientProvider = require('web3-provider-engine/zero.js')
+// const ZeroClientProvider = require('web3-provider-engine/zero.js')
 export default {
-  connect ({commit, state, dispatch}) {
+  promptConnect ({state}) {
+
+  },
+  async connect ({commit, state, dispatch}) {
     commit('SET_LOADING', true)
-    let web3Provider = false
-    if (typeof window.web3 !== 'undefined') {
-      web3Provider = window.web3.currentProvider
-      commit('SET_METAMASK', true)
-    } else if (!state.retried) {
-      commit('SET_RETRY', true)
-      setTimeout(() => {
-        dispatch('connect')
-      }, 1000)
-    } else {
-      web3Provider = ZeroClientProvider({
-        getAccounts: function () {},
-        rpcUrl: 'https://rinkeby.infura.io/Q5I7AA6unRLULsLTYd6d'
-      })
+    console.log('connect')
+    if (typeof window.ethereum == 'undefined') {
+      alert('plese install metamask.io browser extension')
+      return
     }
-    if (web3Provider) {
-      window.web3 = new Web3(web3Provider)
-      commit('SET_LOADING', false)
-      commit('SET_CONNECTED', true)
-      // let wrongNetwork = false
-      // web3.eth.net.getId((err, netId) => {
-      //   if (!err) {
-      //     switch (netId) {
-      //       case 1:
-      //       case 3:
-      //       case 4:
-      //       case 666:
-      //         break
-      //       default:
-      //         wrongNetwork = true
-      //     }
-      //   }
-        // if (!wrongNetwork) {
-      dispatch('setAccountInterval')
-        // }
-      // })
-    }
+    await ethereum.request({ method: 'eth_requestAccounts' });
+
+    window.web3 = new Web3(ethereum)
+    commit('SET_LOADING', false)
+    commit('SET_CONNECTED', true)
+    commit('SET_METAMASK', true)
+    // let wrongNetwork = false
+    // web3.eth.net.getId((err, netId) => {
+    //   if (!err) {
+    //     switch (netId) {
+    //       case 1:
+    //       case 3:
+    //       case 4:
+    //       case 666:
+    //         break
+    //       default:
+    //         wrongNetwork = true
+    //     }
+    //   }
+      // if (!wrongNetwork) {
+    await dispatch('checkAccount')
+    dispatch('setAccountInterval')
+      // }
+    // })
   },
   setAccountInterval ({dispatch}) {
     dispatch('checkAccount')
@@ -51,15 +49,13 @@ export default {
       dispatch('checkAccount')
     }, 3000)
   },
-  checkAccount ({commit, state}) {
-    window.web3.eth.getAccounts((error, accounts) => {
-      if (error) console.error(error)
-      if (state.account !== accounts[0]) {
-        commit('SET_ACCOUNT', accounts[0])
-      } else if (!accounts.length) {
-        commit('SET_ACCOUNT', null)
-      }
-    })
+  async checkAccount ({commit, state}) {
+    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+    if (!state.account || state.account.toLowerCase() !== accounts[0].toLowerCase()) {
+      commit('SET_ACCOUNT', accounts[0])
+    } else if (!accounts.length) {
+      commit('SET_ACCOUNT', null)
+    }
   },
   // getConversions ({commit, dispatch}) {
   //   dispatch('getConversion', 0)
@@ -142,81 +138,81 @@ export default {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
-    .then((results) => {
-      commit('ADD_LOGS', results)
-    })
+      .then((results) => {
+        commit('ADD_LOGS', results)
+      })
 
     let p2 = state.Doneth.getPastEvents('Withdraw', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
-    .then((results) => {
-      commit('ADD_LOGS', results)
-    })
+      .then((results) => {
+        commit('ADD_LOGS', results)
+      })
 
     let p3 = state.Doneth.getPastEvents('TokenWithdraw', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
-    .then((results) => {
-      commit('ADD_LOGS', results)
-    })
+      .then((results) => {
+        commit('ADD_LOGS', results)
+      })
 
     let p4 = state.Doneth.getPastEvents('AddShare', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
-    .then((results) => {
-      commit('ADD_LOGS', results)
-    })
+      .then((results) => {
+        commit('ADD_LOGS', results)
+      })
 
     let p5 = state.Doneth.getPastEvents('RemoveShare', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
-    .then((results) => {
-      commit('ADD_LOGS', results)
-    })
+      .then((results) => {
+        commit('ADD_LOGS', results)
+      })
 
     let p6 = state.Doneth.getPastEvents('ChangePrivilege', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
-    .then((results) => {
-      commit('ADD_LOGS', results)
-    })
+      .then((results) => {
+        commit('ADD_LOGS', results)
+      })
 
     let p7 = state.Doneth.getPastEvents('ChangeContractName', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
-    .then((results) => {
-      commit('ADD_LOGS', results)
-    })
+      .then((results) => {
+        commit('ADD_LOGS', results)
+      })
 
     let p8 = state.Doneth.getPastEvents('ChangeMemberName', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
-    .then((results) => {
-      commit('ADD_LOGS', results)
-    })
+      .then((results) => {
+        commit('ADD_LOGS', results)
+      })
 
     let p9 = state.Doneth.getPastEvents('ChangeSharedExpense', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
-    .then((results) => {
-      commit('ADD_LOGS', results)
-    })
+      .then((results) => {
+        commit('ADD_LOGS', results)
+      })
 
     let p10 = state.Doneth.getPastEvents('WithdrawSharedExpense', {
       fromBlock: state.genesisBlock,
       toBlock: 'latest'
     })
-    .then((results) => {
-      commit('ADD_LOGS', results)
-    })
+      .then((results) => {
+        commit('ADD_LOGS', results)
+      })
     return Promise.all([p1, p2, p3, p4, p5, p6, p7, p8, p9, p10])
   },
   pollAllowedAmounts ({dispatch, state}) {
@@ -234,15 +230,17 @@ export default {
     })
   },
   pollMember ({dispatch, state, commit}, data) {
+    console.log({data})
     return state.Doneth.methods.getMemberAtKey(new BN(data.i)).call()
       .then((address) => {
         return state.Doneth.methods.returnMember(address).call()
-        .then(({active, admin, shares, withdrawn, memberName}) => {
-          commit('ADD_MEMBER', {address, active, admin, shares, withdrawn, memberName})
-          if (data.i + 1 < data.length) {
-            return dispatch('pollMember', {i: data.i + 1, length: data.length})
-          }
-        })
+          .then(({active, admin, shares, withdrawn, memberName}) => {
+
+            commit('ADD_MEMBER', {address, active, admin, shares, withdrawn, memberName})
+            if (data.i + 1 < data.length) {
+              return dispatch('pollMember', {i: data.i + 1, length: data.length})
+            }
+          })
       })
   },
   pollSharedExpense ({state, commit}) {
@@ -259,36 +257,37 @@ export default {
   updateMember ({state, dispatch, commit}, member) {
     return new Promise((resolve, reject) => {
       let currentUser = state.members.find((member) => {
-        return member.address === state.account
+        return member.address.toLowerCase() === state.account.toLowerCase()
       })
+      console.log({currentUser})
       if (!currentUser || !currentUser.admin) {
         reject(new Error('Not an Admin'))
       } else {
         return state.Doneth.methods[member.action](member.userAddress, new BN(member.sharesTotal), member.isAdmin, member.firstName).send({from: state.account})
-        .on('transactionHash', (hash) => {
-          dispatch('setLoading', true)
-          commit('SET_MODAL', false)
-        })
-        .on('error', (error) => {
-          console.error(error)
-          dispatch('setLoading', false)
-          reject(error)
-        })
-        .then((result) => {
-          dispatch('setLoading', false)
-          let msg = member.action === 'addMember' ? 'added' : 'updated'
-          dispatch('addNotification', {
-            text: 'Member ' + msg + ' successfully!',
-            class: 'success'
+          .on('transactionHash', (hash) => {
+            dispatch('setLoading', true)
+            commit('SET_MODAL', false)
           })
+          .on('error', (error) => {
+            console.error(error)
+            dispatch('setLoading', false)
+            reject(error)
+          })
+          .then((result) => {
+            dispatch('setLoading', false)
+            let msg = member.action === 'addMember' ? 'added' : 'updated'
+            dispatch('addNotification', {
+              text: 'Member ' + msg + ' successfully!',
+              class: 'success'
+            })
 
-          dispatch('readLogs')
-          dispatch('getContractInfo')
-          dispatch('pollAllowedAmounts')
-          dispatch('pollMembers')
+            dispatch('readLogs')
+            dispatch('getContractInfo')
+            dispatch('pollAllowedAmounts')
+            dispatch('pollMembers')
 
-          resolve()
-        })
+            resolve()
+          })
       }
     })
   },
@@ -300,7 +299,7 @@ export default {
     if (!eth) return 0
     let conversion = state.conversions[state.currency]
     if (!conversion) return 0
-    let result = new BN(eth).mul(conversion).toFixed(2)
+    let result = new BN(eth).times(conversion).toFixed(2)
     let symbol = ''
     switch (state.currency) {
       case ('CAD'):
@@ -331,30 +330,37 @@ export default {
     return result
   },
   makeWithdraw ({state, dispatch, commit}, withdrawOptions) {
+    console.log(state.account, withdrawOptions.amount)
     if (!state.account || !withdrawOptions.amount) return
     let wei = new BN(window.web3.utils.toWei(withdrawOptions.amount))
+    console.log({wei})
     return state.Doneth.methods.calculateTotalWithdrawableAmount(state.account).call().then((result) => {
-      let member = state.members.find((member) => member.address === state.account)
+      console.log({result})
+      let member = state.members.find((member) => member.address.toLowerCase() === state.account.toLowerCase())
+
       if (!member) return new Error('No Member')
       let withdrawnAlready = new BN(member.withdrawn)
       result = new BN(result)
-
-      if (result.sub(withdrawnAlready).greaterThanOrEqualTo(wei)) {
+      console.log({result})
+      console.log({withdrawnAlready})
+      console.log({wei})
+      if (result.minus(withdrawnAlready).gte(wei)) {
         let options = {from: state.account}
         // TODO: Is this correct?! "to" option to send to recipient
         if (withdrawOptions.optionalAddress) options.to = withdrawOptions.optionalAddress
+        console.log(state.Doneth)
         return state.Doneth.methods.withdraw(wei).send(options)
-        .on('transactionHash', (hash) => {
-          dispatch('setLoading', true)
-          commit('SET_MODAL', false)
-        }).then((result) => {
-          dispatch('readLogs')
-          commit('UPDATE_MEMBER_WITHDRAWN', {amount: wei, address: state.account})
-          dispatch('setLoading', false)
-          dispatch('getContractInfo')
-          dispatch('pollAllowedAmounts')
-          dispatch('addNotification', {class: 'success', text: 'Withdrawn 🎉'})
-        })
+          .on('transactionHash', (hash) => {
+            dispatch('setLoading', true)
+            commit('SET_MODAL', false)
+          }).then((result) => {
+            dispatch('readLogs')
+            commit('UPDATE_MEMBER_WITHDRAWN', {amount: wei, address: state.account})
+            dispatch('setLoading', false)
+            dispatch('getContractInfo')
+            dispatch('pollAllowedAmounts')
+            dispatch('addNotification', {class: 'success', text: 'Withdrawn 🎉'})
+          })
       } else {
         dispatch('addNotification', {class: 'error', text: 'Insufficient Shares to withdraw that amount'})
       }
@@ -370,23 +376,23 @@ export default {
     let wei = new BN(window.web3.utils.toWei(amount))
     return state.Doneth.methods.calculateTotalExpenseWithdrawableAmount().call().then((result) => {
       result = new BN(result)
-      if (result.greaterThanOrEqualTo(wei)) {
+      if (result.gte(wei)) {
         let options = {from: state.account}
         return state.Doneth.methods.withdrawSharedExpense(wei, to).send(options)
-        .on('transactionHash', (hash) => {
-          this.commit('SET_MODAL', false)
-          dispatch('setLoading', true)
-        })
-        .then((result) => {
-          commit('ADD_EXPENSEWITHDRAWN', wei)
-          dispatch('setLoading', false)
-          dispatch('addNotification', {class: 'success', text: 'Withdrawn 🎉'})
-          return Promise.all([
-            dispatch('readLogs'),
-            dispatch('getContractInfo'),
-            dispatch('pollAllowedAmounts')
-          ])
-        })
+          .on('transactionHash', (hash) => {
+            this.commit('SET_MODAL', false)
+            dispatch('setLoading', true)
+          })
+          .then((result) => {
+            commit('ADD_EXPENSEWITHDRAWN', wei)
+            dispatch('setLoading', false)
+            dispatch('addNotification', {class: 'success', text: 'Withdrawn 🎉'})
+            return Promise.all([
+              dispatch('readLogs'),
+              dispatch('getContractInfo'),
+              dispatch('pollAllowedAmounts')
+            ])
+          })
       } else {
         dispatch('addNotification', {class: 'error', text: 'Insufficient Shares to withdraw that amount'})
         return new Error()
@@ -428,30 +434,30 @@ export default {
     let wei = window.web3.utils.toWei(new BN(amount))
     return new Promise((resolve, reject) => {
       return state.Doneth.methods.changeSharedExpenseAllocation(wei).send({from: state.account})
-      .on('transactionHash', (hash) => {
-        this.commit('SET_MODAL', false)
-        dispatch('setLoading', true)
-      })
-      .on('error', (error) => {
-        console.error(error)
-        dispatch('setLoading', false)
-        reject(error)
-      })
-      .then((result) => {
-        dispatch('setLoading', false)
-        dispatch('addNotification', {
-          text: 'Expense allocated successfully!',
-          class: 'success'
+        .on('transactionHash', (hash) => {
+          this.commit('SET_MODAL', false)
+          dispatch('setLoading', true)
         })
+        .on('error', (error) => {
+          console.error(error)
+          dispatch('setLoading', false)
+          reject(error)
+        })
+        .then((result) => {
+          dispatch('setLoading', false)
+          dispatch('addNotification', {
+            text: 'Expense allocated successfully!',
+            class: 'success'
+          })
 
-        return Promise.all([
-          dispatch('readLogs'),
-          dispatch('getContractInfo'),
-          dispatch('pollSharedExpense'),
-          dispatch('pollSharedExpenseWithdrawn'),
-          dispatch('pollAllowedAmounts')])
-        .then(resolve())
-      })
+          return Promise.all([
+            dispatch('readLogs'),
+            dispatch('getContractInfo'),
+            dispatch('pollSharedExpense'),
+            dispatch('pollSharedExpenseWithdrawn'),
+            dispatch('pollAllowedAmounts')])
+            .then(resolve())
+        })
     })
   },
   updateContractName ({state, dispatch, commit}, name) {
