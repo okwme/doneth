@@ -81,6 +81,7 @@ export default {
   },
   async mounted () {
     this.connect()
+    this.getConversion(0)
     setTimeout(() => {
       this.deployDoneth(this.address)
       this.getCreatedAt()
@@ -102,7 +103,7 @@ export default {
   },
   methods: {
     ...mapMutations({setModal: 'SET_MODAL'}),
-    ...mapActions(['deployDoneth', 'makeDeposit', 'convertToCurrency', 'convertFromCurrency', 'updateContractName', 'connect']),
+    ...mapActions(['getConversion', 'deployDoneth', 'makeDeposit', 'convertToCurrency', 'convertFromCurrency', 'updateContractName', 'connect']),
     convertTotalBalance () {
       if (!this.totalBalance) return
       this.convertToCurrency(this.totalBalance).then((amount) => {

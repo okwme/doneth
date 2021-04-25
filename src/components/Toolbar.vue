@@ -25,9 +25,9 @@
       </li>
       <li class="currency">
         <div class="active-currency">{{activeCurrency}} <img src="/static/downArrow.svg"/></div>
-        <div class="dropdown" :class="justClicked">
+        <!-- <div class="dropdown" :class="justClicked">
           <div class="dropdown-item" v-bind:key="option" v-for="option in options" @click="selectCurrency(option)">Eth/{{option}}</div>
-        </div>
+        </div> -->
       </li>
     </ul>
   </div>

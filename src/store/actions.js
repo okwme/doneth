@@ -64,15 +64,21 @@ export default {
   //     commit('SET_CONVERSIONS', resp.data.ETH)
   //   })
   // },
-  getConversion ({commit, dispatch, getters}, currencyKey) {
+  getConversion ({commit, dispatch, getters, state}, currencyKey) {
+
+    if (!(new Date().getTime() > state.lastCalledCurrency + 1000 * 60 * 5)) return
+    console.log('lastCalled', state.lastCalledCurrency)
+    console.log('new Date().getTime()', new Date().getTime())
+    commit('UPDATE_LAST_CONVERTED', new Date().getTime())
+    console.log('getConversion')
     if (currencyKey > getters.currenciesArray.length - 1) return
     let currency = getters.currenciesArray[currencyKey]
     let url = 'https://api.etherscan.io/api?module=stats&action=ethprice&apikey=QCNRXK7D434BB6DQSFMAGFSNNDY5EMTXE6'
     // let url = 'https://api.infura.io/v1/ticker/eth' + currency.toLowerCase()
     axios.get(url).then((resp) => {
       console.log({resp})
-      commit('SET_CONVERSION', {symbol: currency, amount: resp.data.bid})
-      dispatch('getConversion', currencyKey + 1)
+      commit('SET_CONVERSION', {symbol: currency, amount: resp.data.result.ethusd})
+      // dispatch('getConversion', currencyKey + 1)
     })
   },
   addNotification ({commit}, msg) {

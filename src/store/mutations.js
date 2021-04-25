@@ -115,6 +115,9 @@ export default {
       state.members.splice(memberKey, 1, member)
     }
   },
+  UPDATE_LAST_CONVERTED (state, time) {
+    state.lastCalledCurrency = time
+  },
   UPDATE_MEMBER_AMOUNT (state, {amount, address}) {
     let memberKey = state.members.findIndex((member) => member.address.toLowerCase() === address.toLowerCase())
     console.log({memberKey})

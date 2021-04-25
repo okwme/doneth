@@ -37,7 +37,6 @@ export default {
   },
   mounted () {
     // this.connect()
-    // this.getConversion(0)
   },
   components: {
     Toolbar,
