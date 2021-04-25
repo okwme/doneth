@@ -2,8 +2,8 @@
 import Web3 from 'web3'
 import axios from 'axios'
 import BN from 'bignumber.js'
-import Web3Modal from 'web3modal'
-import WalletConnectProvider from "@walletconnect/web3-provider";
+// import Web3Modal from 'web3modal'
+// import WalletConnectProvider from "@walletconnect/web3-provider";
 
 // const ProviderEngine = require('web3-provider-engine/index.js')
 // const ZeroClientProvider = require('web3-provider-engine/zero.js')
@@ -12,74 +12,36 @@ export default {
 
   },
   async connect ({commit, state, dispatch}) {
+    commit('SET_LOADING', true)
     console.log('connect')
-    // commit('SET_LOADING', true)
-    // let web3Provider = false
-    const providerOptions = {
-      walletconnect: {
-        package: WalletConnectProvider, // required
-        options: {
-          infuraId: "e5b8088fe4df4a69a4b5f35c2561bbe0" // required
-        }
-      }
+    if (typeof window.ethereum == 'undefined') {
+      alert('plese install metamask.io browser extension')
+      return
     }
-    const web3Modal = new Web3Modal({
-      network: 'mainnet', // optional
-      cacheProvider: true, // optional
-      providerOptions
-    })
-    // web3Modal.clearCachedProvider();
-    // web3Modal.toggleModal()
-    web3Modal.clearCachedProvider()
-    const provider = await web3Modal.connect()
-    console.log({provider})
-    window.web3 = new Web3(provider)
-    commit('SET_METAMASK', true)
-    // commit('SET_LOADING', false)
+    await ethereum.request({ method: 'eth_requestAccounts' });
+
+    window.web3 = new Web3(ethereum)
+    commit('SET_LOADING', false)
     commit('SET_CONNECTED', true)
-    // dispatch('setAccountInterval')
-
-    // Subscribe to accounts change
-    provider.on('accountsChanged', (accounts) => {
-      console.log(accounts)
-    })
-
-    // if (typeof window.web3 !== 'undefined') {
-    //   web3Provider = window.web3.currentProvider
-    //   commit('SET_METAMASK', true)
-    // } else if (!state.retried) {
-    //   commit('SET_RETRY', true)
-    //   setTimeout(() => {
-    //     dispatch('connect')
-    //   }, 1000)
-    // } else {
-    //   web3Provider = ZeroClientProvider({
-    //     getAccounts: function () {},
-    //     rpcUrl: 'https://rinkeby.infura.io/Q5I7AA6unRLULsLTYd6d'
-    //   })
-    // }
-    // if (web3Provider) {
-    //   window.web3 = new Web3(web3Provider)
-    //   commit('SET_LOADING', false)
-    //   commit('SET_CONNECTED', true)
-    //   // let wrongNetwork = false
-    //   // web3.eth.net.getId((err, netId) => {
-    //   //   if (!err) {
-    //   //     switch (netId) {
-    //   //       case 1:
-    //   //       case 3:
-    //   //       case 4:
-    //   //       case 666:
-    //   //         break
-    //   //       default:
-    //   //         wrongNetwork = true
-    //   //     }
-    //   //   }
-    //     // if (!wrongNetwork) {
-    //   dispatch('setAccountInterval')
-    //     // }
-    //   // })
-    // }
+    commit('SET_METAMASK', true)
+    // let wrongNetwork = false
+    // web3.eth.net.getId((err, netId) => {
+    //   if (!err) {
+    //     switch (netId) {
+    //       case 1:
+    //       case 3:
+    //       case 4:
+    //       case 666:
+    //         break
+    //       default:
+    //         wrongNetwork = true
+    //     }
+    //   }
+      // if (!wrongNetwork) {
+    await dispatch('checkAccount')
+    dispatch('setAccountInterval')
+      // }
+    // })
   },
   setAccountInterval ({dispatch}) {
     dispatch('checkAccount')
@@ -87,15 +49,13 @@ export default {
       dispatch('checkAccount')
     }, 3000)
   },
-  checkAccount ({commit, state}) {
-    window.web3.eth.getAccounts((error, accounts) => {
-      if (error) console.error(error)
-      if (state.account !== accounts[0]) {
-        commit('SET_ACCOUNT', accounts[0])
-      } else if (!accounts.length) {
-        commit('SET_ACCOUNT', null)
-      }
-    })
+  async checkAccount ({commit, state}) {
+    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+    if (!state.account || state.account.toLowerCase() !== accounts[0].toLowerCase()) {
+      commit('SET_ACCOUNT', accounts[0])
+    } else if (!accounts.length) {
+      commit('SET_ACCOUNT', null)
+    }
   },
   // getConversions ({commit, dispatch}) {
   //   dispatch('getConversion', 0)
@@ -270,10 +230,12 @@ export default {
     })
   },
   pollMember ({dispatch, state, commit}, data) {
+    console.log({data})
     return state.Doneth.methods.getMemberAtKey(new BN(data.i)).call()
       .then((address) => {
         return state.Doneth.methods.returnMember(address).call()
           .then(({active, admin, shares, withdrawn, memberName}) => {
+
             commit('ADD_MEMBER', {address, active, admin, shares, withdrawn, memberName})
             if (data.i + 1 < data.length) {
               return dispatch('pollMember', {i: data.i + 1, length: data.length})
@@ -295,8 +257,9 @@ export default {
   updateMember ({state, dispatch, commit}, member) {
     return new Promise((resolve, reject) => {
       let currentUser = state.members.find((member) => {
-        return member.address === state.account
+        return member.address.toLowerCase() === state.account.toLowerCase()
       })
+      console.log({currentUser})
       if (!currentUser || !currentUser.admin) {
         reject(new Error('Not an Admin'))
       } else {
@@ -336,7 +299,7 @@ export default {
     if (!eth) return 0
     let conversion = state.conversions[state.currency]
     if (!conversion) return 0
-    let result = new BN(eth).mul(conversion).toFixed(2)
+    let result = new BN(eth).times(conversion).toFixed(2)
     let symbol = ''
     switch (state.currency) {
       case ('CAD'):
@@ -367,18 +330,25 @@ export default {
     return result
   },
   makeWithdraw ({state, dispatch, commit}, withdrawOptions) {
+    console.log(state.account, withdrawOptions.amount)
     if (!state.account || !withdrawOptions.amount) return
     let wei = new BN(window.web3.utils.toWei(withdrawOptions.amount))
+    console.log({wei})
     return state.Doneth.methods.calculateTotalWithdrawableAmount(state.account).call().then((result) => {
-      let member = state.members.find((member) => member.address === state.account)
+      console.log({result})
+      let member = state.members.find((member) => member.address.toLowerCase() === state.account.toLowerCase())
+
       if (!member) return new Error('No Member')
       let withdrawnAlready = new BN(member.withdrawn)
       result = new BN(result)
-
-      if (result.sub(withdrawnAlready).greaterThanOrEqualTo(wei)) {
+      console.log({result})
+      console.log({withdrawnAlready})
+      console.log({wei})
+      if (result.minus(withdrawnAlready).gte(wei)) {
         let options = {from: state.account}
         // TODO: Is this correct?! "to" option to send to recipient
         if (withdrawOptions.optionalAddress) options.to = withdrawOptions.optionalAddress
+        console.log(state.Doneth)
         return state.Doneth.methods.withdraw(wei).send(options)
           .on('transactionHash', (hash) => {
             dispatch('setLoading', true)
@@ -406,7 +376,7 @@ export default {
     let wei = new BN(window.web3.utils.toWei(amount))
     return state.Doneth.methods.calculateTotalExpenseWithdrawableAmount().call().then((result) => {
       result = new BN(result)
-      if (result.greaterThanOrEqualTo(wei)) {
+      if (result.gte(wei)) {
         let options = {from: state.account}
         return state.Doneth.methods.withdrawSharedExpense(wei, to).send(options)
           .on('transactionHash', (hash) => {

@@ -56,7 +56,7 @@ export default {
     state.address = address
   },
   ADD_MEMBER (state, member) {
-    let memberKey = state.members.findIndex((m) => m.address === member.address)
+    let memberKey = state.members.findIndex((m) => m.address.toLowerCase() === member.address.toLowerCase())
     if (memberKey > -1) {
       state.members.splice(memberKey, 1, member)
     } else {
@@ -88,7 +88,7 @@ export default {
     state.totalExpense = totalExpense
   },
   ADD_EXPENSEWITHDRAWN (state, expenseWithdrawn) {
-    state.totalExpenseWithdrawn = new BN(this.state.totalExpenseWithdrawn).add(new BN(expenseWithdrawn)).toString()
+    state.totalExpenseWithdrawn = new BN(this.state.totalExpenseWithdrawn).plus(new BN(expenseWithdrawn)).toString()
   },
   SET_EXPENSEWITHDRAWN (state, totalExpenseWithdrawn) {
     state.totalExpenseWithdrawn = totalExpenseWithdrawn
@@ -100,7 +100,7 @@ export default {
     state.totalBalance = totalBalance
   },
   UPDATE_MEMBER_SHARES (state, {amount, address}) {
-    let memberKey = state.members.findIndex((member) => member.address === address)
+    let memberKey = state.members.findIndex((member) => member.address.toLowerCase() === address.toLowerCase())
     if (memberKey > -1) {
       let member = state.members[memberKey]
       member.shares = parseInt(amount)
@@ -108,18 +108,19 @@ export default {
     }
   },
   UPDATE_MEMBER_WITHDRAWN (state, {amount, address}) {
-    let memberKey = state.members.findIndex((member) => member.address === address)
+    let memberKey = state.members.findIndex((member) => member.address.toLowerCase() === address.toLowerCase())
     if (memberKey > -1) {
       let member = state.members[memberKey]
-      member.withdrawn = new BN(member.withdrawn).add(new BN(amount)).toString()
+      member.withdrawn = new BN(member.withdrawn).plus(new BN(amount)).toString()
       state.members.splice(memberKey, 1, member)
     }
   },
   UPDATE_MEMBER_AMOUNT (state, {amount, address}) {
-    let memberKey = state.members.findIndex((member) => member.address === address)
+    let memberKey = state.members.findIndex((member) => member.address.toLowerCase() === address.toLowerCase())
+    console.log({memberKey})
     if (memberKey > -1) {
       let member = state.members[memberKey]
-      let remaining = new BN(amount).sub(new BN(member.withdrawn))
+      let remaining = new BN(amount).minus(new BN(member.withdrawn))
       let wei = new BN(utils.fromWei(remaining.toString())).toString()
       member.allowedAmount = wei
       state.members.splice(memberKey, 1, member)

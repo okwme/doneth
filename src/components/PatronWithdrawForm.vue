@@ -77,12 +77,12 @@ export default {
     ...mapMutations({setModal: 'SET_MODAL'}),
     ...mapActions(['convertToCurrency', 'makeWithdraw', 'addNotification']),
     getAllowedAmount (address) {
-      let patron = this.members.find((p) => p.address === address)
+      let patron = this.members.find((p) => p.address.toLowerCase() === address.toLowerCase())
       if (!patron || !patron.allowedAmount) return 0
       return new BN(patron.allowedAmount).toFixed(4)
     },
     getFullAllowedAmount (address) {
-      let patron = this.members.find((p) => p.address === address)
+      let patron = this.members.find((p) => p.address.toLowerCase() === address.toLowerCase())
       if (!patron || !patron.allowedAmount) return 0
       return new BN(patron.allowedAmount)
     },
@@ -92,7 +92,7 @@ export default {
       patron.allowedAmount = typeof patron.allowedAmount === 'object' ? patron.allowedAmount.toString() : patron.allowedAmount
       let allowedAmount = new BN(utils.toWei(patron.allowedAmount))
       withdrawing = new BN(utils.toWei(withdrawing))
-      return allowedAmount.greaterThanOrEqualTo(withdrawing)
+      return allowedAmount.gte(withdrawing)
     },
     overdrafted (patron, withdrawing) {
       return {
@@ -111,6 +111,8 @@ export default {
       this.withdrawer = null
     },
     withdraw (patron) {
+      console.log('withdraw')
+      console.log(this.withdrawAmount)
       if (this.withdrawAmount) {
         this.withdrawer = patron.address
         this.submitting = true

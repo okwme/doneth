@@ -37,7 +37,7 @@
           </form>
         </template>
         <template v-else>
-          Please get Metamask
+          Please connect your wallet
         </template>
       </div>
     </div>

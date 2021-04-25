@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <patron-withdraw-form v-if="patron.address === account" :patron="patron" />
+    <patron-withdraw-form v-if="patron.address && account && patron.address.toLowerCase() === account.toLowerCase()" :patron="patron" />
   </div>
 </template>
 
@@ -57,11 +57,11 @@ export default {
     },
     alloted (patron) {
       return new BN(this.totalBalance)
-      .add(this.fromWei(this.totalWithdrawn))
-      .sub(this.fromWei(this.totalExpense))
-      .add(this.totalExpenseWithdrawn)
+      .plus(this.fromWei(this.totalWithdrawn))
+      .minus(this.fromWei(this.totalExpense))
+      .plus(this.totalExpenseWithdrawn)
       .div(this.totalShares)
-      .mul(patron.shares).toString()
+      .times(patron.shares).toString()
     },
     getAllowedAmount (address) {
       let patron = this.members.find((p) => p.address === address)

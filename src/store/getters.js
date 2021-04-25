@@ -29,7 +29,7 @@ export default {
     })
   },
   isAdmin: (state) => {
-    let me = state.members.find((member) => member.address === state.account)
+    let me = state.members.find((member) => member.address.toLowerCase() === state.account.toLowerCase())
     if (!me) return false
     return me.admin
   }

@@ -3,7 +3,7 @@
     <div id="note-fixed">
       <div id="note-relative">
         <div
-        v-bind:key="note"
+        v-bind:key="note.id"
         v-for="note in notifications"
         @click="removeNotification(note.id)"
         :class="note.class"

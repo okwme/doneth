@@ -67,7 +67,7 @@ export default {
     ...mapActions(['convertToCurrency', 'allocateExpenseAmount', 'addNotification']),
     overdrafted (amount) {
       return {
-        overdrawn: new BN(amount).greaterThan(this.totalBalance)
+        overdrawn: new BN(amount).gt(this.totalBalance)
       }
     },
     allocate () {

@@ -36,7 +36,7 @@ export default {
       return Web3.utils.fromWei(this.totalExpenseWithdrawn.toString())
     },
     totalExpenseWei () {
-      return Web3.utils.fromWei(new BN(this.totalExpense).sub(new BN(this.totalExpenseWithdrawn)).toString())
+      return Web3.utils.fromWei(new BN(this.totalExpense).minus(new BN(this.totalExpenseWithdrawn)).toString())
     }
   },
   watch: {
