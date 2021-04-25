@@ -233,11 +233,13 @@ export default {
     })
   },
   pollMembers ({dispatch, state, commit}) {
+    console.log('pollMembers')
     return state.Doneth.methods.getMemberCount().call().then((count) => {
       return dispatch('pollMember', {i: 0, length: parseInt(count)})
     })
   },
   pollMember ({dispatch, state, commit}, data) {
+    console.log('pollMember', {data})
     console.log({data})
     return state.Doneth.methods.getMemberAtKey(new BN(data.i)).call()
       .then((address) => {
