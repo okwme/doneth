@@ -67,8 +67,10 @@ export default {
   getConversion ({commit, dispatch, getters}, currencyKey) {
     if (currencyKey > getters.currenciesArray.length - 1) return
     let currency = getters.currenciesArray[currencyKey]
-    let url = 'https://api.infura.io/v1/ticker/eth' + currency.toLowerCase()
+    let url = 'https://api.etherscan.io/api?module=stats&action=ethprice&apikey=QCNRXK7D434BB6DQSFMAGFSNNDY5EMTXE6'
+    // let url = 'https://api.infura.io/v1/ticker/eth' + currency.toLowerCase()
     axios.get(url).then((resp) => {
+      console.log({resp})
       commit('SET_CONVERSION', {symbol: currency, amount: resp.data.bid})
       dispatch('getConversion', currencyKey + 1)
     })
