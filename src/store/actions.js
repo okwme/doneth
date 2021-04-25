@@ -247,7 +247,7 @@ export default {
   pollMember ({dispatch, state, commit}, data) {
     console.log('pollMember', {data})
     console.log({data})
-    return state.Doneth.methods.getMemberAtKey(new BN(data.i)).call()
+    return state.Doneth.methods.getMemberAtKey(data.i).call()
       .then((address) => {
         return state.Doneth.methods.returnMember(address).call()
           .then(({active, admin, shares, withdrawn, memberName}) => {
