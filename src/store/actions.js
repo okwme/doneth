@@ -111,7 +111,9 @@ export default {
     }
   },
   populateContractData ({dispatch}) {
+    console.log('populateContractData')
     dispatch('pollMembers').then(() => {
+      console.log('done pollMembers')
       return dispatch('pollAllowedAmounts')
     })
     dispatch('getContractInfo')
@@ -120,6 +122,7 @@ export default {
     dispatch('pollSharedExpenseWithdrawn')
   },
   getContractInfo ({state, commit}) {
+    console.log('getContractInfo')
     state.Doneth.methods.genesisBlockNumber().call().then((genesisBlockNumber) => {
       commit('SET_BLOCK', genesisBlockNumber)
     })
@@ -140,6 +143,7 @@ export default {
     })
   },
   readLogs ({dispatch, state, commit}) {
+    console.log('readLogs')
     commit('CLEAR_LOGS')
 
     let p1 = state.Doneth.getPastEvents('Deposit', {
@@ -254,11 +258,13 @@ export default {
       })
   },
   pollSharedExpense ({state, commit}) {
+    console.log('pollSharedExpense')
     return state.Doneth.methods.sharedExpense().call().then((amount) => {
       return commit('SET_EXPENSE', amount)
     })
   },
   pollSharedExpenseWithdrawn ({state, commit}) {
+    console.log('pollSharedExpenseWithdrawn')
     return state.Doneth.methods.sharedExpenseWithdrawn().call().then((amount) => {
       return commit('SET_EXPENSEWITHDRAWN', amount)
     })
