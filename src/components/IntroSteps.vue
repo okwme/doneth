@@ -1,6 +1,6 @@
 <template>
   <div class="intro-steps">
-    <div v-for="item in items" class="intro-item">
+    <div v-bind:key="item.index"  v-for="item in items" class="intro-item">
       <div class="large-number">{{item.index}}</div>
       <h3>{{item.title}}</h3>
       <div class="item-copy">

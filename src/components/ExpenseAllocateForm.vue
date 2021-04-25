@@ -11,7 +11,7 @@
       </div>
       <div class="fields">
         <label for="">ETH</label>
-        <input 
+        <input
         :class="overdrafted(allocateAmount)"
         min="0.000000000000000001"  step="0.0001"  class="center" type="number" placeholder="Amount (ETH)" v-model="allocateAmount">
         <label for="">{{currency}}</label>
@@ -67,7 +67,7 @@ export default {
     ...mapActions(['convertToCurrency', 'allocateExpenseAmount', 'addNotification']),
     overdrafted (amount) {
       return {
-        overdrawn: new BN(amount).greaterThan(this.totalBalance)
+        overdrawn: new BN(amount).gt(this.totalBalance)
       }
     },
     allocate () {

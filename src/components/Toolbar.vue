@@ -16,14 +16,17 @@
     </div>
 
     <ul class="menu">
+      <li class="connect" v-if="!connected">
+                <button @click.prevent="connect" class="pointer btn btn-primary btn-outlined" tag="button">Connect Wallet</button>
+      </li>
       <li>
         <!-- <router-link :to="{name: 'Deploy'}">Create</router-link> -->
-        <router-link class="pointer btn btn-primary btn-outlined" :to="{name: 'Deploy'}" tag="button">Create</router-link>
+        <router-link  class="pointer btn btn-primary btn-outlined" :to="{name: 'Deploy'}" tag="button">Create</router-link>
       </li>
       <li class="currency">
         <div class="active-currency">{{activeCurrency}} <img src="/static/downArrow.svg"/></div>
         <div class="dropdown" :class="justClicked">
-          <div class="dropdown-item" v-for="option in options" @click="selectCurrency(option)">Eth/{{option}}</div>
+          <div class="dropdown-item" v-bind:key="option" v-for="option in options" @click="selectCurrency(option)">Eth/{{option}}</div>
         </div>
       </li>
     </ul>
@@ -42,7 +45,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['setCurrency']),
+    ...mapActions(['setCurrency', 'connect']),
     selectCurrency (option) {
       // this.clicked = true
       this.setCurrency(option)
@@ -52,7 +55,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['currenciesArray', 'currency']),
+    ...mapGetters(['currenciesArray', 'currency', 'connected']),
     justClicked () {
       return {justClicked: this.clicked}
     },
@@ -68,6 +71,9 @@ export default {
 
 <style lang="scss" scoped>
   @import '../scss/variables';
+  .connect {
+    margin-right: 5px;
+  }
   .toolbar {
     background: $white;
     box-shadow: 0 1px 10px -3px rgba(0,0,0,0.15);

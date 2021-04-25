@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+
 import Home from '@/components/Home'
 import Contract from '@/components/Contract'
 import DonateButton from '@/components/DonateButton'

@@ -3,7 +3,7 @@
     <div class="page-card transactions">
       <div class="heading">Transactions</div>
       <ul class="transactions-list">
-        <li class="transaction" v-for="item in formattedTransactions">
+        <li class="transaction" v-for="item in formattedTransactions" v-bind:key="item.transactionHash" >
 
           <template v-if="item.type === 'AddShare' || item.type === 'RemoveShare'">
             <div class="reference">
@@ -42,7 +42,7 @@
 
           <template v-else-if="item.type === 'ChangeSharedExpense'">
             <div class="reference">
-              <h3>The Shared Expense Amount changed from {{item.oldValueConverted}} ETH to {{item.newValueConverted}}  ETH</small></h3>
+              <h3>The Shared Expense Amount changed from {{item.oldValueConverted}} ETH to {{item.newValueConverted}}  ETH</h3>
             </div>
             <div class="details">
               <div><a :href="transactionLink(item)">View Transaction Details</a></div>
@@ -124,11 +124,11 @@ export default {
         obj.transactionHash = a.transactionHash
 
         obj.who = a.returnValues.from || (!isNaN(a.returnValues[0]) && a.returnValues[0])
-        let member = this.members.find((m) => m.address === obj.who)
+        let member = this.members.find((m) => m.address && obj.who && m.address.toLowerCase() === obj.who.toLowerCase())
         if (member) obj.who = member.memberName
 
         obj.to = a.returnValues.to
-        let to = this.members.find((m) => m.address === obj.to)
+        let to = this.members.find((m) => m.address&& obj.to && m.address.toLowerCase() === obj.to.toLowerCase())
         if (to) obj.to = to.memberName
 
         if (obj.value) obj.valueConverted = this.fromWei(obj.value, 'ether')

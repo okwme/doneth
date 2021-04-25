@@ -3,26 +3,20 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import store from './store'
 import { sync } from 'vuex-router-sync'
-import VueWorker from 'vue-worker'
+import store from './store'
 import moment from 'moment'
-router.afterEach((to, from, next) => {
-  if (typeof window.ga !== 'undefined') ga('send', 'pageview')
-})
-sync(store, router)
-Vue.use(VueWorker)
-
 Object.defineProperty(Vue.prototype, '$moment', { value: moment })
+sync(store, router)
 
 Vue.config.productionTip = false
-Vue.config.devtools = true
+// Vue.config.devtools = true
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   store,
   router,
-  template: '<App/>',
-  components: { App }
+  components: { App },
+  template: '<App/>'
 })
