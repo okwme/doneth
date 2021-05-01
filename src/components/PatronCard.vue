@@ -17,8 +17,8 @@
         <span>Shares: <strong>{{patron.shares}}/{{totalShares}}</strong></span>
       </div>
       <div class="meta-item">
-        <span>Alloted: <strong>{{alloted(patron)}}</strong></span>
-        <span>Used: <strong>{{fromWei(patron.withdrawn) || 0}}</strong></span>
+        <span>Alloted: <strong>{{alloted}} ETH</strong></span>
+        <span>Used: <strong>{{fromWei(patron.withdrawn) || 0}} ETH</strong></span>
       </div>
     </div>
 
@@ -30,8 +30,12 @@
 import ShortHash from '@/components/ShortHash'
 import PatronWithdrawForm from '@/components/PatronWithdrawForm'
 import { mapGetters, mapMutations } from 'vuex'
-import BN from 'bignumber.js'
+
 import utils from 'web3-utils'
+
+import { BigFloat } from "bigfloat.js";
+const BN = BigFloat;
+
 export default {
 
   name: 'PatronCard',
@@ -43,7 +47,15 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['account', 'totalShares', 'members', 'isAdmin', 'totalBalance', 'totalWithdrawn', 'totalExpense', 'totalExpenseWithdrawn', 'totalShares'])
+    ...mapGetters(['account', 'totalShares', 'members', 'isAdmin', 'totalBalance', 'totalWithdrawn', 'totalExpense', 'totalExpenseWithdrawn', 'totalShares']),
+    alloted () {
+      return new BN(this.totalBalance.toString())
+      .add(this.fromWei(this.totalWithdrawn.toString()))
+      .sub(this.fromWei(this.totalExpense.toString()))
+      .add(this.fromWei(this.totalExpenseWithdrawn.toString()))
+      .div(this.totalShares.toString())
+      .mul(this.patron.shares.toString()).toString()
+    }
   },
   methods: {
     ...mapMutations({setModal: 'SET_MODAL', setEditMember: 'SET_EDIT_MEMBER'}),
@@ -55,18 +67,10 @@ export default {
     fromWei (amount) {
       return utils.fromWei(amount.toString())
     },
-    alloted (patron) {
-      return new BN(this.totalBalance)
-      .plus(this.fromWei(this.totalWithdrawn))
-      .minus(this.fromWei(this.totalExpense))
-      .plus(this.totalExpenseWithdrawn)
-      .div(this.totalShares)
-      .times(patron.shares).toString()
-    },
     getAllowedAmount (address) {
       let patron = this.members.find((p) => p.address === address)
       if (!patron || !patron.allowedAmount) return 0
-      return new BN(patron.allowedAmount).toFixed(4)
+      return new BN(patron.allowedAmount).toString()
     },
     firstName (patron) {
       let initial = (patron && patron.memberName) ? patron.memberName.substring(0, 2) : '0x'

@@ -33,8 +33,12 @@
 
 <script>
 import UiModal from '@/components/UiModal'
-import BN from 'bignumber.js'
+
 import utils from 'web3-utils'
+
+import { BigFloat } from "bigfloat.js";
+const BN = BigFloat;
+
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 export default {
@@ -97,7 +101,7 @@ export default {
       this.allocateAmount = new BN(this.getFullAllowedAmount()).div(2).toString()
     },
     useMinAmount () {
-      this.allocateAmount = new BN('0.005').toFixed(3)
+      this.allocateAmount = new BN('0.005').toString()
     },
     closeModal (ref) {
       this.setModal(false)

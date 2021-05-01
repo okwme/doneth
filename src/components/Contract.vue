@@ -115,7 +115,7 @@ export default {
       return this.$moment(value).format('dddd, MMMM Do YYYY')
     },
     getCreatedAt () {
-      if (!this.sortedLogs || this.sortedLogs.length <= 0 || !this.sortedLogs[0] || !this.sortedLogs[0].blockNumber) {
+      if (!this.sortedLogs || this.sortedLogs.length >= 0 || !this.sortedLogs[0] || !this.sortedLogs[0].blockNumber) {
         // NOTE: Added only for demo so no missing data :/
         this.timestamp = (+new Date())
         return
@@ -202,7 +202,7 @@ export default {
     flex-direction: row;
     flex-wrap: wrap;
     margin: 20px auto 30px;
-    width: 820px;
+    width: 1020px;
   }
 
   .patron-card,

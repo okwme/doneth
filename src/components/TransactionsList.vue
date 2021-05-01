@@ -91,9 +91,12 @@
 
 <script>
 import ShortHash from '@/components/ShortHash'
-import BN from 'bignumber.js'
 import { mapGetters } from 'vuex'
 import utils from 'web3-utils'
+
+import { BigFloat } from "bigfloat.js";
+const BN = BigFloat;
+
 export default {
 
   name: 'TransactionsList',

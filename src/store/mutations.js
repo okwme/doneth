@@ -1,6 +1,8 @@
-import BN from 'bignumber.js'
 import Vue from 'vue'
 import utils from 'web3-utils'
+import { BigFloat } from "bigfloat.js";
+const BN = BigFloat;
+
 export default {
   SET_MODAL (state, isOpen) {
     state.modalOpen = isOpen
@@ -88,7 +90,7 @@ export default {
     state.totalExpense = totalExpense
   },
   ADD_EXPENSEWITHDRAWN (state, expenseWithdrawn) {
-    state.totalExpenseWithdrawn = new BN(this.state.totalExpenseWithdrawn).plus(new BN(expenseWithdrawn)).toString()
+    state.totalExpenseWithdrawn = new BN(this.state.totalExpenseWithdrawn).add(new BN(expenseWithdrawn)).toString()
   },
   SET_EXPENSEWITHDRAWN (state, totalExpenseWithdrawn) {
     state.totalExpenseWithdrawn = totalExpenseWithdrawn
@@ -111,7 +113,7 @@ export default {
     let memberKey = state.members.findIndex((member) => member.address.toLowerCase() === address.toLowerCase())
     if (memberKey > -1) {
       let member = state.members[memberKey]
-      member.withdrawn = new BN(member.withdrawn).plus(new BN(amount)).toString()
+      member.withdrawn = new BN(member.withdrawn).add(new BN(amount)).toString()
       state.members.splice(memberKey, 1, member)
     }
   },
@@ -123,7 +125,7 @@ export default {
     console.log({memberKey})
     if (memberKey > -1) {
       let member = state.members[memberKey]
-      let remaining = new BN(amount).minus(new BN(member.withdrawn))
+      let remaining = new BN(amount).sub(new BN(member.withdrawn))
       let wei = new BN(utils.fromWei(remaining.toString())).toString()
       member.allowedAmount = wei
       state.members.splice(memberKey, 1, member)

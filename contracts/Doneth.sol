@@ -40,6 +40,8 @@ contract Ownable {
 contract Doneth is Ownable {
     using SafeMath for uint256;  
 
+    bool initiated;
+
     // Name of the contract
     string public name;
 
@@ -79,12 +81,16 @@ contract Doneth is Ownable {
         uint256 totalWithdrawn;
     }
 
-    function Doneth(string _contractName, string _founderName) {
+    function Doneth() {}
+
+    function init(string _contractName, string _founderName) {
+        require(!initiated, "ALREADY_INITATED");
+        initiated = true;
         if (bytes(_contractName).length > 21) revert();
         if (bytes(_founderName).length > 21) revert();
         name = _contractName;
         genesisBlockNumber = block.number;
-        addMember(msg.sender, 1, true, _founderName);
+        addMember(msg.origin, 1, true, _founderName);
     }
 
     event Deposit(address from, uint value);

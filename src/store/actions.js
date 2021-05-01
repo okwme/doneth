@@ -1,7 +1,10 @@
-// import BN from 'bignumber.js'
+
 import Web3 from 'web3'
 import axios from 'axios'
-import BN from 'bignumber.js'
+import { BigFloat, set_precision } from "bigfloat.js";
+const BN = BigFloat;
+
+
 // import Web3Modal from 'web3modal'
 // import WalletConnectProvider from "@walletconnect/web3-provider";
 
@@ -281,7 +284,7 @@ export default {
       if (!currentUser || !currentUser.admin) {
         reject(new Error('Not an Admin'))
       } else {
-        return state.Doneth.methods[member.action](member.userAddress, new BN(member.sharesTotal), member.isAdmin, member.firstName).send({from: state.account})
+        return state.Doneth.methods[member.action](member.userAddress, (new BN(member.sharesTotal)).toString(), member.isAdmin, member.firstName).send({from: state.account})
           .on('transactionHash', (hash) => {
             dispatch('setLoading', true)
             commit('SET_MODAL', false)
@@ -313,11 +316,15 @@ export default {
     commit('SET_CURRENCY', currency)
   },
   convertToCurrency ({state}, eth) {
-    if (isNaN(eth)) return 0
+    if (isNaN(eth.toString())) return 0
     if (!eth) return 0
+    if (eth == 0) return 0
     let conversion = state.conversions[state.currency]
     if (!conversion) return 0
-    let result = new BN(eth).times(conversion).toFixed(2)
+    let result = new BN(eth).mul(conversion)
+    set_precision(2)
+    result = result.toString()
+    set_precision(18)
     let symbol = ''
     switch (state.currency) {
       case ('CAD'):
@@ -344,7 +351,10 @@ export default {
   },
   convertFromCurrency ({state}, eth) {
     let conversion = state.conversions[state.currency]
-    let result = new BN(eth).div(conversion).toFixed(8)
+    let result = new BN(eth).div(conversion)
+    set_precision(8)
+    result = result.toString()
+    set_precision(18)
     return result
   },
   makeWithdraw ({state, dispatch, commit}, withdrawOptions) {
@@ -362,18 +372,18 @@ export default {
       console.log({result})
       console.log({withdrawnAlready})
       console.log({wei})
-      if (result.minus(withdrawnAlready).gte(wei)) {
+      if (result.sub(withdrawnAlready).gte(wei)) {
         let options = {from: state.account}
         // TODO: Is this correct?! "to" option to send to recipient
         if (withdrawOptions.optionalAddress) options.to = withdrawOptions.optionalAddress
         console.log(state.Doneth)
-        return state.Doneth.methods.withdraw(wei).send(options)
+        return state.Doneth.methods.withdraw(wei.toString()).send(options)
           .on('transactionHash', (hash) => {
             dispatch('setLoading', true)
             commit('SET_MODAL', false)
           }).then((result) => {
             dispatch('readLogs')
-            commit('UPDATE_MEMBER_WITHDRAWN', {amount: wei, address: state.account})
+            commit('UPDATE_MEMBER_WITHDRAWN', {amount: wei.toString(), address: state.account})
             dispatch('setLoading', false)
             dispatch('getContractInfo')
             dispatch('pollAllowedAmounts')
@@ -396,7 +406,7 @@ export default {
       result = new BN(result)
       if (result.gte(wei)) {
         let options = {from: state.account}
-        return state.Doneth.methods.withdrawSharedExpense(wei, to).send(options)
+        return state.Doneth.methods.withdrawSharedExpense(wei.toString(), to).send(options)
           .on('transactionHash', (hash) => {
             this.commit('SET_MODAL', false)
             dispatch('setLoading', true)
@@ -449,9 +459,9 @@ export default {
     })
   },
   allocateExpenseAmount ({state, dispatch, commit}, amount) {
-    let wei = window.web3.utils.toWei(new BN(amount))
+    let wei = window.web3.utils.toWei(new BN(amount).toString())
     return new Promise((resolve, reject) => {
-      return state.Doneth.methods.changeSharedExpenseAllocation(wei).send({from: state.account})
+      return state.Doneth.methods.changeSharedExpenseAllocation(wei.toString()).send({from: state.account})
         .on('transactionHash', (hash) => {
           this.commit('SET_MODAL', false)
           dispatch('setLoading', true)

@@ -19,7 +19,9 @@
 <script>
 import GoalBar from '@/components/GoalBar'
 import { mapGetters, mapActions } from 'vuex'
-import BN from 'bignumber.js'
+
+import { BigFloat } from "bigfloat.js";
+const BN = BigFloat;
 import Web3 from 'web3'
 export default {
   name: 'ExpenseCard',
@@ -36,7 +38,7 @@ export default {
       return Web3.utils.fromWei(this.totalExpenseWithdrawn.toString())
     },
     totalExpenseWei () {
-      return Web3.utils.fromWei(new BN(this.totalExpense).minus(new BN(this.totalExpenseWithdrawn)).toString())
+      return Web3.utils.fromWei(new BN(this.totalExpense).sub(new BN(this.totalExpenseWithdrawn)).toString())
     }
   },
   watch: {
@@ -48,7 +50,7 @@ export default {
     ...mapActions(['convertToCurrency']),
     getConvertedTotal () {
       if (!this.totalExpenseWei) return 0
-      return this.convertToCurrency(new BN(this.totalExpenseWei, 10).toFixed(2))
+      return this.convertToCurrency(new BN(this.totalExpenseWei, 10).toString(2))
     }
   },
   components: {

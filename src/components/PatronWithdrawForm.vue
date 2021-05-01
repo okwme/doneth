@@ -44,8 +44,12 @@
 
 <script>
 import UiModal from '@/components/UiModal'
-import BN from 'bignumber.js'
+
 import utils from 'web3-utils'
+
+import { BigFloat } from "bigfloat.js";
+const BN = BigFloat;
+
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 export default {
@@ -66,7 +70,9 @@ export default {
     ...mapGetters(['account', 'members', 'conversions', 'currency'])
   },
   watch: {
-    withdrawAmount () {
+    withdrawAmount (new_, old) {
+      console.log({old, new_})
+      console.log(new_.toString())
       this.updateConversion()
     },
     currency () {
@@ -79,7 +85,7 @@ export default {
     getAllowedAmount (address) {
       let patron = this.members.find((p) => p.address.toLowerCase() === address.toLowerCase())
       if (!patron || !patron.allowedAmount) return 0
-      return new BN(patron.allowedAmount).toFixed(4)
+      return new BN(patron.allowedAmount).toString()
     },
     getFullAllowedAmount (address) {
       let patron = this.members.find((p) => p.address.toLowerCase() === address.toLowerCase())
@@ -111,8 +117,6 @@ export default {
       this.withdrawer = null
     },
     withdraw (patron) {
-      console.log('withdraw')
-      console.log(this.withdrawAmount)
       if (this.withdrawAmount) {
         this.withdrawer = patron.address
         this.submitting = true
@@ -127,13 +131,13 @@ export default {
       }
     },
     useAllAmount () {
-      this.withdrawAmount = this.getFullAllowedAmount(this.patron.address)
+      this.withdrawAmount = this.getFullAllowedAmount(this.patron.address).toString()
     },
     useHalfAmount () {
-      this.withdrawAmount = new BN(this.getFullAllowedAmount(this.patron.address) / 2 + '')
+      this.withdrawAmount = new BN(this.getFullAllowedAmount(this.patron.address) / 2 + '').toString()
     },
     useMinAmount () {
-      this.withdrawAmount = new BN('0.005').toFixed(3)
+      this.withdrawAmount = '0.005'
     },
     openModal (ref) {
       this.userAddress = this.patron.address

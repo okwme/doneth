@@ -10,6 +10,8 @@
 </template>
 
 <script>
+import {BigFloat} from 'bigfloat.js'
+const BN = BigFloat
 import { mapGetters } from 'vuex'
 export default {
 
@@ -29,15 +31,15 @@ export default {
       return (member && member.address) ? `#${member.address.slice(-6)}` : '#CCCCCC'
     },
     percentage (member) {
-      let num = parseInt(this.totalShares, 10)
-      if (num === 0) {
+      let num = new BN(this.totalShares)
+      if (num.eq(0)) {
         this.patrons.map((p) => {
-          if (p && p.shares && !isNaN(parseInt(p.shares, 10))) {
-            num += parseInt(p.shares, 10)
+          if (p && p.shares) {
+            num = num.plus(p.shares)
           }
         })
       }
-      return ((parseInt(member.shares, 10) * 100) / num).toFixed(2)
+      return new BN(member.shares).mul(100).div(num).toString(2)
     }
   }
 }

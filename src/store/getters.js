@@ -1,5 +1,7 @@
-import BN from 'bignumber.js'
 import utils from 'web3-utils'
+
+import { BigFloat } from "bigfloat.js";
+const BN = BigFloat;
 
 export default {
   account: state => state.account,

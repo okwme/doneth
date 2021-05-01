@@ -34,8 +34,11 @@
 
 <script>
 import UiModal from '@/components/UiModal'
-import BN from 'bignumber.js'
+import { BigFloat } from "bigfloat.js";
 import utils from 'web3-utils'
+
+const BN = BigFloat;
+
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 export default {
@@ -72,10 +75,10 @@ export default {
       return 100
       // let patron = this.members.find((p) => p.address.toLowerCase() === address.toLowerCase())
       // if (!patron || !patron.allowedAmount) return 0
-      // return new BN(patron.allowedAmount).toFixed(4)
+      // return new BN(patron.allowedAmount).toString(4)
     },
     getFullAllowedAmount () {
-      return new BN(utils.fromWei(this.totalExpense.toString())).minus(this.totalExpenseWithdrawn)
+      return new BN(utils.fromWei(this.totalExpense.toString())).sub(this.totalExpenseWithdrawn)
     },
     isOverdrafted (patron, withdrawing) {
       if (isNaN(withdrawing) || withdrawing === '') return false
@@ -115,13 +118,13 @@ export default {
       }
     },
     useAllAmount () {
-      this.withdrawAmount = this.getFullAllowedAmount()
+      this.withdrawAmount = this.getFullAllowedAmount().toString()
     },
     useHalfAmount () {
-      this.withdrawAmount = new BN(this.getFullAllowedAmount() / 2 + '')
+      this.withdrawAmount = new BN(this.getFullAllowedAmount() / 2 + '').toString()
     },
     useMinAmount () {
-      this.withdrawAmount = new BN('0.005').toFixed(3)
+      this.withdrawAmount = new BN('0.005').toString()
     },
     closeModal (ref) {
       this.setModal(false)
