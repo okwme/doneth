@@ -21,16 +21,16 @@ pragma solidity ^0.4.15;
 contract Ownable {
     address public owner;
 
-    function Ownable() {
-        owner = msg.sender;
+    function Ownable() public {
+        owner = tx.origin;
     }
 
     modifier onlyOwner() {
-        require(msg.sender == owner);
+        require(msg.sender == owner || tx.origin == owner);
         _;
     }
 
-    function transferOwnership(address newOwner) onlyOwner {
+    function transferOwnership(address newOwner) onlyOwner public {
         if (newOwner != address(0)) {
             owner = newOwner;
         }
@@ -38,9 +38,11 @@ contract Ownable {
 }
 
 contract Doneth is Ownable {
+    address public implementation;
+
     using SafeMath for uint256;  
 
-    bool initiated;
+    bool public initialized;
 
     // Name of the contract
     string public name;
@@ -81,16 +83,35 @@ contract Doneth is Ownable {
         uint256 totalWithdrawn;
     }
 
-    function Doneth() {}
+    // constructor() public {
+    //     genesisBlockNumber = block.number;
+    //     addMember(tx.origin, 1, true, "");
+    // }
 
-    function init(string _contractName, string _founderName) {
-        require(!initiated, "ALREADY_INITATED");
-        initiated = true;
+
+    function init(string _contractName, string _founderName) public {
+        require(!initialized, "ALREADY INITIALIZED");
+        initialized = true;
+        owner = tx.origin;
+        genesisBlockNumber = block.number;
         if (bytes(_contractName).length > 21) revert();
         if (bytes(_founderName).length > 21) revert();
         name = _contractName;
-        genesisBlockNumber = block.number;
-        addMember(msg.origin, 1, true, _founderName);
+        // addMember(founder, 1, true, _founderName);
+
+        Member memory newMember;
+        newMember.exists = true;
+        newMember.admin = true;
+        newMember.memberName = _founderName;
+
+        members[tx.origin] = newMember;
+        memberKeys.push(tx.origin);
+        // addShare(tx.origin, shares);
+        totalShares = totalShares.add(1);
+        members[tx.origin].shares = members[tx.origin].shares.add(1);
+        AddShare(tx.origin, 1, members[tx.origin].shares);
+        // AddShare(tx.origin, 1, members[tx.origin].shares);
+        // AddShare(msg.sender, 1, members[tx.origin].shares);
     }
 
     event Deposit(address from, uint value);
@@ -132,7 +153,7 @@ contract Doneth is Ownable {
         return this.balance;
     }
     
-    function getContractInfo() public constant returns(string, address, uint256, uint256, uint256) {
+    function getContractInfo() public constant returns(string name, address owner,  uint256 genesisBlockNumber,  uint256 totalShares,  uint256 totalWithdrawn) {
         return (string(name), owner, genesisBlockNumber, totalShares, totalWithdrawn);
     }
     
@@ -142,11 +163,11 @@ contract Doneth is Ownable {
     }
 
     function checkERC20Balance(address token) public constant returns(uint256) {
-        uint256 balance = ERC20(token).balanceOf(address(this));
-        if (!tokens[token].exists && balance > 0) {
-            tokens[token].exists = true;
-        }
-        return balance;
+        return ERC20(token).balanceOf(address(this));
+        // if (!tokens[token].exists && balance > 0) {
+        //     tokens[token].exists = true;
+        // }
+        // return balance;
     }
 
     // Function to add members to the contract 

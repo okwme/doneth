@@ -13,12 +13,12 @@
             <template v-if="!deploying && !confirming && !address">
               <div class="field">
                 <label for="alloc_shares">Title:</label>
-                <input maxLength="21" type="text" name="name" v-model="name" required>
+                <input maxLength="21" type="text" name="name" v-model="name" >
               </div>
 
               <div class="field">
                 <label for="alloc_shares">Founder:</label>
-                <input maxLength="21" type="text" name="founder_name" v-model="founderName" required>
+                <input maxLength="21" type="text" name="founder_name" v-model="founderName" >
               </div>
               <div class="field">
                 <button class="btn btn-primary" type="submit" name="button">Deploy</button>
@@ -47,6 +47,8 @@
 <script>
 
 import SectionHeader from '@/components/SectionHeader'
+import proxyABI from '../../build/contracts/ProxyFactory.json'
+import donethABI from '../../build/contracts/Doneth.json'
 
 import { mapGetters, mapActions, mapState } from 'vuex'
 export default {
@@ -66,7 +68,7 @@ export default {
   },
   computed: {
     ...mapGetters(['account', 'metamask']),
-    ...mapState(['abi'])
+    ...mapState(['abi', 'network'])
   },
   methods: {
     ...mapActions(['addNotification', 'setLoading']),
@@ -76,20 +78,58 @@ export default {
         return
       }
       this.setLoading(true)
-      var contract = new window.web3.eth.Contract(this.abi.abi)
+      var donethMaster = donethABI.networks[this.network]
+
+      if (!donethMaster) throw new Error("Doneth Master not deployed on network "+ this.network)
+      // 0x59BDC45cDD125D713313436550A5B538bD6ACBBb
+      var address = proxyABI.networks[this.network]
+      if (!address) throw new Error('Not deployed to network ' + this.network)
+      var ProxyFactory = new window.web3.eth.Contract(proxyABI.abi, address.address)
+      // var contract = new window.web3.eth.Contract(this.abi.abi)
+      // contract.deploy({
+      //   data: this.abi.bytecode,
+      //   arguments: [this.name, this.founderName],
+      //   from: this.account
+      // }).send({
+      //   from: this.account,
+      //   gas: '4200000'
+      //   // gasPrice: '4000000000'
+      // }, 
       this.deploying = true
-      contract.deploy({
-        data: this.abi.bytecode,
-        arguments: [this.name, this.founderName],
-        from: this.account
-      }).send({
-        from: this.account,
-        gas: '4200000'
-        // gasPrice: '4000000000'
-      }, (e, transactionHash) => {
+      console.log('donethMaster.address', donethMaster.address)
+
+    let data = web3.eth.abi.encodeFunctionCall(
+      {
+        name: 'init',
+        type: 'function',
+        inputs: [
+          // {
+          //   type: 'address',
+          //   name: 'founder'
+          // },
+          {
+            type: 'string',
+            name: '_contractName'
+          },
+          {
+            type: 'string',
+            name: '_founderName'
+          },
+        ]
+      },
+      [
+        // this.account,
+        this.name,
+        this.founderName
+      ]
+    );
+
+      console.log({data})
+      ProxyFactory.methods.createProxy(donethMaster.address, data).send({from: this.account}, (e, transactionHash) => {
         this.deploying = false
         this.confirming = true
         this.tx = transactionHash
+        console.log({transactionHash})
       })
       .on('error', () => {
         this.confirming = false
@@ -101,9 +141,10 @@ export default {
         })
       })
       .then((newContractInstance) => {
+        console.log({newContractInstance})
         this.setLoading(false)
         this.confirming = false
-        this.address = newContractInstance.options.address
+        this.address = newContractInstance.events.ProxyDeployed.returnValues.proxyAddress
         setInterval(() => {
           this.countdown--
           if (this.countdown === 0) this.$router.push('/' + this.address)

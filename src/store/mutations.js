@@ -54,6 +54,9 @@ export default {
   ADD_DONETH (state, contract) {
     state.Doneth = contract
   },
+  SET_NETWORK (state, network) {
+    state.network = Number(network, 16).toString(10)
+  },
   ADD_ADDRESS (state, address) {
     state.address = address
   },

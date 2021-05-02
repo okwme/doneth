@@ -16,6 +16,7 @@ const state = {
   editMember: null,
   retried: false,
   metamask: false,
+  network: null,
   account: null,
   connected: false,
   currency: 'USD',

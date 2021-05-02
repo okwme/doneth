@@ -59,6 +59,10 @@ export default {
     } else if (!accounts.length) {
       commit('SET_ACCOUNT', null)
     }
+    const chainId = await ethereum.request({ method: 'eth_chainId' });
+    if (state.network != chainId) {
+      commit('SET_NETWORK', chainId)
+    }
   },
   // getConversions ({commit, dispatch}) {
   //   dispatch('getConversion', 0)
@@ -250,6 +254,7 @@ export default {
   pollMember ({dispatch, state, commit}, data) {
     console.log('pollMember', {data})
     console.log({data})
+    state.Doneth.methods.owner().call().then((owner) => {console.log({owner})})
     return state.Doneth.methods.getMemberAtKey(data.i).call()
       .then((address) => {
         return state.Doneth.methods.returnMember(address).call()
