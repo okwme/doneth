@@ -1,68 +1,21 @@
 {
-  "contractName": "ProxyFactory",
+  "contractName": "IDoneth",
   "abi": [
     {
-      "constant": true,
+      "constant": false,
       "inputs": [],
-      "name": "target",
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
+      "name": "init",
+      "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "constructor"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "name": "proxyAddress",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "name": "targetAddress",
-          "type": "address"
-        }
-      ],
-      "name": "ProxyDeployed",
-      "type": "event"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "_target",
-          "type": "address"
-        }
-      ],
-      "name": "createProxy",
-      "outputs": [
-        {
-          "name": "proxyContract",
-          "type": "address"
-        }
-      ],
-      "payable": true,
-      "stateMutability": "payable",
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.4.24+commit.e67f0147\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":false,\"inputs\":[{\"name\":\"_target\",\"type\":\"address\"}],\"name\":\"createProxy\",\"outputs\":[{\"name\":\"proxyContract\",\"type\":\"address\"}],\"payable\":true,\"stateMutability\":\"payable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"target\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"proxyAddress\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"targetAddress\",\"type\":\"address\"}],\"name\":\"ProxyDeployed\",\"type\":\"event\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/billy/GitHub/okwme/doneth-v2/contracts/ProxyFactory.sol\":\"ProxyFactory\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/billy/GitHub/okwme/doneth-v2/contracts/Proxy.sol\":{\"keccak256\":\"0x859cc04899b494b309ad099984dc51901bdf4483835a4ac1748d513024034af5\",\"urls\":[\"bzzr://8b31e9cc14ed2235817134d6f953316158bbc60ed429cd566f02be99174438d2\"]},\"/Users/billy/GitHub/okwme/doneth-v2/contracts/ProxyFactory.sol\":{\"keccak256\":\"0xd39dd329bc3458fda4cc5596e744f0f9667880368888ae6da4158de9fcc80fd2\",\"urls\":[\"bzzr://edcbae5b4a060e037a8b9d89491acfc2fe2b7dddeb8f7f6d6937474638e1f96c\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b506104ee806100206000396000f30060806040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680636140c54c14610051578063d4b83992146100c7575b600080fd5b610085600480360381019080803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505061011e565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b3480156100d357600080fd5b506100dc610298565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b6000808261012a6102bd565b808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001915050604051809103906000f08015801561017c573d6000803e3d6000fd5b5090508073ffffffffffffffffffffffffffffffffffffffff1663e1c7392a6040518163ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401600060405180830381600087803b1580156101e357600080fd5b505af11580156101f7573d6000803e3d6000fd5b505050507f3d2489efb661e8b1c3679865db649ca1de61d76a71184a1234de2e55786a6aad8184604051808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019250505060405180910390a150919050565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b6040516101f5806102ce833901905600608060405234801561001057600080fd5b506040516020806101f583398101806040528101908080519060200190929190505050806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050610172806100836000396000f300608060405260043610610041576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680635c60da1b146100ca575b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff169050600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff16141515156100a357600080fd5b60405136600082376000803683855af43d806000843e81600081146100c6578184f35b8184fd5b3480156100d657600080fd5b506100df610121565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff16815600a165627a7a7230582076d27f6725af327935f0de0f240ab38bc5ee9ba1a557fbefe47582d2e0d30dbf0029a165627a7a723058207243cb076dd8306b9e65f393af1510416ba0cae3573bb5ebe258704c220497000029",
-  "deployedBytecode": "0x60806040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680636140c54c14610051578063d4b83992146100c7575b600080fd5b610085600480360381019080803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505061011e565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b3480156100d357600080fd5b506100dc610298565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b6000808261012a6102bd565b808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001915050604051809103906000f08015801561017c573d6000803e3d6000fd5b5090508073ffffffffffffffffffffffffffffffffffffffff1663e1c7392a6040518163ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401600060405180830381600087803b1580156101e357600080fd5b505af11580156101f7573d6000803e3d6000fd5b505050507f3d2489efb661e8b1c3679865db649ca1de61d76a71184a1234de2e55786a6aad8184604051808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019250505060405180910390a150919050565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b6040516101f5806102ce833901905600608060405234801561001057600080fd5b506040516020806101f583398101806040528101908080519060200190929190505050806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050610172806100836000396000f300608060405260043610610041576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680635c60da1b146100ca575b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff169050600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff16141515156100a357600080fd5b60405136600082376000803683855af43d806000843e81600081146100c6578184f35b8184fd5b3480156100d657600080fd5b506100df610121565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff16815600a165627a7a7230582076d27f6725af327935f0de0f240ab38bc5ee9ba1a557fbefe47582d2e0d30dbf0029a165627a7a723058207243cb076dd8306b9e65f393af1510416ba0cae3573bb5ebe258704c220497000029",
-  "sourceMap": "1979:415:4:-;;;2035:33;8:9:-1;5:2;;;30:1;27;20:12;5:2;2035:33:4;1979:415;;;;;;",
-  "deployedSourceMap": "1979:415:4:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2145:247;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2008:21;;8:9:-1;5:2;;;30:1;27;20:12;5:2;2008:21:4;;;;;;;;;;;;;;;;;;;;;;;;;;;2145:247;2231:21;2268:10;2291:7;2281:18;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;2281:18:4;2268:31;;2325:4;2309:27;;;:29;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;2309:29:4;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;2309:29:4;;;;2348:37;2370:4;2377:7;2348:37;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2145:247;;;;:::o;2008:21::-;;;;;;;;;;;;;:::o;1979:415::-;;;;;;;;;;:::o",
+  "metadata": "",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
   "source": "/***\n* Shoutouts:\n*\n* Bytecode origin https://www.reddit.com/r/ethereum/comments/6ic49q/any_assembly_programmers_willing_to_write_a/dj5ceuw/\n* Modified version of Vitalik's https://www.reddit.com/r/ethereum/comments/6c1jui/delegatecall_forwarders_how_to_save_5098_on/\n* Credits to Jorge Izquierdo (@izqui) for coming up with this design here: https://gist.github.com/izqui/7f904443e6d19c1ab52ec7f5ad46b3a8\n* Credits to Stefan George (@Georgi87) for inspiration for many of the improvements from Gnosis Safe: https://github.com/gnosis/gnosis-safe-contracts\n*\n* This version has many improvements over the original @izqui's library like using REVERT instead of THROWing on failed calls.\n* It also implements the awesome design pattern for initializing code as seen in Gnosis Safe Factory: https://github.com/gnosis/gnosis-safe-contracts/blob/master/contracts/ProxyFactory.sol\n* but unlike this last one it doesn't require that you waste storage on both the proxy and the proxied contracts (v. https://github.com/gnosis/gnosis-safe-contracts/blob/master/contracts/Proxy.sol#L8 & https://github.com/gnosis/gnosis-safe-contracts/blob/master/contracts/GnosisSafe.sol#L14)\n*\n*\n* v0.0.2\n* The proxy is now only 60 bytes long in total. Constructor included.\n* No functionalities were added. The change was just to make the proxy leaner.\n*\n* v0.0.3\n* Thanks @dacarley for noticing the incorrect check for the subsequent call to the proxy. 🙌\n* Note: I'm creating a new version of this that doesn't need that one call.\n*       Will add tests and put this in its own repository soon™.\n*\n* v0.0.4\n* All the merit in this fix + update of the factory is @dacarley 's. 🙌\n* Thank you! 😄\n*\n* Potential updates can be found at https://gist.github.com/GNSPS/ba7b88565c947cfd781d44cf469c2ddb\n*\n***/\n\nimport \"./Proxy.sol\";\n\npragma solidity ^0.4.19;\n\n\ninterface IDoneth {\n  function init() public;\n}\n\n/* solhint-disable no-inline-assembly, indent, state-visibility, avoid-low-level-calls */\n\ncontract ProxyFactory {\n\n    address public target;\n    function ProxyFactory() public {}\n\n    event ProxyDeployed(address proxyAddress, address targetAddress);\n\n    function createProxy(address _target)\n        public\n        payable\n        returns (address proxyContract)\n    {\n        Proxy prox = new Proxy(_target);\n        IDoneth(address(prox)).init();\n        ProxyDeployed(address(prox), _target);\n    }\n}",
   "sourcePath": "/Users/billy/GitHub/okwme/doneth-v2/contracts/ProxyFactory.sol",
   "ast": {
@@ -1379,41 +1332,9 @@
     "name": "solc",
     "version": "0.4.24+commit.e67f0147.Emscripten.clang"
   },
-  "networks": {
-    "4": {
-      "events": {
-        "0x3d2489efb661e8b1c3679865db649ca1de61d76a71184a1234de2e55786a6aad": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "name": "proxyAddress",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "name": "targetAddress",
-              "type": "address"
-            }
-          ],
-          "name": "ProxyDeployed",
-          "type": "event"
-        }
-      },
-      "links": {},
-      "address": "0x4A4160728678a8572e419E697dC83bFFa7382Ce8",
-      "transactionHash": "0x1119ecc73dd855582acb2ba370e6963bafbd9a909bebc4a558b5c5a4fc3450e4"
-    },
-    "1": {
-      "events": {
-      },
-      "links": {},
-      "address": "0xb3291e65d5fae0d4f2f94b48a97337000bf339d7",
-      "transactionHash": "0x73b03fd9d9b9c649837232bcfaf82c788a773db3be86c20ffc46f659120822f4"
-    }
-  },
+  "networks": {},
   "schemaVersion": "3.3.2",
-  "updatedAt": "2021-05-02T12:39:45.353Z",
+  "updatedAt": "2021-05-02T12:39:45.352Z",
   "devdoc": {
     "methods": {}
   },

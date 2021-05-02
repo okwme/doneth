@@ -2,10 +2,11 @@
   <div class="contract">
     <div class="contract-header">
       <div class="contract-details">
-        <h2 :class="{edit: isAdmin}" @click="openModal('modalSetContractName')">{{contractName}}</h2>
+        <h2 :class="{edit: isAdmin}" @click="openModal('modalSetContractName')">{{contractName || 'Unnamed Project'}}</h2>
         <div class="sub-details">
           <div class=""><small>Total Available:</small> {{totalBalance}} Eth ({{totalBalanceEther}})</div>
           <div class=""><small>Created:</small> {{dateTime(timestamp)}}</div>
+          <div><small>View on <a :href="`https://${networkURL}etherscan.io/address/${address}#readProxyContract`" target="_blank">Etherscan</a></small></div>
         </div>
       </div>
 
@@ -62,7 +63,7 @@ import ShortHash from '@/components/ShortHash'
 import SectionHeader from '@/components/SectionHeader'
 import TransactionsList from '@/components/TransactionsList'
 import UiModal from '@/components/UiModal'
-import { mapGetters, mapActions, mapMutations } from 'vuex'
+import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
 export default {
 
   name: 'Contract',
@@ -77,7 +78,11 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['metamask', 'members', 'contractName', 'sortedLogs', 'totalBalance', 'totalBalanceRaw', 'currency', 'account', 'isAdmin', 'totalExpense'])
+    ...mapState(['network']),
+    ...mapGetters(['metamask', 'members', 'contractName', 'sortedLogs', 'totalBalance', 'totalBalanceRaw', 'currency', 'account', 'isAdmin', 'totalExpense']),
+    networkURL() {
+      return this.network == '4' ? 'rinkeby.' : ''
+    }
   },
   async mounted () {
     this.connect()

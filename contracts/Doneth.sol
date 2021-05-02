@@ -10,15 +10,12 @@ pragma solidity ^0.4.15;
  * the member can withdraw from the contract.
  */
 
-/*
- * Ownable
- *
- * Base contract with an owner.
- * Provides onlyOwner modifier, which prevents function from running
- * if it is called by anyone other than the owner.
- */
 
-contract Ownable {
+contract Doneth {
+
+    address public implementation;
+    // constructor(address _implementation) public {}
+
     address public owner;
 
     function Ownable() public {
@@ -35,10 +32,6 @@ contract Ownable {
             owner = newOwner;
         }
     }
-}
-
-contract Doneth is Ownable {
-    address public implementation;
 
     using SafeMath for uint256;  
 
@@ -76,42 +69,24 @@ contract Doneth is Ownable {
     }
 
     // Used to keep track of ERC20 tokens used and how much withdrawn
-    mapping(address => Token) public tokens;
-    address[] public tokenKeys;
-    struct Token {
-        bool exists;
-        uint256 totalWithdrawn;
-    }
+    mapping(address => uint256) public tokens;
 
-    // constructor() public {
-    //     genesisBlockNumber = block.number;
-    //     addMember(tx.origin, 1, true, "");
-    // }
-
-
-    function init(string _contractName, string _founderName) public {
-        require(!initialized, "ALREADY INITIALIZED");
+    function init() public {
+        require(!initialized);
         initialized = true;
+
         owner = tx.origin;
         genesisBlockNumber = block.number;
-        if (bytes(_contractName).length > 21) revert();
-        if (bytes(_founderName).length > 21) revert();
-        name = _contractName;
-        // addMember(founder, 1, true, _founderName);
 
         Member memory newMember;
         newMember.exists = true;
         newMember.admin = true;
-        newMember.memberName = _founderName;
-
         members[tx.origin] = newMember;
         memberKeys.push(tx.origin);
-        // addShare(tx.origin, shares);
+
         totalShares = totalShares.add(1);
         members[tx.origin].shares = members[tx.origin].shares.add(1);
         AddShare(tx.origin, 1, members[tx.origin].shares);
-        // AddShare(tx.origin, 1, members[tx.origin].shares);
-        // AddShare(msg.sender, 1, members[tx.origin].shares);
     }
 
     event Deposit(address from, uint value);
@@ -164,10 +139,6 @@ contract Doneth is Ownable {
 
     function checkERC20Balance(address token) public constant returns(uint256) {
         return ERC20(token).balanceOf(address(this));
-        // if (!tokens[token].exists && balance > 0) {
-        //     tokens[token].exists = true;
-        // }
-        // return balance;
     }
 
     // Function to add members to the contract 
@@ -263,15 +234,15 @@ contract Doneth is Ownable {
         Withdraw(msg.sender, amount, totalWithdrawn);
     }
 
-    // Withdrawal function for ERC20 tokens
+    // Withdrawal function for ERC20 tokensx
     function withdrawToken(uint256 amount, address token) public onlyExisting(msg.sender) {
         uint256 newTotal = calculateTotalWithdrawableTokenAmount(msg.sender, token);
         if (amount > newTotal.sub(members[msg.sender].tokensWithdrawn[token])) revert();
 
         members[msg.sender].tokensWithdrawn[token] = members[msg.sender].tokensWithdrawn[token].add(amount);
-        tokens[token].totalWithdrawn = tokens[token].totalWithdrawn.add(amount);
+        tokens[token] = tokens[token].add(amount);
         ERC20(token).transfer(msg.sender, amount);
-        TokenWithdraw(msg.sender, amount, token, tokens[token].totalWithdrawn);
+        TokenWithdraw(msg.sender, amount, token, tokens[token]);
     }
 
     // Withdraw from shared expense allocation. Total withdrawable is calculated as 
@@ -303,7 +274,7 @@ contract Doneth is Ownable {
 
 
     function calculateTotalWithdrawableTokenAmount(address who, address token) public constant returns(uint256) {
-        uint256 balanceSum = checkERC20Balance(token).add(tokens[token].totalWithdrawn);
+        uint256 balanceSum = checkERC20Balance(token).add(tokens[token]);
 
         // Need to use parts-per notation to compute percentages for lack of floating point division
         uint256 tokPerSharePPN = balanceSum.percent(totalShares, PRECISION); 

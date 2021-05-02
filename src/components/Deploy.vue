@@ -11,7 +11,7 @@
         <template v-if="metamask">
           <form @submit.prevent="deploy()">
             <template v-if="!deploying && !confirming && !address">
-              <div class="field">
+              <!-- <div class="field">
                 <label for="alloc_shares">Title:</label>
                 <input maxLength="21" type="text" name="name" v-model="name" >
               </div>
@@ -19,9 +19,9 @@
               <div class="field">
                 <label for="alloc_shares">Founder:</label>
                 <input maxLength="21" type="text" name="founder_name" v-model="founderName" >
-              </div>
-              <div class="field">
-                <button class="btn btn-primary" type="submit" name="button">Deploy</button>
+              </div> -->
+              <div class="field ">
+                <button class="btn btn-primary center" type="submit" name="button">Deploy</button>
               </div>
             </template>
             <h2 v-if="deploying && !confirming && !address">
@@ -49,8 +49,9 @@
 import SectionHeader from '@/components/SectionHeader'
 import proxyABI from '../../build/contracts/ProxyFactory.json'
 import donethABI from '../../build/contracts/Doneth.json'
-
+import axios from 'axios'
 import { mapGetters, mapActions, mapState } from 'vuex'
+const APITOKEN = 'QCNRXK7D434BB6DQSFMAGFSNNDY5EMTXE6'
 export default {
 
   name: 'Deploy',
@@ -72,6 +73,50 @@ export default {
   },
   methods: {
     ...mapActions(['addNotification', 'setLoading']),
+    verifyProxy(address) {
+
+
+      var formdata = new FormData();
+      formdata.append("address", address);
+
+      var requestOptions = {
+        method: 'POST',
+        body: formdata,
+        redirect: 'follow'
+      };
+      var network = this.network == "4" ? '-rinkeby' : ''
+      const url = `https://api${network}.etherscan.io/api?module=contract&action=verifyproxycontract&apikey=${APITOKEN}`
+
+      fetch(url, requestOptions)
+      // .then(response => response.text())
+      // .then(result => console.log(result))
+      // .catch(error => console.log('error', error));
+
+
+      // const url = `https://api-rinkeby.etherscan.io/api?module=contract&action=verifyproxycontract&apikey=${APITOKEN}`
+      // console.log({url})
+      // axios.post(url, {
+      //   address
+      // })
+      .then(response => {
+        console.log({response})
+        // if (res.data.message == 'NOTOK') {
+        //   console.log('FAILED TO VERIFY', {res})
+        //   setTimeout(() => {
+        //     this.verifyProxy(address)
+        //   }, 5000)
+        // } else {
+        //   console.log('SUCCEEDED TO VERIFY', {res})
+        // }
+      }).
+      then(result => {
+        console.log({result})
+      }).
+      catch(error => {
+        console.error(error)
+      })
+
+    },
     deploy () {
       if (!this.account) {
         alert('unlock your wallet!')
@@ -98,34 +143,8 @@ export default {
       this.deploying = true
       console.log('donethMaster.address', donethMaster.address)
 
-    let data = web3.eth.abi.encodeFunctionCall(
-      {
-        name: 'init',
-        type: 'function',
-        inputs: [
-          // {
-          //   type: 'address',
-          //   name: 'founder'
-          // },
-          {
-            type: 'string',
-            name: '_contractName'
-          },
-          {
-            type: 'string',
-            name: '_founderName'
-          },
-        ]
-      },
-      [
-        // this.account,
-        this.name,
-        this.founderName
-      ]
-    );
 
-      console.log({data})
-      ProxyFactory.methods.createProxy(donethMaster.address, data).send({from: this.account}, (e, transactionHash) => {
+      ProxyFactory.methods.createProxy(donethMaster.address).send({from: this.account}, (e, transactionHash) => {
         this.deploying = false
         this.confirming = true
         this.tx = transactionHash
@@ -145,9 +164,14 @@ export default {
         this.setLoading(false)
         this.confirming = false
         this.address = newContractInstance.events.ProxyDeployed.returnValues.proxyAddress
+
+
         setInterval(() => {
           this.countdown--
-          if (this.countdown === 0) this.$router.push('/' + this.address)
+          if (this.countdown === 0) {
+            this.verifyProxy(this.address)
+            this.$router.push('/' + this.address)
+          }
         }, 1000)
       })
     }
@@ -169,6 +193,11 @@ export default {
   form {
     display: flex;
     width: 100%;
+
+    .center {
+      margin-left:auto;
+      margin-right: auto;
+    }
 
     h2 {
       flex: 1;

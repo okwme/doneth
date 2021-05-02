@@ -6,7 +6,7 @@
         <div>{{firstName(patron)}}</div>
       </div>
       <div class="attributes">
-        <h3  :class="{edit: isAdmin}"  @click="editMember(patron)">{{patron.memberName || 'FirstName'}}</h3>
+        <h3  :class="{edit: isAdmin}"  @click="editMember(patron)">{{patron.memberName || `Member ${patron.address.substr(0,6)}...`}}</h3>
         <short-hash :hash="patron.address || '0x0000000000000'"/>
       </div>
     </div>
