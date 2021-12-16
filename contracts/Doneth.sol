@@ -230,7 +230,11 @@ contract Doneth {
         
         members[msg.sender].withdrawn = members[msg.sender].withdrawn.add(amount);
         totalWithdrawn = totalWithdrawn.add(amount);
-        msg.sender.transfer(amount);
+
+        (bool success, ) = msg.sender.call.value(amount)("");
+        require(success, "msg.sender failed to receive");
+
+        // msg.sender.transfer(amount);
         Withdraw(msg.sender, amount, totalWithdrawn);
     }
 
@@ -251,7 +255,11 @@ contract Doneth {
         if (amount > calculateTotalExpenseWithdrawableAmount()) revert();
         
         sharedExpenseWithdrawn = sharedExpenseWithdrawn.add(amount);
-        to.transfer(amount);
+
+        (bool success, ) = to.call.value(amount)("");
+        require(success, "recpient failed to receive");
+        // to.transfer(amount);
+
         WithdrawSharedExpense(msg.sender, to, amount, sharedExpenseWithdrawn);
     }
 

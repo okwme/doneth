@@ -169,7 +169,9 @@ export default {
         setInterval(() => {
           this.countdown--
           if (this.countdown === 0) {
-            this.verifyProxy(this.address)
+            setTimeout(() => {
+              this.verifyProxy(this.address)
+            }, 15000)
             this.$router.push('/' + this.address)
           }
         }, 1000)
