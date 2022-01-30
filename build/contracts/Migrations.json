@@ -1379,12 +1379,12 @@
     "4": {
       "events": {},
       "links": {},
-      "address": "0x7113347cF4f47fa94539DCeA01dA1B3c9C9bbeAf",
-      "transactionHash": "0x4c25eae0e67c42ec926c9264bdde7933e0823c9a905e959f3fc8122c45d98996"
+      "address": "0x475eA242c1c2d9d7eBec0B69422f7D5c12eC5246",
+      "transactionHash": "0xf5ce8e6f1a2e18e638d256944b4ccbe226acfdf506fe66272dd6341f265d2bfa"
     }
   },
-  "schemaVersion": "3.3.2",
-  "updatedAt": "2021-05-02T12:42:44.239Z",
+  "schemaVersion": "3.4.3",
+  "updatedAt": "2022-01-30T20:25:30.301Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {}

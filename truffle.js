@@ -1,7 +1,7 @@
 require('dotenv').config()
 
 const HDWalletProvider = require('truffle-hdwallet-provider')
-
+console.log(          'https://rinkeby.infura.io/v3/' + process.env.INFURA_API_KEY)
 module.exports = {
   compilers: {
     solc: {
@@ -79,7 +79,7 @@ module.exports = {
       },
       network_id: 4,
       // gas: 4700000,
-      gasPrice: 100000000000 // 200 GWEI
+      gasPrice: 5000000000 // 5 GWEI
     },
     ropsten: {
       provider() {
