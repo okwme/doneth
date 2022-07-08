@@ -14,7 +14,7 @@
     "@babel/plugin-transform-spread": "^7.13.0",
     "axios": "^0.21.1",
     "bigfloat.js": "^3.0.1",
-    "moment": "^2.29.1",
+    "moment": "^2.29.4",
     "solc": "^0.8.4",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
